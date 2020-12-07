@@ -165,7 +165,7 @@ class Termination extends Component {
 				lastDate: this.state.lastDate,
 			};
 			axios.interceptors.request.use(function (config) {
-				document.getElementById("fuse-splash-screen").style.display="block";
+				//document.getElementById("fuse-splash-screen").style.display="block";
 
 				return config;
 			}, function (error) {
@@ -193,7 +193,7 @@ class Termination extends Component {
 						Id:0,
 						value:0
 					});
-					document.getElementById("fuse-splash-screen").style.display="none";
+					//document.getElementById("fuse-splash-screen").style.display="none";
 					Messages.success();
 
 				})
@@ -209,7 +209,7 @@ class Termination extends Component {
 						Id:0,
 						value:0
 					})
-					document.getElementById("fuse-splash-screen").style.display="none";
+					//document.getElementById("fuse-splash-screen").style.display="none";
 					Messages.error();
 				})
 
@@ -275,7 +275,7 @@ class Termination extends Component {
 			},
 		})
 			.then((response) => {
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 				console.log(response);
 				this.getEmployees(response.data[0].CompanyId);
 				this.setState({
@@ -291,7 +291,7 @@ class Termination extends Component {
 
 			})
 			.catch((error) => {
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 				console.log(error);
 			})
 	}

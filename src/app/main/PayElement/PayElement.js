@@ -253,7 +253,7 @@ class PayElement extends Component {
 				Frequency:this.state.Frequency
 			};
 			axios.interceptors.request.use(function (config) {
-				document.getElementById("fuse-splash-screen").style.display="block";
+				//document.getElementById("fuse-splash-screen").style.display="block";
 				return config;
 			}, function (error) {
 				console.log('Error');
@@ -288,7 +288,7 @@ class PayElement extends Component {
 						value:0,
 						Frequency:""
 					});
-					document.getElementById("fuse-splash-screen").style.display="none";
+					//document.getElementById("fuse-splash-screen").style.display="none";
 					Messages.success();
 
 				})
@@ -311,7 +311,7 @@ class PayElement extends Component {
 						value:0,
 						Frequency:""
 					})
-					document.getElementById("fuse-splash-screen").style.display="none";
+					//document.getElementById("fuse-splash-screen").style.display="none";
 					Messages.error();
 
 				})
@@ -374,7 +374,7 @@ class PayElement extends Component {
 			Messages.warning("kindly Select one record");
 			return false;	
 		}
-		document.getElementById("fuse-splash-screen").style.display="block";
+		//document.getElementById("fuse-splash-screen").style.display="block";
 
 		axios({
 			method: "get",
@@ -402,12 +402,12 @@ class PayElement extends Component {
 					Action : "Update Record",
 					Frequency:response.data[0].Frequency
 				});
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 
 			})
 			.catch((error) => {
 				console.log(error);
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 
 			})
 	}
@@ -418,7 +418,7 @@ class PayElement extends Component {
 		Messages.warning("No Record Selected");
 		return false;
 		}
-		document.getElementById("fuse-splash-screen").style.display="block";
+		//document.getElementById("fuse-splash-screen").style.display="block";
 
 		axios({
 			method: "delete",
@@ -431,12 +431,12 @@ class PayElement extends Component {
 			.then((response) => {
 				
 				this.getPayElement();
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 				Messages.success();
 
 			})
 			.catch((error) => {
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 				console.log(error);
 				Messages.error();
 			})

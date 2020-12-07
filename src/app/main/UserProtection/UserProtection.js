@@ -154,7 +154,7 @@ class UserProtection extends Component {
 			Messages.warning("kindly Select one record");
 			return false;
 		}
-		document.getElementById("fuse-splash-screen").style.display="block";
+		//document.getElementById("fuse-splash-screen").style.display="block";
 
 		axios({
 			method: "get",
@@ -168,12 +168,12 @@ class UserProtection extends Component {
 				console.log(response);
 				this.setState({ Action: 'Update Record', value: 1, 
 				companyId: response.data[0].CompanyId, labourId: response.data[0].LabourId, Id: response.data[0].Id,countryId:response.data[0].Country });
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 
 			})
 			.catch((error) => {
 				console.log(error);
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 
 			})
 	}
@@ -185,7 +185,7 @@ class UserProtection extends Component {
 		Messages.warning("No Record Selected");
 		return false;
 		}
-		document.getElementById("fuse-splash-screen").style.display="block";
+		//document.getElementById("fuse-splash-screen").style.display="block";
 
 		axios({
 			method: "delete",
@@ -198,13 +198,13 @@ class UserProtection extends Component {
 			.then((response) => {
 				localStorage.removeItem("ids");
 				this.getUserProtection();
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 				Messages.success();
 
 			})
 			.catch((error) => {
 				console.log(error);
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 				Messages.error();
 
 			})
@@ -232,7 +232,7 @@ class UserProtection extends Component {
 			Country: this.state.countryId
 		};
 		axios.interceptors.request.use(function (config) {
-			document.getElementById("fuse-splash-screen").style.display="block";
+			//document.getElementById("fuse-splash-screen").style.display="block";
 			return config;
 		}, function (error) {
 			console.log('Error');
@@ -259,7 +259,7 @@ class UserProtection extends Component {
 					Id: 0,
 					value:0
 				});
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 				Messages.success();
 
 			})
@@ -273,7 +273,7 @@ class UserProtection extends Component {
 					Id: 0,
 					value:0
 				})
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 				Messages.error();
 
 			})

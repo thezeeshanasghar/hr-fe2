@@ -165,7 +165,7 @@ class UnpaidLeaves extends Component {
 				LeaveEndDate: this.state.dateTo
 			};
 			axios.interceptors.request.use(function (config) {
-				document.getElementById("fuse-splash-screen").style.display="block";
+				//document.getElementById("fuse-splash-screen").style.display="block";
 
 				return config;
 			}, function (error) {
@@ -194,7 +194,7 @@ class UnpaidLeaves extends Component {
 						Id:0,
 						value:0
 					});
-					document.getElementById("fuse-splash-screen").style.display="none";
+					//document.getElementById("fuse-splash-screen").style.display="none";
 					Messages.success();
 
 				})
@@ -210,7 +210,7 @@ class UnpaidLeaves extends Component {
 						Id:0,
 						value:0
 					})
-					document.getElementById("fuse-splash-screen").style.display="none";
+					//document.getElementById("fuse-splash-screen").style.display="none";
 					Messages.error();
 				})
 

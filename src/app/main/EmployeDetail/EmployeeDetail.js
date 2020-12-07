@@ -133,7 +133,7 @@ class EmployeeDetail extends Component {
 					// Id: response.data[0].Id,
 
 				});
-				document.getElementById("fuse-splash-screen").style.display = "none";
+				//document.getElementById("fuse-splash-screen").style.display = "none";
 				console.log(response.data)
 				// employee detail table start
 				this.state.table = $('#employeedetail_Table').DataTable({
@@ -196,7 +196,7 @@ class EmployeeDetail extends Component {
 			})
 			.catch((error) => {
 				console.log(error);
-				document.getElementById("fuse-splash-screen").style.display = "none";
+				//document.getElementById("fuse-splash-screen").style.display = "none";
 
 			})
 	}

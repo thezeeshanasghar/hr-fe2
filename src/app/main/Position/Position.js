@@ -221,7 +221,7 @@ class Position extends Component {
 			Action: 'Insert Record'
 		};
 		axios.interceptors.request.use(function (config) {
-			document.getElementById("fuse-splash-screen").style.display = "block";
+			//document.getElementById("fuse-splash-screen").style.display = "block";
 			return config;
 		}, function (error) {
 			console.log('Error');
@@ -250,7 +250,7 @@ class Position extends Component {
 					Action: 'Insert Record',
 					value: 0
 				});
-				document.getElementById("fuse-splash-screen").style.display = "none";
+				//document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.success();
 
 			})
@@ -265,7 +265,7 @@ class Position extends Component {
 					Action: 'Insert Record',
 					value: 0
 				})
-				document.getElementById("fuse-splash-screen").style.display = "none";
+				//document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.error();
 			})
 	}
@@ -275,7 +275,7 @@ class Position extends Component {
 			Messages.warning("No Record Selected");
 			return false;
 		}
-		document.getElementById("fuse-splash-screen").style.display = "block";
+		//document.getElementById("fuse-splash-screen").style.display = "block";
 
 		axios({
 			method: "delete",
@@ -288,13 +288,13 @@ class Position extends Component {
 			.then((response) => {
 				localStorage.removeItem("ids");
 				this.getPositionDetail();
-				document.getElementById("fuse-splash-screen").style.display = "none";
+				//document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.success();
 
 			})
 			.catch((error) => {
 				console.log(error);
-				document.getElementById("fuse-splash-screen").style.display = "none";
+				//document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.warning();
 
 			})
@@ -306,7 +306,7 @@ class Position extends Component {
 			Messages.warning("kindly Select one record");
 			return false;
 		}
-		document.getElementById("fuse-splash-screen").style.display = "block";
+		//document.getElementById("fuse-splash-screen").style.display = "block";
 
 		axios({
 			method: "get",
@@ -319,11 +319,11 @@ class Position extends Component {
 			.then((response) => {
 				console.log(response);
 				this.setState({ Action: 'Update Record', value: 1, jobId: response.data[0].JobId, code: response.data[0].Code, title: response.data[0].Title, Id: response.data[0].Id, unitId: response.data[0].UnitId });
-				document.getElementById("fuse-splash-screen").style.display = "none";
+				//document.getElementById("fuse-splash-screen").style.display = "none";
 			})
 			.catch((error) => {
 				console.log(error);
-				document.getElementById("fuse-splash-screen").style.display = "none";
+				//document.getElementById("fuse-splash-screen").style.display = "none";
 			})
 	}
 	render() {

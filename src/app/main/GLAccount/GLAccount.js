@@ -168,7 +168,7 @@ class GLAccount extends Component {
 			CompanyId: 2
 		  };
 		  axios.interceptors.request.use(function(config) {
-			document.getElementById("fuse-splash-screen").style.display="block";
+			//document.getElementById("fuse-splash-screen").style.display="block";
 			return config;
 		  }, function(error) {
 			console.log('Error');
@@ -193,7 +193,7 @@ class GLAccount extends Component {
 				Id:0,
 				value:0
 			  });
-			  document.getElementById("fuse-splash-screen").style.display="none";
+			  //document.getElementById("fuse-splash-screen").style.display="none";
 			  Messages.success();
 
 			})
@@ -206,7 +206,7 @@ class GLAccount extends Component {
 				Id:0,
 				value:0
 				})
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 				Messages.error();
 			})
 	  }
@@ -218,7 +218,7 @@ class GLAccount extends Component {
 		Messages.warning("No Record Selected");
 		return false;
 		}
-		document.getElementById("fuse-splash-screen").style.display="block";
+		//document.getElementById("fuse-splash-screen").style.display="block";
 
 		axios({
 			method: "delete",
@@ -231,13 +231,13 @@ class GLAccount extends Component {
 			.then((response) => {
 				
 				this.getGlAccountDetail();
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 				Messages.success();
 
 			})
 			.catch((error) => {
 				console.log(error);
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 				Messages.error();
 
 			})
@@ -250,7 +250,7 @@ class GLAccount extends Component {
 			Messages.warning("kindly Select one record");
 			return false;	
 		}
-		document.getElementById("fuse-splash-screen").style.display="block";
+		//document.getElementById("fuse-splash-screen").style.display="block";
 
 		axios({
 			method: "get",
@@ -263,13 +263,13 @@ class GLAccount extends Component {
 			.then((response) => {
 				console.log(response);
 				this.setState({Action:'Update Record',value:1,account:response.data[0].Account,description:response.data[0].Description,companyId:response.data[0].CompanyId, Id:response.data[0].Id });
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 				Messages.success();
 
 			})
 			.catch((error) => {
 				console.log(error);
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 				Messages.error();
 			})
 	  }

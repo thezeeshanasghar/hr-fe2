@@ -184,7 +184,7 @@ class Unit extends Component {
 			CompanyId: this.state.companyId
 		};
 		axios.interceptors.request.use(function (config) {
-			document.getElementById("fuse-splash-screen").style.display="block";
+			//document.getElementById("fuse-splash-screen").style.display="block";
 			return config;
 		}, function (error) {
 			console.log('Error');
@@ -212,7 +212,7 @@ class Unit extends Component {
 					Id: 0,
 					value:0
 				});
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 				Messages.success();
 
 			})
@@ -225,7 +225,7 @@ class Unit extends Component {
 					Id: 0,
 					value:0
 				})
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 				Messages.error();
 
 			})
@@ -238,7 +238,7 @@ class Unit extends Component {
 		Messages.warning("No Record Selected");
 		return false;
 		}
-		document.getElementById("fuse-splash-screen").style.display="block";
+		//document.getElementById("fuse-splash-screen").style.display="block";
 
 		axios({
 			method: "delete",
@@ -251,13 +251,13 @@ class Unit extends Component {
 			.then((response) => {
 				localStorage.removeItem("ids");
 				this.getUnitDetail();
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 				Messages.success();
 
 			})
 			.catch((error) => {
 				console.log(error);
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 				Messages.error();
 
 			})
@@ -269,7 +269,7 @@ class Unit extends Component {
 			Messages.warning("kindly Select one record");
 			return false;
 		}
-		document.getElementById("fuse-splash-screen").style.display="block";
+		//document.getElementById("fuse-splash-screen").style.display="block";
 
 		axios({
 			method: "get",
@@ -282,12 +282,12 @@ class Unit extends Component {
 			.then((response) => {
 				console.log(response);
 				this.setState({ Action: 'Update Record', value: 1, code: response.data[0].Code, description: response.data[0].Description, Id: response.data[0].Id,companyId:response.data[0].CompanyId });
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 
 			})
 			.catch((error) => {
 				console.log(error);
-				document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 
 			})
 	}

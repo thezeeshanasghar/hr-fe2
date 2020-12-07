@@ -258,7 +258,7 @@ class CountryLaws extends Component {
 				PaidWithIn:this.state.PaidWithIn,
 				DeclarationMode:this.state.DeclarationMode,
 			};
-			document.getElementById("fuse-splash-screen").style.display = "block";
+			//document.getElementById("fuse-splash-screen").style.display = "block";
 			axios.interceptors.request.use(function (config) {
 				// document.getElementsByClassName("loader-wrapper")[0].style.display="block"
 				return config;
@@ -298,7 +298,7 @@ class CountryLaws extends Component {
 						PaidWithIn:"",
 						DeclarationMode:"",
 					});
-					document.getElementById("fuse-splash-screen").style.display = "none";
+					//document.getElementById("fuse-splash-screen").style.display = "none";
 					Messages.success();
 				})
 				.catch((error) => {
@@ -323,7 +323,7 @@ class CountryLaws extends Component {
 						PaidWithIn:"",
 						DeclarationMode:"",
 					})
-					document.getElementById("fuse-splash-screen").style.display = "none";
+					//document.getElementById("fuse-splash-screen").style.display = "none";
 					Messages.error();
 				})
 		}
@@ -334,7 +334,7 @@ class CountryLaws extends Component {
 			Messages.warning("No Record Selected");
 			return false;
 		}
-		document.getElementById("fuse-splash-screen").style.display = "block";
+		//document.getElementById("fuse-splash-screen").style.display = "block";
 		axios({
 			method: "get",
 			url: defaultUrl + "countrylaw/" + ids,
@@ -364,11 +364,11 @@ class CountryLaws extends Component {
 					PaidWithIn:response.data[0].PaidWithin,
 					DeclarationMode:response.data[0].DeclarationMode,
 				});
-				document.getElementById("fuse-splash-screen").style.display = "none";
+				//document.getElementById("fuse-splash-screen").style.display = "none";
 			})
 			.catch((error) => {
 				console.log(error);
-				document.getElementById("fuse-splash-screen").style.display = "none";
+				//document.getElementById("fuse-splash-screen").style.display = "none";
 			})
 	}
 	getCountryLaw = () => {
@@ -428,7 +428,7 @@ class CountryLaws extends Component {
 			Messages.warning("kindly Select one record");
 			return false;
 		}
-		document.getElementById("fuse-splash-screen").style.display = "block";
+		//document.getElementById("fuse-splash-screen").style.display = "block";
 		axios({
 			method: "delete",
 			url: defaultUrl + "countrylaw/" + ids,
@@ -440,12 +440,12 @@ class CountryLaws extends Component {
 			.then((response) => {
 
 				this.getCountryLaw();
-				document.getElementById("fuse-splash-screen").style.display = "none";
+				//document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.success();
 			})
 			.catch((error) => {
 				console.log(error);
-				document.getElementById("fuse-splash-screen").style.display = "none";
+				//document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.error();
 			})
 	}

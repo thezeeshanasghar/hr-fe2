@@ -26,11 +26,10 @@ import InputLabel from '@material-ui/core/InputLabel';
 import { Icon, Input, MuiThemeProvider} from '@material-ui/core';
 import SimpleReactValidator from 'simple-react-validator';
 import axios from "axios";
-//import toastr from 'toastr';
 import {Lookups} from '../../services/constant/enum'
 import Grid from '@material-ui/core/Grid';
 import moment from 'moment';
-import defaultUrl from "../../../app/services/constant/constant";
+import defaultUrl from "../../services/constant/constant";
 import Messages from '../toaster';
 import { ToastContainer, toast } from 'react-toastify';
 
@@ -131,7 +130,7 @@ class CurrencyExchange extends Component {
 					EffectiveDate: this.state.effectiveDate
 				};
 				axios.interceptors.request.use(function (config) {
-				//	document.getElementById("fuse-splash-screen").style.display="block";
+					//document.getElementById("fuse-splash-screen").style.display="block";
 					return config;
 				}, function (error) {
 					console.log('Error');
@@ -158,7 +157,7 @@ class CurrencyExchange extends Component {
 							Id:0,
 							value:0
 						});
-					//	document.getElementById("fuse-splash-screen").style.display="none";
+						//document.getElementById("fuse-splash-screen").style.display="none";
 						Messages.success();
 					})
 					.catch((error) => {
@@ -173,7 +172,7 @@ class CurrencyExchange extends Component {
 							Id:0,
 							value:0
 						})
-					//	document.getElementById("fuse-splash-screen").style.display="none";
+						//document.getElementById("fuse-splash-screen").style.display="none";
 						Messages.error();
 					})
 	
@@ -250,7 +249,7 @@ class CurrencyExchange extends Component {
 		Messages.warning("No Record Selected");
 		return false;
 		}
-	//	document.getElementById("fuse-splash-screen").style.display="block";
+		//document.getElementById("fuse-splash-screen").style.display="block";
 		axios({
 			method: "get",
 			url:  defaultUrl+"Currency/"+ids,
@@ -270,10 +269,10 @@ class CurrencyExchange extends Component {
 				Id:response.data[0].Id,
 				value:1
 				});
-			//	document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 			})
 			.catch((error) => {
-				// document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 				console.log(error);
 			})
 	}
@@ -284,7 +283,7 @@ class CurrencyExchange extends Component {
 			Messages.warning("kindly Select one record");
 			return false;
 		}
-		// document.getElementById("fuse-splash-screen").style.display="block";
+		//document.getElementById("fuse-splash-screen").style.display="block";
 		axios({
 			method: "delete",
 			url:  defaultUrl+"Currency/"+ids,
@@ -296,11 +295,11 @@ class CurrencyExchange extends Component {
 			.then((response) => {
 				
 				this.getExchangeRate();
-				// document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 				Messages.success();
 			})
 			.catch((error) => {
-			//	document.getElementById("fuse-splash-screen").style.display="none";
+				//document.getElementById("fuse-splash-screen").style.display="none";
 				console.log(error);
 				Messages.error();
 			})
@@ -391,7 +390,7 @@ class CurrencyExchange extends Component {
 							<TabContainer dir={theme.direction}>
 					
 								<form className={classes.container} noValidate autoComplete="off">
-								{/* <Paper className={classes.root}> */}
+							
 									<Grid item xs={12} sm={5}  style={{marginRight:'5px'}} >
 									<FormControl className={classes.formControl}>
 										<InputLabel htmlFor="currency">Currency</InputLabel>
@@ -414,7 +413,7 @@ class CurrencyExchange extends Component {
 
 									</FormControl>
 									</Grid>
-									<Grid item xs={12} sm={5}>
+									<Grid item xs={12} sm={5}   >
 									<FormControl className={classes.formControl}>
 										<InputLabel htmlFor="toCurrency">To Currency</InputLabel>
 										<Select
@@ -459,7 +458,7 @@ class CurrencyExchange extends Component {
 									{this.validator.message('effectiveDate', this.state.effectiveDate, 'required')}
 
 									</Grid>
-									{/* </Paper> */}
+							
 								</form>
 								<div className="row">
 								<Grid item xs={12} sm={10}  >

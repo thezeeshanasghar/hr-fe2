@@ -34,6 +34,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import Messages from '../toaster';
 //import { Message } from 'semantic-ui-react';
 
+import MaterialTable from 'material-table';
+
 const styles = theme => ({
 	container: {
 		display: 'flex',
@@ -85,6 +87,25 @@ class Bank extends Component {
 		Id: 0,
 		Action: 'Insert Record',
 		table: null,
+		columns: [
+			{ title: 'Name', field: 'name' },
+			{ title: 'Surname', field: 'surname' },
+			{ title: 'Birth Year', field: 'birthYear', type: 'numeric' },
+			{
+			  title: 'Birth Place',
+			  field: 'birthCity',
+			  lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' },
+			},
+		  ],
+		  data: [
+			{ name: 'Mehmet', surname: 'Baran', birthYear: 1987, birthCity: 63 },
+			{
+			  name: 'Zerya Betül',
+			  surname: 'Baran',
+			  birthYear: 2017,
+			  birthCity: 34,
+			},
+		  ],
 	};
 	constructor(props) {
 		super(props);
@@ -334,7 +355,7 @@ class Bank extends Component {
 			})
 	}
 
-	selection = () => {
+	selection = (id) => {
 		console.log("called");
 		const checkboxes = document.querySelectorAll('input[name=radio]:checked');
 									let values = [];
@@ -422,13 +443,28 @@ class Bank extends Component {
 													<CustomTableCell align="center">{row.RouteCode}</CustomTableCell>
 													<CustomTableCell align="center">{row.Description}</CustomTableCell>
 											<CustomTableCell align="center"><input type="checkbox" name="radio"  value= {row.Id}
-						onClick={this.selection()}
+						onChange={()=>this.selection(row.Id)}
 						/>
 						</CustomTableCell>
 												</TableRow>
 											))}
 										</TableBody>
 									</Table>
+
+									{/* <MaterialTable
+      title="Editable Example"
+      columns={this.state.columns}
+	  data={this.state.data}
+	  editable={{
+		onSelectionChange: (newData, oldData) =>
+		new Promise(() => {
+		  setTimeout(() => {
+		  }, 600);
+		}),  
+      }}
+    /> */}
+
+
 								</Paper>
 							</TabContainer>
 							<TabContainer dir={theme.direction}>
@@ -479,9 +515,15 @@ class Bank extends Component {
 								</div>
 							</TabContainer>
 						</SwipeableViews>
+					
+
 					</div>
+
+					
 				}
+				
 			/>
+		
 		)
 	}
 }

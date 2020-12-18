@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-//import { FusePageSimple, DemoContent } from '@fuse';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import SwipeableViews from 'react-swipeable-views';
 import AppBar from '@material-ui/core/AppBar';
@@ -22,7 +21,7 @@ import { Icon, Input, MuiThemeProvider } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import axios from "axios";
 import SimpleReactValidator from 'simple-react-validator';
-import defaultUrl from "../../../app/services/constant/constant";
+import defaultUrl from "../../services/constant/constant";
 import Messages from '../toaster';
 import { ToastContainer, toast } from 'react-toastify';
 import FormControl from '@material-ui/core/FormControl';
@@ -34,7 +33,6 @@ import Divider from '@material-ui/core/Divider';
 import $ from 'jquery';
 import DataTable from "datatables.net";
 import * as responsive from "datatables.net-responsive";
-import FuseLoading from '@fuse/core/FuseLoading';
 
 
 const styles = theme => ({
@@ -113,8 +111,9 @@ class Company extends Component {
 		currencyList:[],
 		Currency:"",
 		AccountNo:"",
-		loading: false
-
+		payrollformula:"",
+		employeePercentage:"",
+		companyPercentage:""
 	};
 	
  
@@ -192,7 +191,6 @@ class Company extends Component {
 	};
 	getCompanyDetail = () => {
 		localStorage.removeItem("ids");
-		this.setState({loading: true});
 		if (!$.fn.dataTable.isDataTable('#Company_Table')) {
 			this.state.table = $('#Company_Table').DataTable({
 				ajax: defaultUrl + "company",
@@ -237,10 +235,8 @@ class Company extends Component {
 					"targets": "_all"
 				}]
 			});
-			this.setState({loading: false});
 		} else {
 			this.state.table.ajax.reload();
-			this.setState({loading: false});
 		}
 	}
 	insertUpdateRecord = () => {
@@ -270,10 +266,12 @@ class Company extends Component {
 			Bank:this.state.Bank,
 			Currency:this.state.Currency,
 			AccountNo:this.state.AccountNo,
+			payrollformula:this.state.payrollformula,
+			companyPercentage:this.state.companyPercentage,
+			employeePercentage:this.state.employeePercentage
 		};
 		axios.interceptors.request.use(function (config) {
-			//document.getElementById("fuse-splash-screen").style.display = "block";
-			this.setState({loading: true});
+			////document.getElementById("fuse-splash-screen").style.display = "block";
 			return config;
 		}, function (error) {
 			console.log('Error');
@@ -306,11 +304,13 @@ class Company extends Component {
 					SocialSecurityNo:"",
 					EOBINo:"",
 					Bank:"",
-			Currency:"",
-			AccountNo:"",
+					payrollformula:"",
+					Currency:"",
+					AccountNo:"",
+					companyPercentage:"",
+					employeePercentage:""
 				});
-				//document.getElementById("fuse-splash-screen").style.display = "none";
-				this.setState({loading: false});
+				////document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.success();
 			})
 			.catch((error) => {
@@ -330,11 +330,13 @@ class Company extends Component {
 					SocialSecurityNo:"",
 					EOBINo:"",
 					Bank:"",
-			Currency:"",
-			AccountNo:"",
+					payrollformula:"",
+					Currency:"",
+					AccountNo:"",
+					companyPercentage:"",
+					employeePercentage:""
 				})
-				//document.getElementById("fuse-splash-screen").style.display = "none";
-				this.setState({loading: false});
+				////document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.error();
 			});
 	}
@@ -345,7 +347,7 @@ class Company extends Component {
 			Messages.warning("No Record Selected");
 			return false;
 		}
-		document.getElementById("fuse-splash-screen").style.display = "block"
+		////document.getElementById("fuse-splash-screen").style.display = "block"
 		axios({
 			method: "delete",
 			url: defaultUrl + "company/" + ids,
@@ -356,12 +358,12 @@ class Company extends Component {
 		})
 			.then((response) => {
 				this.getCompanyDetail();
-				document.getElementById("fuse-splash-screen").style.display = "none";
+				////document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.success();
 			})
 			.catch((error) => {
 				console.log(error);
-				document.getElementById("fuse-splash-screen").style.display = "none";
+				////document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.error();
 			})
 	}
@@ -372,8 +374,7 @@ class Company extends Component {
 			Messages.warning("kindly Select one record");
 			return false;
 		}
-		//document.getElementById("fuse-splash-screen").style.display = "block"
-		this.setState({loading: true});
+		////document.getElementById("fuse-splash-screen").style.display = "block"
 
 		axios({
 			method: "get",
@@ -384,7 +385,7 @@ class Company extends Component {
 			},
 		})
 			.then((response) => {
-				console.log(response);
+				console.log(response.data);
 				if(response.data)
 				{
 					this.setState({
@@ -396,24 +397,21 @@ class Company extends Component {
 						EOBINo:response.data[0].EOBINo,
 						Bank:response.data[0].BankId,
 				Currency:response.data[0].CurrencyId,
-				AccountNo:response.data[0].AccNo
+				AccountNo:response.data[0].AccNo,
+				payrollformula:response.data[0].PayrollFormula,
+				companyPercentage:response.data[0].EmployeeDeduction,
+				employeePercentage:response.data[0].CompanyDeduction
 					});
 				}
-				//document.getElementById("fuse-splash-screen").style.display = "none"
-				this.setState({loading: false});
+				////document.getElementById("fuse-splash-screen").style.display = "none"
 			})
 			.catch((error) => {
 				console.log(error);
-				this.setState({loading: false});
 			})
 	}
 	render() {
 		const { classes, theme } = this.props;
-		 
-		if (this.state.loading == true){
-			return <FuseLoading />;
-		}
-
+		// if (this.state.loading == true)
 		return (
 			<FusePageSimple
 
@@ -600,6 +598,55 @@ class Company extends Component {
 										<TextField id="Address" fullWidth label="AccountNo" name="AccountNo" value={this.state.AccountNo} onChange={this.handleChange} />
 										{this.validator.message('AccountNo', this.state.AccountNo, 'required')}
 									</Grid>
+								<Grid item xs={12} sm={10} style={{marginTop:"20px"}}  >
+										<div style={{borderBottom:"solid 1px black",borderBottom:"solid 1px black"}}>Company Rules</div>
+									
+									</Grid>
+									<Grid item xs={12} sm={5} style={{ marginRight: '5px' }}  >
+									<FormControl className={classes.formControl}>
+											<InputLabel htmlFor="payrollformula">Payroll Formula</InputLabel>
+											<Select
+												value={this.state.payrollformula}
+												onChange={this.handleChange}
+												inputProps={{
+													name: 'payrollformula',
+													id: 'payrollformula',
+												}}
+											>
+													<MenuItem value="">
+													<em>None</em>
+												</MenuItem>
+												<MenuItem value="1">
+													<em>ACTUAL DAYS</em>
+												</MenuItem>
+												<MenuItem value="2">
+													<em>30 days</em>
+												</MenuItem>
+												<MenuItem value="3">
+													<em>12-365</em>
+												</MenuItem>
+												<MenuItem value="4">
+													<em>26 days</em>
+												</MenuItem>
+												<MenuItem value="5">
+													<em>22 days</em>
+												</MenuItem>
+											
+												
+												
+											</Select>
+										</FormControl>
+										{this.validator.message('payrollformula', this.state.payrollformula, 'required')}
+									</Grid>
+									<Grid item xs={12} sm={5}  >
+										<TextField id="employeePercentage" type="number" fullWidth label="Social Security(Employee Percentage)" name="employeePercentage" value={this.state.employeePercentage} onChange={this.handleChange} />
+										{this.validator.message('employeePercentage', this.state.employeePercentage, 'required')}
+									</Grid>
+									<Grid item xs={12} sm={5}  >
+										<TextField id="companyPercentage" type="number" fullWidth label="Social Security(Company Percentage)" name="companyPercentage" value={this.state.companyPercentage} onChange={this.handleChange} />
+										{this.validator.message('companyPercentage', this.state.companyPercentage, 'required')}
+									</Grid>
+								
 								</form>
 								<div className="row">
 									<div style={{ float: "right", "marginRight": "8px" }}>

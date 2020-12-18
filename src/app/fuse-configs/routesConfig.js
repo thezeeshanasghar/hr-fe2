@@ -22,6 +22,7 @@ import {SalaryPayRollConfig} from 'app/main/SalaryPayRoll/SalaryPayRollConfig.js
 import {EmployeeReportsConfig} from 'app/main/EmployeeReports/EmployeeReportsConfig'
 import {EmployeeVarianceReportConfig} from 'app/main/EmployeeVarianceReport/EmployeeVarianceReportConfig'
 import {PayrollReportsConfig} from 'app/main/PayrollReports/PayrollReportsConfig'
+import {BulkUploadConfig} from 'app/main/BulkUpload/BulkUploadConfig'
 import {TerminationConfig} from 'app/main/Termination/TerminationConfig'
 import {EmployeeVarianceReportDetailConfig} from 'app/main/EmployeeVarianceReportDetail/EmployeeVarianceReportDetailConfig'
 
@@ -29,7 +30,7 @@ import {EmployeeVarianceReportDetailConfig} from 'app/main/EmployeeVarianceRepor
 const routeConfigs = [
 	ExampleConfig,BankConfig,CompanyConfig,CostCenterConfig,CountryLawsConfig,CurrencyExchangeConfig,EmployeeConfig,EmployeeDetailConfig,
 	GLAccountConfig,GradesConfig,PayElementConfig,JobsConfig,PositionConfig,PayElementGlAccountConfig,UnitConfig,UnpaidLeavesConfig,UserProtectionConfig,
-	SalaryPayRollConfig,EmployeeReportsConfig,EmployeeVarianceReportConfig,PayrollReportsConfig,TerminationConfig,EmployeeVarianceReportDetailConfig
+	SalaryPayRollConfig,EmployeeReportsConfig,EmployeeVarianceReportConfig,PayrollReportsConfig,TerminationConfig,EmployeeVarianceReportDetailConfig,BulkUploadConfig
 ];
 
 const routes = [

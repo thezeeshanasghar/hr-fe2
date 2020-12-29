@@ -151,6 +151,34 @@ class Company extends Component {
 				console.log(error);
 			})
 	}
+
+	selection = (id) => {
+		console.log("called");
+		const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+									let values = [];
+									checkboxes.forEach((checkbox) => {
+										values.push(checkbox.value);
+									});
+									localStorage.setItem('ids',values);
+								}
+	getCurrency = () => {
+		axios({
+			method: "get",
+			url: defaultUrl+"lookups/"+Lookups.Currency,
+			headers: {
+				// 'Authorization': `bearer ${token}`,
+				"Content-Type": "application/json;charset=utf-8",
+			},
+		})
+			.then((response) => {
+				console.log(response);
+				this.setState({ CurrencyList: response.data });
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+	}
+	
 	getCurrency = () => {
 		axios({
 			method: "get",
@@ -190,54 +218,22 @@ class Company extends Component {
 		this.setState({ [e.target.name]: e.target.value });
 	};
 	getCompanyDetail = () => {
-		localStorage.removeItem("ids");
-		if (!$.fn.dataTable.isDataTable('#Company_Table')) {
-			this.state.table = $('#Company_Table').DataTable({
-				ajax: defaultUrl + "company",
-				"columns": [
-					{ "data": "Code" },
-					{ "data": "CompanyName" },
-					{ "data": "Address" },
-					{ "data": "Contact" },
-					{ "data": "Email" },
-					{ "data": "CountryCode" },
-					{ "data": "RegistrationNo" },
-					{ "data": "TaxationNo" },
-					{ "data": "SocialSecurityNo" },
-					{ "data": "EOBINo" },
-					{
-						"data": "Action",
-						sortable: false,
-						"render": function (data, type, full, meta) {
-
-							return `<input type="checkbox" name="radio"  value=` + full.Id + `
-						onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
-									let values = [];
-									checkboxes.forEach((checkbox) => {
-										values.push(checkbox.value);
-									});
-									localStorage.setItem('ids',values);	"
-						/>`;
-						}
-					}
-
-				],
-				rowReorder: {
-					selector: 'td:nth-child(2)'
-				},
-				responsive: true,
-				dom: 'Bfrtip',
-				buttons: [
-
-				],
-				columnDefs: [{
-					"defaultContent": "-",
-					"targets": "_all"
-				}]
-			});
-		} else {
-			this.state.table.ajax.reload();
-		}
+		axios({
+			method: "get",
+			url: defaultUrl+"Company/",
+			headers: {
+				// 'Authorization': `bearer ${token}`,
+				"Content-Type": "application/json;charset=utf-8",
+			},
+		})
+			.then((response) => {
+				console.log(response);
+				this.setState({ Companies: response.data.data });
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+		
 	}
 	insertUpdateRecord = () => {
 		if (!this.validator.allValid()) {
@@ -449,36 +445,61 @@ class Company extends Component {
 						>
 							<TabContainer dir={theme.direction}>
 								<Paper className={classes.root}>
-									<div className="row">
-										<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-											<Button variant="outlined" color="primary" className={classes.button} onClick={this.getCompanyById}>
+								
+									<div className="row" style={{marginBottom:"5px"}}  >
+										<div style={{ float: "left",  "margin": "8px" }}>
+											<Button variant="contained" color="secondary" className={classes.button} onClick={this.getCompanyById}>
 												Edit
 										</Button>
 										</div>
-										<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-											<Button variant="outlined" color="inherit" className={classes.button} onClick={this.deleteCompany}>
+										<div style={{ float: "left", "margin": "8px" }}>
+											<Button  variant="contained" color="primary" className={classes.button} onClick={this.deleteCompany}>
 												Delete
 										</Button>
-										</div>
+										</div>										
 									</div>
-									<table id="Company_Table" className="nowrap header_custom" style={{ "width": "100%" }}>
-										<thead>
-											<tr>
-												<th>Code</th>
-												<th>CompanyName</th>
-												<th>Address</th>
-												<th>Contact</th>
-												<th>Email</th>
-												<th>CountryCode</th>
-												<th>RegistrationNo</th>
-												<th>TaxationNo</th>
-												<th>SocialSecurityNo</th>
-												<th>EOBINo</th>
-												<th>Action</th>
-											</tr>
-										</thead>
 
-									</table>
+
+									
+									<Table className={classes.table}>
+										<TableHead>
+											<TableRow>
+												<CustomTableCell align="center" >Code</CustomTableCell>
+												<CustomTableCell align="center">CompanyName</CustomTableCell>
+												<CustomTableCell align="center">BranchCode</CustomTableCell>
+												<CustomTableCell align="center">Address</CustomTableCell>
+												<CustomTableCell align="center">Contact</CustomTableCell>
+												<CustomTableCell align="center">Email</CustomTableCell>
+												<CustomTableCell align="center">CountryCode</CustomTableCell>
+												<CustomTableCell align="center">TaxationNo</CustomTableCell>
+												<CustomTableCell align="center">SocialSecurityNo</CustomTableCell>
+												<CustomTableCell align="center">EOBINo</CustomTableCell>		
+												<CustomTableCell align="center">Action</CustomTableCell>														
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{this.state.Companies.map(row => (
+												<TableRow className={classes.row} key={row.Code}>
+													<CustomTableCell align="center">{row.Code}</CustomTableCell>
+													<CustomTableCell align="center">{row.CompanyName}</CustomTableCell>
+													<CustomTableCell align="center">{row.BranchCode}</CustomTableCell>
+													<CustomTableCell align="center">{row.Address}</CustomTableCell>
+													<CustomTableCell align="center">{row.Contact}</CustomTableCell>
+													<CustomTableCell align="center">{row.Email}</CustomTableCell>
+													<CustomTableCell align="center">{row.CountryCode}</CustomTableCell>
+													<CustomTableCell align="center">{row.TaxationNo}</CustomTableCell>
+													<CustomTableCell align="center">{row.SocialSecurityNo}</CustomTableCell>
+													<CustomTableCell align="center">{row.EOBINo}</CustomTableCell>
+													<CustomTableCell align="center"><input type="checkbox" name="radio"  value= {row.Id}
+						onChange={()=>this.selection(row.Id)}
+						/>
+						</CustomTableCell>
+												</TableRow>
+											))}
+										</TableBody>
+									</Table>
+
+
 								</Paper>
 							</TabContainer>
 							<TabContainer dir={theme.direction}>

@@ -404,17 +404,19 @@ class Bank extends Component {
 						>
 							<TabContainer dir={theme.direction}>
 								<Paper className={classes.root}>
-									<div className="row">
-										<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-											<Button variant="outlined" color="primary" className={classes.button} onClick={this.getBankById}>
+				
+									<div className="row" style={{marginBottom:"5px"}}  >
+										<div style={{ float: "left",  "margin": "8px" }}>
+											<Button variant="contained" color="secondary" className={classes.button} onClick={this.getBankById}>
 												Edit
 										</Button>
 										</div>
-										<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-											<Button variant="outlined" color="inherit" className={classes.button} onClick={this.deleteBank}>
+										<div style={{ float: "left", "margin": "8px" }}>
+											<Button  variant="contained" color="primary" className={classes.button} onClick={this.deleteBank}>
 												Delete
 										</Button>
 										</div>
+										
 									</div>
 
 									<Table className={classes.table}>

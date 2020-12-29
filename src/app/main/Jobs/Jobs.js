@@ -347,7 +347,7 @@ class Jobs extends Component {
 					root: classes.layoutRoot
 				}}
 				header={
-					<div className="p-24"><h4>Job</h4></div>
+					<div className="p-24"><h4>Job-{this.state.Default !=null?this.state.Default.Company:"No Company Selected Yet"}</h4></div>
 				}
 				contentToolbar={
 					<div className="px-24"><h4>Add New Job</h4></div>
@@ -377,29 +377,22 @@ class Jobs extends Component {
 						>
 							<TabContainer dir={theme.direction}>
 								<Paper className={classes.root}>
-								<div className="row">
-									<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-										<Button variant="outlined" color="primary" className={classes.button} onClick={this.getJobsById}>
-											Edit
-										</Button>
-									</div>
-									<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-										<Button variant="outlined" color="inherit" className={classes.button} onClick={this.deleteJobs}>
-											Delete
-										</Button>
-									</div>
-								</div>
-								{/* <table id="job_Table" className="nowrap header_custom" style={{ "width": "100%" }}>
-										<thead>
-											<tr>
-												<th>Code</th>
-												<th>Description</th>
-												<th>Company</th>
-												<th>Action</th>
-											</tr>
-										</thead>
+							
 
-									</table> */}
+								<div className="row" style={{marginBottom:"5px"}}  >
+										<div style={{ float: "left",  "margin": "8px" }}>
+											<Button variant="contained" color="secondary" className={classes.button} onClick={this.getJobsById}>
+												Edit
+										</Button>
+										</div>
+										<div style={{ float: "left", "margin": "8px" }}>
+											<Button  variant="contained" color="primary" className={classes.button} onClick={this.deleteJobs}>
+												Delete
+										</Button>
+										</div>
+										
+									</div>
+							
 										<Table className={classes.table}>
 										<TableHead>
 											<TableRow>

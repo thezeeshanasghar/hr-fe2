@@ -30,7 +30,7 @@ import { Lookups } from '../../services/constant/enum'
 import SimpleReactValidator from 'simple-react-validator';
 import $ from 'jquery';
 import Messages from '../toaster';
-
+import { ToastContainer, toast } from 'react-toastify';
 const styles = theme => ({
 	container: {
 		display: 'flex',
@@ -91,7 +91,9 @@ class UserProtection extends Component {
 		Action: 'Insert Record',
 		table:null,
 		Companies:[],
-		countryCode:[]
+		countryCode:[],
+		UserProtection:[],
+		Default:localStorage.getItem("state")!=null?JSON.parse(localStorage.getItem("state")):null
 	};
 		constructor(props) {
 		super(props);
@@ -106,46 +108,66 @@ class UserProtection extends Component {
 	}
 
 	getUserProtection = () => {
-		localStorage.removeItem("ids");
-		if (!$.fn.dataTable.isDataTable('#Protection_Table')) {
-			this.state.table = $('#Protection_Table').DataTable({
-				ajax: defaultUrl + "userProtection",
-				"columns": [
-					{ "data": "LabourId" },
-					{ "data": "CompanyName" },
-					{ "data": "Country" },
-					{ "data": "Action",
-					sortable: false,
-					"render": function ( data, type, full, meta ) {
-					   
-						return `<input type="checkbox" name="radio"  value=`+full.Id+`
-						onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
-									let values = [];
-									checkboxes.forEach((checkbox) => {
-										values.push(checkbox.value);
-									});
-									localStorage.setItem('ids',values);	"
-						/>`;
-					}
-				 }
-
-				],
-				rowReorder: {
-					selector: 'td:nth-child(2)'
-				},
-				responsive: true,
-				dom: 'Bfrtip',
-				buttons: [
-
-				],
-				columnDefs: [{
-					"defaultContent": "-",
-					"targets": "_all"
-				  }]
-			});
-		} else {
-			this.state.table.ajax.reload();
+		if(this.state.Default == null){
+			return false;
 		}
+		axios({
+			method: "get",
+			url: defaultUrl + "/userProtection/ByCompany/"+this.state.Default.Id,
+			headers: {
+				// 'Authorization': `bearer ${token}`,
+				"Content-Type": "application/json;charset=utf-8",
+			},
+		})
+			.then((response) => {
+				console.log(response);
+
+				this.setState({ UserProtection: response.data });
+			
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+		// localStorage.removeItem("ids");
+		// if (!$.fn.dataTable.isDataTable('#Protection_Table')) {
+		// 	this.state.table = $('#Protection_Table').DataTable({
+		// 		ajax: defaultUrl + "userProtection",
+		// 		"columns": [
+		// 			{ "data": "LabourId" },
+		// 			{ "data": "CompanyName" },
+		// 			{ "data": "Country" },
+		// 			{ "data": "Action",
+		// 			sortable: false,
+		// 			"render": function ( data, type, full, meta ) {
+					   
+		// 				return `<input type="checkbox" name="radio"  value=`+full.Id+`
+		// 				onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+		// 							let values = [];
+		// 							checkboxes.forEach((checkbox) => {
+		// 								values.push(checkbox.value);
+		// 							});
+		// 							localStorage.setItem('ids',values);	"
+		// 				/>`;
+		// 			}
+		// 		 }
+
+		// 		],
+		// 		rowReorder: {
+		// 			selector: 'td:nth-child(2)'
+		// 		},
+		// 		responsive: true,
+		// 		dom: 'Bfrtip',
+		// 		buttons: [
+
+		// 		],
+		// 		columnDefs: [{
+		// 			"defaultContent": "-",
+		// 			"targets": "_all"
+		// 		  }]
+		// 	});
+		// } else {
+		// 	this.state.table.ajax.reload();
+		// }
 	}
 	getUserProtectionById = () => {
 		let ids = localStorage.getItem("ids")
@@ -248,7 +270,7 @@ class UserProtection extends Component {
 			},
 		})
 			.then((response) => {
-				
+				Messages.success();
 				this.getUserProtection();
 
 				this.setState({
@@ -260,7 +282,7 @@ class UserProtection extends Component {
 					value:0
 				});
 				//document.getElementById("fuse-splash-screen").style.display="none";
-				Messages.success();
+				
 
 			})
 			.catch((error) => {
@@ -274,7 +296,7 @@ class UserProtection extends Component {
 					value:0
 				})
 				//document.getElementById("fuse-splash-screen").style.display="none";
-				Messages.error();
+				Messages.error(error.message);
 
 			})
 	}
@@ -320,6 +342,15 @@ class UserProtection extends Component {
 	handleChange = (e) => {
 		this.setState({ [e.target.name]: e.target.value });
 	};
+	selection = (id) => {
+		console.log("called");
+		const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+		let values = [];
+		checkboxes.forEach((checkbox) => {
+			values.push(checkbox.value);
+		});
+		localStorage.setItem('ids', values);
+	}
 	render() {
 		const { classes, theme } = this.props;
 
@@ -329,14 +360,18 @@ class UserProtection extends Component {
 					root: classes.layoutRoot
 				}}
 				header={
-					<div className="p-24"><h4>User Protection</h4></div>
+					<div className="p-24"><h4>User Protection-{this.state.Default !=null?this.state.Default.Company:"No Company Selected Yet"}</h4></div>
 				}
 				contentToolbar={
 					<div className="px-24"><h4>Add New User Protection</h4></div>
 				}
 				content={
-
+			
+					
 					<div className={classes.root}>
+							<div>
+							<ToastContainer />
+						</div>
 						<AppBar position="static" color="default">
 							<Tabs
 								value={this.state.value}
@@ -356,31 +391,47 @@ class UserProtection extends Component {
 						>
 							<TabContainer dir={theme.direction}>
 								<Paper className={classes.root}>
-								<div className="row">
-									<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-										<Button variant="outlined" color="primary" className={classes.button} onClick={this.getUserProtectionById}>
-											Edit
-										</Button>
-									</div>
-									<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-										<Button variant="outlined" color="inherit" className={classes.button} onClick={this.deleteProtection}>
-											Delete
-										</Button>
-									</div>
-								</div>
-									<table id="Protection_Table" className="nowrap header_custom" style={{ "width": "100%" }}>
-										<thead>
-											<tr>
-												<th>labour Id</th>
-												<th>Company Name</th>
-												<th>Country</th>
-												<th>Action</th>
-											</tr>
-										</thead>
-
-									</table>
 								
-							
+								<div className="row" style={{marginBottom:"5px"}}  >
+										<div style={{ float: "left",  "margin": "8px" }}>
+											<Button variant="contained" color="secondary" className={classes.button} onClick={this.getUserProtectionById}>
+												Edit
+										</Button>
+										</div>
+										<div style={{ float: "left", "margin": "8px" }}>
+											<Button  variant="contained" color="primary" className={classes.button} onClick={this.deleteProtection}>
+												Delete
+										</Button>
+										</div>
+										
+									</div>
+								
+									<Table className={classes.table}>
+										<TableHead>
+											<TableRow>
+												<CustomTableCell align="center" >labour Id</CustomTableCell>
+												<CustomTableCell align="center">Action</CustomTableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{
+												this.state.UserProtection.length>0?
+												this.state.UserProtection.map(row => (
+													<TableRow className={classes.row} key={row.Code}>
+	
+														<CustomTableCell align="center">{row.LabourId == "" || row.LabourId == null || row.LabourId == undefined ? 'N/A' : row.LabourId}</CustomTableCell>
+														
+														<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
+															onChange={() => this.selection(row.Id)}
+														/>
+														</CustomTableCell>
+													</TableRow>
+												))
+												:
+												<div style={{fontSize: "calc(1em + 1vw)",textAlign: "center"}} >{this.state.Default==null?"No Company Selected Yet":"No Record Found"}</div>
+											}
+										</TableBody>
+									</Table>
 								</Paper>
 							</TabContainer>
 							<TabContainer dir={theme.direction}>

@@ -373,18 +373,18 @@ class BulkUpload extends Component {
 													<em>None</em>
 												</MenuItem>
 												<MenuItem value="Bank">Bank</MenuItem>
-												{/* <MenuItem value="Company">Company</MenuItem> */}
+												<MenuItem value="Company">Company</MenuItem>
 												<MenuItem value="Exchange">Exchange Rate</MenuItem>
 												<MenuItem value="CountryLaw">Country Laws</MenuItem>
 												<MenuItem value="Grade">Grade</MenuItem>
 												<MenuItem value="Unit">Unit</MenuItem>
 												<MenuItem value="Position">Position</MenuItem>
 												<MenuItem value="Job">Job</MenuItem>
-												{/* <MenuItem value="Employee">Employee(Basic)</MenuItem> */}
+												<MenuItem value="Employee">Employee(Basic)</MenuItem>
 												<MenuItem value="EmployeeBank">Employee(Bank)</MenuItem>
 												<MenuItem value="EmployeePayroll">Employee(Payroll-Periodic)</MenuItem>
 												<MenuItem value="EmployeePayrollOneTime">Employee(Payroll-oneTime)</MenuItem>
-												{/* <MenuItem value="ApplicableLaws">Employee(ApplicableLaws)</MenuItem> */}
+												<MenuItem value="ApplicableLaws">Employee(ApplicableLaws)</MenuItem>
 												<MenuItem value="UnpaidLeaves">Employee(UnpaidLeaves)</MenuItem>
 												<MenuItem value="overtime">Employee(overTime)</MenuItem>
 												<MenuItem value="CostCenter">Cost Center</MenuItem>
@@ -431,7 +431,7 @@ class BulkUpload extends Component {
 											</Button>
 										</div>
 									</Grid>
-									<div style={{ height: '200px' }}></div>
+									{/* <div style={{ height: '200px' }}></div> */}
 								</div>
 							</TabContainer>
 						</SwipeableViews>
@@ -466,7 +466,7 @@ class BulkUpload extends Component {
 											</Button></h2>
 								</Grid>
 
-								<ol>
+								<ol style={{height:"200px",overflowX:"scroll"}}>
 									{this.state.logs.map(row => (
 										<li>{row.DETAIL}</li>
 									))}

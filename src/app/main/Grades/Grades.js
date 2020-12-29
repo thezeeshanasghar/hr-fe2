@@ -331,6 +331,8 @@ class Grades extends Component {
 										</div>
 										
 									</div>
+
+									
 									<Table className={classes.table}>
 										<TableHead>
 											<TableRow>

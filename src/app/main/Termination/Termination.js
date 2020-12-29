@@ -86,7 +86,8 @@ class Termination extends Component {
 		TerminationList: [],
 		Action:"Insert Record",
 		Id:0,
-		table:null
+		table:null,
+		Default:localStorage.getItem("state")!=null?JSON.parse(localStorage.getItem("state")):null
 
 	};
 	constructor(props) {
@@ -96,6 +97,15 @@ class Termination extends Component {
 	componentDidMount() {
 		this.getCompanies();
 		this.getEmployeeTermination();
+	}
+	selection = (id) => {
+		console.log("called");
+		const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+		let values = [];
+		checkboxes.forEach((checkbox) => {
+			values.push(checkbox.value);
+		});
+		localStorage.setItem('ids', values);
 	}
 	getCompanies = () => {
 		axios({
@@ -210,54 +220,35 @@ class Termination extends Component {
 						value:0
 					})
 					//document.getElementById("fuse-splash-screen").style.display="none";
-					Messages.error();
+					Messages.error(error.message);
 				})
 
 
 		}
 	}
 	getEmployeeTermination = () => {
-		localStorage.removeItem("ids");
-		if (!$.fn.dataTable.isDataTable('#termination_Table')) {
-			this.state.table = $('#termination_Table').DataTable({
-				ajax: defaultUrl + "termination",
-				"columns": [
-					{ "data": "FirstName" },
-					{ "data": "CompanyName" },
-					{ "data": "LastWorkingDate" },
-					{ "data": "TerminationReason" },
-					{ "data": "Action",
-					sortable: false,
-					"render": function ( data, type, full, meta ) {
-					   
-						return `<input type="checkbox" name="radio"  value=`+full.Id+`
-						onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
-									let values = [];
-									checkboxes.forEach((checkbox) => {
-										values.push(checkbox.value);
-									});
-									localStorage.setItem('ids',values);	"
-						/>`;
-					}
-				 }
-
-				],
-				rowReorder: {
-					selector: 'td:nth-child(2)'
-				},
-				responsive: true,
-				dom: 'Bfrtip',
-				buttons: [
-
-				],
-				columnDefs: [{
-					"defaultContent": "-",
-					"targets": "_all"
-				  }]
-			});
-		} else {
-			this.state.table.ajax.reload();
+				
+		if(this.state.Default == null){
+			return false;
 		}
+		axios({
+			method: "get",
+			url: defaultUrl + "/termination/ByCompany/"+this.state.Default.Id,
+			headers: {
+				// 'Authorization': `bearer ${token}`,
+				"Content-Type": "application/json;charset=utf-8",
+			},
+		})
+			.then((response) => {
+				console.log(response);
+
+				this.setState({ TerminationList: response.data.data });
+			
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+	
 	}
 	getTerminationById = () => {
 		let ids = localStorage.getItem("ids")
@@ -312,11 +303,11 @@ class Termination extends Component {
 			},
 		  })
 			.then((response) => {
-				
+				Messages.success();
 				this.getEmployeeTermination();
 			})
 			.catch((error) => {
-				console.log(error);
+				Messages.error(error.message);
 			})
 	  }
 	render() {
@@ -328,7 +319,7 @@ class Termination extends Component {
 					root: classes.layoutRoot
 				}}
 				header={
-					<div className="p-24"><h4>Employee Termination</h4></div>
+					<div className="p-24"><h4>Employee Termination-{this.state.Default !=null?this.state.Default.Company:"No Company Selected Yet"}</h4></div>
 				}
 				contentToolbar={
 					<div className="px-24"><h4>Add New Employee Termination</h4></div>
@@ -358,30 +349,55 @@ class Termination extends Component {
 						>
 							<TabContainer dir={theme.direction}>
 								<Paper className={classes.root}>
-								<div className="row">
-									<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-										<Button variant="outlined" color="primary" className={classes.button} onClick={this.getTerminationById}>
-											Edit
+							
+								<div className="row" style={{marginBottom:"5px"}}  >
+										<div style={{ float: "left",  "margin": "8px" }}>
+											<Button variant="contained" color="secondary" className={classes.button} onClick={this.getTerminationById}>
+												Edit
 										</Button>
-									</div>
-									<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-										<Button variant="outlined" color="inherit" className={classes.button} onClick={this.deleteTermination}>
-											Delete
+										</div>
+										<div style={{ float: "left", "margin": "8px" }}>
+											<Button  variant="contained" color="primary" className={classes.button} onClick={this.deleteTermination}>
+												Delete
 										</Button>
+										</div>
+										
 									</div>
-								</div>
-									<table id="termination_Table" className="nowrap header_custom" style={{ "width": "100%" }}>
-										<thead>
-											<tr>
-												<th>First Name</th>
-												<th>Company Name</th>
-												<th>Last working Date</th>
-												<th>Reason of Termination</th>
-												<th>Action</th>
-											</tr>
-										</thead>
-
-									</table>
+									<Table className={classes.table}>
+										<TableHead>
+											<TableRow>
+												<CustomTableCell align="center" >First Name</CustomTableCell>
+												<CustomTableCell align="center" >Company Name</CustomTableCell>
+												<CustomTableCell align="center" >Last working Date</CustomTableCell>
+												<CustomTableCell align="center" >Reason of Termination</CustomTableCell>
+												<CustomTableCell align="center">Action</CustomTableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{
+												this.state.TerminationList.length>0?
+												this.state.TerminationList.map(row => (
+													<TableRow className={classes.row} key={row.Code}>
+	
+														<CustomTableCell align="center">{row.FirstName == "" || row.FirstName == null || row.FirstName == undefined ? 'N/A' : row.FirstName}</CustomTableCell>
+														<CustomTableCell align="center">{row.CompanyName == "" || row.CompanyName == null || row.CompanyName == undefined ? 'N/A' : row.CompanyName}</CustomTableCell>
+														<CustomTableCell align="center" component="th" scope="row">
+															{row.LastWorkingDate == "" || row.LastWorkingDate == null || row.LastWorkingDate == undefined ? 'N/A' : row.LastWorkingDate}
+														</CustomTableCell>
+														<CustomTableCell align="center" component="th" scope="row">
+															{row.TerminationReason == "" || row.TerminationReason == null || row.TerminationReason == undefined ? 'N/A' : row.TerminationReason}
+														</CustomTableCell>
+														<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
+															onChange={() => this.selection(row.Id)}
+														/>
+														</CustomTableCell>
+													</TableRow>
+												))
+												:
+												<div style={{fontSize: "calc(1em + 1vw)",textAlign: "center"}} >{this.state.Default==null?"No Company Selected Yet":"No Record Found"}</div>
+											}
+										</TableBody>
+									</Table>
 								</Paper>
 							</TabContainer>
 							<TabContainer dir={theme.direction}>

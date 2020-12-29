@@ -86,7 +86,8 @@ class UnpaidLeaves extends Component {
 		leaves: [],
 		Action:"Insert Record",
 		Id:0,
-		table:null
+		table:null,
+		Default:localStorage.getItem("state")!=null?JSON.parse(localStorage.getItem("state")):null
 
 	};
 	constructor(props) {
@@ -184,7 +185,6 @@ class UnpaidLeaves extends Component {
 				.then((response) => {
 					toast.success('Operation successfull');
 					this.getUnPaidLeaves();
-					this.getBankDetail();
 					this.setState({
 						company: "",
 						employee: "",
@@ -211,54 +211,75 @@ class UnpaidLeaves extends Component {
 						value:0
 					})
 					//document.getElementById("fuse-splash-screen").style.display="none";
-					Messages.error();
+					Messages.error(error.message);
 				})
 
 
 		}
 	}
 	getUnPaidLeaves = () => {
-		localStorage.removeItem("ids");
-		if (!$.fn.dataTable.isDataTable('#Unpaid_Table')) {
-			this.state.table = $('#Unpaid_Table').DataTable({
-				ajax: defaultUrl + "unpaidleaves",
-				"columns": [
-					{ "data": "FirstName" },
-					{ "data": "CompanyName" },
-					{ "data": "LeaveStartDate" },
-					{ "data": "LeaveStartDate" },
-					{ "data": "Action",
-					sortable: false,
-					"render": function ( data, type, full, meta ) {
-					   
-						return `<input type="checkbox" name="radio"  value=`+full.Id+`
-						onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
-									let values = [];
-									checkboxes.forEach((checkbox) => {
-										values.push(checkbox.value);
-									});
-									localStorage.setItem('ids',values);	"
-						/>`;
-					}
-				 }
 
-				],
-				rowReorder: {
-					selector: 'td:nth-child(2)'
-				},
-				responsive: true,
-				dom: 'Bfrtip',
-				buttons: [
-
-				],
-				columnDefs: [{
-					"defaultContent": "-",
-					"targets": "_all"
-				  }]
-			});
-		} else {
-			this.state.table.ajax.reload();
+		if(this.state.Default == null){
+			return false;
 		}
+		axios({
+			method: "get",
+			url: defaultUrl + "/unpaidleaves/ByCompany/"+this.state.Default.Id,
+			headers: {
+				// 'Authorization': `bearer ${token}`,
+				"Content-Type": "application/json;charset=utf-8",
+			},
+		})
+			.then((response) => {
+				console.log(response);
+
+				this.setState({ leaves: response.data });
+			
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+		// localStorage.removeItem("ids");
+		// if (!$.fn.dataTable.isDataTable('#Unpaid_Table')) {
+		// 	this.state.table = $('#Unpaid_Table').DataTable({
+		// 		ajax: defaultUrl + "unpaidleaves",
+		// 		"columns": [
+		// 			{ "data": "FirstName" },
+		// 			{ "data": "CompanyName" },
+		// 			{ "data": "LeaveStartDate" },
+		// 			{ "data": "LeaveStartDate" },
+		// 			{ "data": "Action",
+		// 			sortable: false,
+		// 			"render": function ( data, type, full, meta ) {
+					   
+		// 				return `<input type="checkbox" name="radio"  value=`+full.Id+`
+		// 				onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+		// 							let values = [];
+		// 							checkboxes.forEach((checkbox) => {
+		// 								values.push(checkbox.value);
+		// 							});
+		// 							localStorage.setItem('ids',values);	"
+		// 				/>`;
+		// 			}
+		// 		 }
+
+		// 		],
+		// 		rowReorder: {
+		// 			selector: 'td:nth-child(2)'
+		// 		},
+		// 		responsive: true,
+		// 		dom: 'Bfrtip',
+		// 		buttons: [
+
+		// 		],
+		// 		columnDefs: [{
+		// 			"defaultContent": "-",
+		// 			"targets": "_all"
+		// 		  }]
+		// 	});
+		// } else {
+		// 	this.state.table.ajax.reload();
+		// }
 	}
 	getLeavesById = () => {
 		let ids = localStorage.getItem("ids")
@@ -310,13 +331,23 @@ class UnpaidLeaves extends Component {
 			},
 		  })
 			.then((response) => {
-				
+				Messages.success();
 				this.getUnPaidLeaves();
 			})
 			.catch((error) => {
+				Messages.error(error.message);
 				console.log(error);
 			})
 	  }
+	  selection = (id) => {
+		console.log("called");
+		const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+		let values = [];
+		checkboxes.forEach((checkbox) => {
+			values.push(checkbox.value);
+		});
+		localStorage.setItem('ids', values);
+	}
 	render() {
 		const { classes, theme } = this.props;
 
@@ -326,7 +357,7 @@ class UnpaidLeaves extends Component {
 					root: classes.layoutRoot
 				}}
 				header={
-					<div className="p-24"><h4>Unpaid Leave</h4></div>
+					<div className="p-24"><h4>Unpaid Leave-{this.state.Default !=null?this.state.Default.Company:"No Company Selected Yet"}</h4></div>
 				}
 				contentToolbar={
 					<div className="px-24"><h4>Add New Unpaid Leave</h4></div>
@@ -356,30 +387,52 @@ class UnpaidLeaves extends Component {
 						>
 							<TabContainer dir={theme.direction}>
 								<Paper className={classes.root}>
-								<div className="row">
-									<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-										<Button variant="outlined" color="primary" className={classes.button} onClick={this.getLeavesById}>
-											Edit
+							
+								<div className="row" style={{marginBottom:"5px"}}  >
+										<div style={{ float: "left",  "margin": "8px" }}>
+											<Button variant="contained" color="secondary" className={classes.button} onClick={this.getLeavesById}>
+												Edit
 										</Button>
-									</div>
-									<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-										<Button variant="outlined" color="inherit" className={classes.button} onClick={this.deleteLeaves}>
-											Delete
+										</div>
+										<div style={{ float: "left", "margin": "8px" }}>
+											<Button  variant="contained" color="primary" className={classes.button} onClick={this.deleteLeaves}>
+												Delete
 										</Button>
+										</div>
+										
 									</div>
-								</div>
-									<table id="Unpaid_Table" className="nowrap header_custom" style={{ "width": "100%" }}>
-										<thead>
-											<tr>
-												<th>First Name</th>
-												<th>Company Name</th>
-												<th>Leave Start Date</th>
-												<th>Leave Start Date</th>
-												<th>Action</th>
-											</tr>
-										</thead>
-
-									</table>
+									<Table className={classes.table}>
+										<TableHead>
+											<TableRow>
+												<CustomTableCell align="center" >First Name</CustomTableCell>
+												<CustomTableCell align="center">Company Name</CustomTableCell>
+												<CustomTableCell align="center">Leave Start Date</CustomTableCell>
+												<CustomTableCell align="center">Leave Start Date</CustomTableCell>
+												<CustomTableCell align="center">Action</CustomTableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{
+												this.state.leaves.length>0?
+												this.state.leaves.map(row => (
+													<TableRow className={classes.row} key={row.Code}>
+	
+														<CustomTableCell align="center">{row.FirstName == "" || row.FirstName == null || row.FirstName == undefined ? 'N/A' : row.FirstName}</CustomTableCell>
+														<CustomTableCell align="center">{row.CompanyName == "" || row.CompanyName == null || row.CompanyName == undefined ? 'N/A' : row.CompanyName}</CustomTableCell>
+														<CustomTableCell align="center">{row.LeaveStartDate == "" || row.LeaveStartDate == null || row.LeaveStartDate == undefined ? 'N/A' : row.LeaveStartDate}</CustomTableCell>
+														<CustomTableCell align="center">{row.LeaveEndDate == "" || row.LeaveEndDate == null || row.LeaveEndDate == undefined ? 'N/A' : row.LeaveEndDate}</CustomTableCell>
+														
+														<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
+															onChange={() => this.selection(row.Id)}
+														/>
+														</CustomTableCell>
+													</TableRow>
+												))
+												:
+												<div style={{fontSize: "calc(1em + 1vw)",textAlign: "center"}} >{this.state.Default==null?"No Company Selected Yet":"No Record Found"}</div>
+											}
+										</TableBody>
+									</Table>
 								</Paper>
 							</TabContainer>
 							<TabContainer dir={theme.direction}>

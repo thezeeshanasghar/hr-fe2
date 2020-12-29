@@ -51,7 +51,7 @@ const options = [
 ]
 const styles = theme => ({
 	root: {
-		height: 300,
+		// height: 300,
 		flexGrow: 1,
 		minWidth: 300,
 		transform: 'translateZ(0)',
@@ -69,7 +69,7 @@ const styles = theme => ({
 
 	},
 	paper: {
-		height: "500px",
+		// height: "500px",
 		width: "80%",
 		backgroundColor: theme.palette.background.paper,
 		border: '2px solid #000',
@@ -158,7 +158,9 @@ class SalaryPayRoll extends Component {
 			{ "value": "Regular", "label": "Regular" },
 			{ "value": "OffCycle", "label": "OffCycle" },
 			{ "value": "Bonus", "label": "Bonus" }
-		]
+		],
+		Default:localStorage.getItem("state")!=null?JSON.parse(localStorage.getItem("state")):null,
+		salaryPayroll:[]
 	};
 	constructor(props) {
 		super(props);
@@ -253,49 +255,69 @@ axios({
 
 	}
 	getSalaryPayRoll = () => {
-		localStorage.removeItem("ids");
-		if (!$.fn.dataTable.isDataTable('#PayRoll_Table')) {
-			this.state.table = $('#PayRoll_Table').DataTable({
-				ajax: defaultUrl + "payslip",
-				"columns": [
-					{ "data": "FirstName" },
-					{ "data": "payables" },
-					{ "data": "taxdeduction" },
-					{ "data": "leavededuct" },
-					{ "data": "paid" },
-					{ "data": "PayRollType" },
-					// 	{ "data": "Action",
-					// 	sortable: false,
-					// 	"render": function ( data, type, full, meta ) {
-
-					// 		return `<input type="checkbox" name="radio"  value=`+full.Id+`
-					// 		onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
-					// 					let values = [];
-					// 					checkboxes.forEach((checkbox) => {
-					// 						values.push(checkbox.value);
-					// 					});
-					// 					localStorage.setItem('ids',values);	"
-					// 		/>`;
-					// 	}
-					//  }
-
-				],
-				rowReorder: {
-					selector: 'td:nth-child(2)'
-				},
-				responsive: true,
-				dom: 'Bfrtip',
-				buttons: [
-
-				],
-				columnDefs: [{
-					"defaultContent": "-",
-					"targets": "_all"
-				}]
-			});
-		} else {
-			this.state.table.ajax.reload();
+		if(this.state.Default == null){
+			return false;
 		}
+		axios({
+			method: "get",
+			url: defaultUrl + "/payslip/ByCompany/"+this.state.Default.Id,
+			headers: {
+				// 'Authorization': `bearer ${token}`,
+				"Content-Type": "application/json;charset=utf-8",
+			},
+		})
+			.then((response) => {
+				console.log(response);
+
+				this.setState({ salaryPayroll: response.data.data });
+			
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+		// localStorage.removeItem("ids");
+		// if (!$.fn.dataTable.isDataTable('#PayRoll_Table')) {
+		// 	this.state.table = $('#PayRoll_Table').DataTable({
+		// 		ajax: defaultUrl + "payslip",
+		// 		"columns": [
+		// 			{ "data": "FirstName" },
+		// 			{ "data": "payables" },
+		// 			{ "data": "taxdeduction" },
+		// 			{ "data": "leavededuct" },
+		// 			{ "data": "paid" },
+		// 			{ "data": "PayRollType" },
+		// 			// 	{ "data": "Action",
+		// 			// 	sortable: false,
+		// 			// 	"render": function ( data, type, full, meta ) {
+
+		// 			// 		return `<input type="checkbox" name="radio"  value=`+full.Id+`
+		// 			// 		onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+		// 			// 					let values = [];
+		// 			// 					checkboxes.forEach((checkbox) => {
+		// 			// 						values.push(checkbox.value);
+		// 			// 					});
+		// 			// 					localStorage.setItem('ids',values);	"
+		// 			// 		/>`;
+		// 			// 	}
+		// 			//  }
+
+		// 		],
+		// 		rowReorder: {
+		// 			selector: 'td:nth-child(2)'
+		// 		},
+		// 		responsive: true,
+		// 		dom: 'Bfrtip',
+		// 		buttons: [
+
+		// 		],
+		// 		columnDefs: [{
+		// 			"defaultContent": "-",
+		// 			"targets": "_all"
+		// 		}]
+		// 	});
+		// } else {
+		// 	this.state.table.ajax.reload();
+		// }
 	}
 	InsertSalaryPayRoll = () => {
 
@@ -699,20 +721,38 @@ axios({
 						>
 							<TabContainer dir={theme.direction}>
 								<Paper className={classes.root}>
-									<table id="PayRoll_Table" className="nowrap header_custom" style={{ "width": "100%" }}>
-										<thead>
-											<tr>
-												<th>Name</th>
-												<th>Payables</th>
-												<th>taxdedutions</th>
-												<th>leavededuct</th>
-												<th>paid</th>
-												<th>PayRollType</th>
-												{/* <th>Action</th> */}
-											</tr>
-										</thead>
-
-									</table>
+								
+									<Table className={classes.table}>
+										<TableHead>
+											<TableRow>
+												<CustomTableCell align="center" >Name</CustomTableCell>
+												<CustomTableCell align="center" >Payables</CustomTableCell>
+												<CustomTableCell align="center" >taxdedutions</CustomTableCell>
+												<CustomTableCell align="center" >leavededuct</CustomTableCell>
+												<CustomTableCell align="center" >paid</CustomTableCell>
+												<CustomTableCell align="center" >PayRollType</CustomTableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{
+												this.state.salaryPayroll.length>0?
+												this.state.salaryPayroll.map(row => (
+													<TableRow className={classes.row} key={row.Id}>
+	
+														<CustomTableCell align="center">{row.FirstName == "" || row.FirstName == null || row.FirstName == undefined ? 'N/A' : row.FirstName}</CustomTableCell>
+														<CustomTableCell align="center">{row.payables == "" || row.payables == null || row.payables == undefined ? 'N/A' : row.payables}</CustomTableCell>
+														<CustomTableCell align="center">{row.taxdeduction == "" || row.taxdeduction == null || row.taxdeduction == undefined ? 'N/A' : row.taxdeduction}</CustomTableCell>
+														<CustomTableCell align="center">{row.leavededuct == "" || row.leavededuct == null || row.leavededuct == undefined ? 'N/A' : row.leavededuct}</CustomTableCell>
+														<CustomTableCell align="center">{row.paid == "" || row.paid == null || row.paid == undefined ? 'N/A' : row.paid}</CustomTableCell>
+														<CustomTableCell align="center">{row.PayRollType == "" || row.PayRollType == null || row.PayRollType == undefined ? 'N/A' : row.PayRollType}</CustomTableCell>
+														
+													</TableRow>
+												))
+												:
+												<div style={{fontSize: "calc(1em + 1vw)",textAlign: "center"}} >{this.state.Default==null?"No Company Selected Yet":"No Record Found"}</div>
+											}
+										</TableBody>
+									</Table>
 								</Paper>
 							</TabContainer>
 							<TabContainer dir={theme.direction}>
@@ -906,7 +946,7 @@ axios({
 											</Button></h2>
 								</Grid>
 
-								<ol>
+								<ol  style={{height:"200px",overflowX:"scroll"}}>
 								{this.state.logs.map(row=>(
 									<li>{row.Detail}</li>
 								))}

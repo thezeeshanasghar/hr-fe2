@@ -103,7 +103,8 @@ class PayElementGlAccount extends Component {
 		Action:"Insert Record",
 		table:null,
 		StaffCategory:"",
-		StaffCategoryList:[]
+		StaffCategoryList:[],
+		Default:localStorage.getItem("state")!=null?JSON.parse(localStorage.getItem("state")):null
 
 	};
 	constructor(props) {
@@ -227,7 +228,7 @@ class PayElementGlAccount extends Component {
 				FinStaffCategory:this.state.StaffCategory
 			};
 			axios.interceptors.request.use(function (config) {
-				document.getElementById("fuse-splash-screen").style.display="block";
+				// document.getElementById("fuse-splash-screen").style.display="block";
 				return config;
 			}, function (error) {
 				console.log('Error');
@@ -253,9 +254,10 @@ class PayElementGlAccount extends Component {
 						postperEmployee:"",
 						Id: 0,
 						Action:'Insert Record',
-						StaffCategory:""
+						StaffCategory:"",
+						value :  0
 					});
-					document.getElementById("fuse-splash-screen").style.display="none";
+					// document.getElementById("fuse-splash-screen").style.display="none";
 					Messages.success();
 
 				})
@@ -270,58 +272,88 @@ class PayElementGlAccount extends Component {
 						postperEmployee:"",
 						Id: 0,
 						Action:'Insert Record',
-						StaffCategory:""
+						StaffCategory:"",
+						value :  0
 					})
-					document.getElementById("fuse-splash-screen").style.display="none";
-					Messages.error();
+					// document.getElementById("fuse-splash-screen").style.display="none";
+					Messages.error(error.message);
 
 				})
 
 
 		}
 	}
+	selection = (id) => {
+		console.log("called");
+		const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+		let values = [];
+		checkboxes.forEach((checkbox) => {
+			values.push(checkbox.value);
+		});
+		localStorage.setItem('ids', values);
+	}
 	getpayelementglAccountList = () => {
-		localStorage.removeItem("ids");
-		if (!$.fn.dataTable.isDataTable('#PayElementGLAccount_Table')) {
-			this.state.table = $('#PayElementGLAccount_Table').DataTable({
-				ajax: defaultUrl + "PayElementGLAccount",
-				"columns": [
-					{ "data": "PayElementId" },
-					{ "data": "GLAccountId" },
-					{ "data": "CostCenterPosting" },
-					{ "data": "CostCenterId" },
-					{ "data": "PostingPerEmployee" },
-					{ "data": "Action",
-					sortable: false,
-					"render": function ( data, type, full, meta ) {
-					   
-						return `<input type="checkbox" name="radio"  value=`+full.Id+`
-						onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
-									let values = [];
-									checkboxes.forEach((checkbox) => {
-										values.push(checkbox.value);
-									});
-									localStorage.setItem('ids',values);	"
-						/>`;
-					}
-				 }
-				],
-				rowReorder: {
-					selector: 'td:nth-child(2)'
-				},
-				responsive: true,
-				dom: 'Bfrtip',
-				buttons: [
-
-				],
-				columnDefs: [{
-					"defaultContent": "-",
-					"targets": "_all"
-				  }]
-			});
-		} else {
-			this.state.table.ajax.reload();
+		if(this.state.Default == null){
+			return false;
 		}
+		axios({
+			method: "get",
+			url: defaultUrl + "/PayElementGLAccount",
+			headers: {
+				// 'Authorization': `bearer ${token}`,
+				"Content-Type": "application/json;charset=utf-8",
+			},
+		})
+			.then((response) => {
+				console.log(response);
+
+				this.setState({ payelementglAccountList: response.data.data });
+			
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+		// localStorage.removeItem("ids");
+		// if (!$.fn.dataTable.isDataTable('#PayElementGLAccount_Table')) {
+		// 	this.state.table = $('#PayElementGLAccount_Table').DataTable({
+		// 		ajax: defaultUrl + "PayElementGLAccount",
+		// 		"columns": [
+		// 			{ "data": "PayElementId" },
+		// 			{ "data": "GLAccountId" },
+		// 			{ "data": "CostCenterPosting" },
+		// 			{ "data": "CostCenterId" },
+		// 			{ "data": "PostingPerEmployee" },
+		// 			{ "data": "Action",
+		// 			sortable: false,
+		// 			"render": function ( data, type, full, meta ) {
+					   
+		// 				return `<input type="checkbox" name="radio"  value=`+full.Id+`
+		// 				onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+		// 							let values = [];
+		// 							checkboxes.forEach((checkbox) => {
+		// 								values.push(checkbox.value);
+		// 							});
+		// 							localStorage.setItem('ids',values);	"
+		// 				/>`;
+		// 			}
+		// 		 }
+		// 		],
+		// 		rowReorder: {
+		// 			selector: 'td:nth-child(2)'
+		// 		},
+		// 		responsive: true,
+		// 		dom: 'Bfrtip',
+		// 		buttons: [
+
+		// 		],
+		// 		columnDefs: [{
+		// 			"defaultContent": "-",
+		// 			"targets": "_all"
+		// 		  }]
+		// 	});
+		// } else {
+		// 	this.state.table.ajax.reload();
+		// }
 	
 	}
 	getpayelementglAccountListById = () => {
@@ -332,7 +364,7 @@ class PayElementGlAccount extends Component {
 			alert("kindly Select one record");
 			return false;	
 		}
-		document.getElementById("fuse-splash-screen").style.display="block";
+		// document.getElementById("fuse-splash-screen").style.display="block";
 
 		axios({
 			method: "get",
@@ -355,12 +387,12 @@ class PayElementGlAccount extends Component {
 					Action : "Update Record",
 					StaffCategory : response.data[0].FinStaffCategory
 				});
-				document.getElementById("fuse-splash-screen").style.display="none";
+				// document.getElementById("fuse-splash-screen").style.display="none";
 
 			})
 			.catch((error) => {
 				console.log(error);
-				document.getElementById("fuse-splash-screen").style.display="none";
+				// document.getElementById("fuse-splash-screen").style.display="none";
 
 			})
 	}
@@ -371,7 +403,7 @@ class PayElementGlAccount extends Component {
 		Messages.warning("No Record Selected");
 		return false;
 		}
-		document.getElementById("fuse-splash-screen").style.display="block";
+		// document.getElementById("fuse-splash-screen").style.display="block";
 
 		axios({
 			method: "delete",
@@ -384,14 +416,14 @@ class PayElementGlAccount extends Component {
 			.then((response) => {
 				
 				this.getpayelementglAccountList();
-				document.getElementById("fuse-splash-screen").style.display="none";
+				// document.getElementById("fuse-splash-screen").style.display="none";
 				Messages.success();
 
 			})
 			.catch((error) => {
 				console.log(error);
-				document.getElementById("fuse-splash-screen").style.display="none";
-				Messages.success();
+				// document.getElementById("fuse-splash-screen").style.display="none";
+				Messages.error(error.message);
 
 			})
 	  }
@@ -442,31 +474,50 @@ class PayElementGlAccount extends Component {
 						>
 							<TabContainer dir={theme.direction}>
 								<Paper className={classes.root}>
-								<div className="row">
-									<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-										<Button variant="outlined" color="primary" className={classes.button} onClick={this.getpayelementglAccountListById}>
-											Edit
+				
+								<div className="row" style={{marginBottom:"5px"}}  >
+										<div style={{ float: "left",  "margin": "8px" }}>
+											<Button variant="contained" color="secondary" className={classes.button} onClick={this.getpayelementglAccountListById}>
+												Edit
 										</Button>
-									</div>
-									<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-										<Button variant="outlined" color="inherit" className={classes.button} onClick={this.deletegetpayelementglAccountList}>
-											Delete
+										</div>
+										<div style={{ float: "left", "margin": "8px" }}>
+											<Button  variant="contained" color="primary" className={classes.button} onClick={this.deletegetpayelementglAccountList}>
+												Delete
 										</Button>
+										</div>
+										
 									</div>
-								</div>
-									<table id="PayElementGLAccount_Table" className="nowrap header_custom" style={{ "width": "100%" }}>
-										<thead>
-											<tr>
-												<th>Pay Element</th>
-												<th>GLAccount</th>
-												<th>CostCenter Posting</th>
-												<th>CostCenter</th>
-												<th>Posting Per Employee</th>
-												<th>Action</th>
-											</tr>
-										</thead>
-
-									</table>
+									<Table className={classes.table}>
+										<TableHead>
+											<TableRow>
+												<CustomTableCell align="center" >Pay Element</CustomTableCell>
+												<CustomTableCell align="center" >GLAccount</CustomTableCell>
+												<CustomTableCell align="center" >Posting Per Employee</CustomTableCell>
+												<CustomTableCell align="center">Action</CustomTableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{
+												this.state.payelementglAccountList.length>0?
+												this.state.payelementglAccountList.map(row => (
+													<TableRow className={classes.row} key={row.PayElementId}>
+	
+														<CustomTableCell align="center">{row.PayElementId == "" || row.PayElementId == null || row.PayElementId == undefined ? 'N/A' : row.PayElementId}</CustomTableCell>
+														<CustomTableCell align="center">{row.GLAccountId == "" || row.GLAccountId == null || row.GLAccountId == undefined ? 'N/A' : row.GLAccountId}</CustomTableCell>
+														<CustomTableCell align="center">{row.PostingPerEmployee == "" || row.PostingPerEmployee == null || row.PostingPerEmployee == undefined ? 'N/A' : row.PostingPerEmployee}</CustomTableCell>
+														
+														<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
+															onChange={() => this.selection(row.Id)}
+														/>
+														</CustomTableCell>
+													</TableRow>
+												))
+												:
+												<div style={{fontSize: "calc(1em + 1vw)",textAlign: "center"}} >{this.state.Default==null?"No Company Selected Yet":"No Record Found"}</div>
+											}
+										</TableBody>
+									</Table>
 							</Paper>
 							</TabContainer>
 							<TabContainer dir={theme.direction}>

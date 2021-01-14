@@ -1,10 +1,6 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import FuseUtils from '@fuse/utils';
-<<<<<<< HEAD
-import {DashboardConfig} from 'app/main/dashboard/DashboardConfig';
-=======
->>>>>>> 30bc94c96751b2f679d3b6d69f24f6a968df7327
 import {BankConfig} from 'app/main/Bank/BankConfig';
 import {CompanyConfig} from 'app/main/company/CompanyConfig';
 import {CostCenterConfig} from 'app/main/CostCenter/CostCenterConfig';
@@ -34,11 +30,7 @@ import {GtoNReportConfig} from 'app/main/GtoNReport/GtoNReportConfig';
 import {CompanyApplicableLawConfig} from 'app/main/CompanyApplicableLaws/CompanyApplicableLawConfig';
 
 const routeConfigs = [
-<<<<<<< HEAD
-	DashboardConfig,BankConfig,CompanyConfig,CostCenterConfig,CountryLawsConfig,CurrencyExchangeConfig,EmployeeConfig,EmployeeDetailConfig,
-=======
 	BankConfig,CompanyConfig,CostCenterConfig,CountryLawsConfig,CurrencyExchangeConfig,EmployeeConfig,EmployeeDetailConfig,
->>>>>>> 30bc94c96751b2f679d3b6d69f24f6a968df7327
 	GLAccountConfig,GradesConfig,PayElementConfig,JobsConfig,PositionConfig,PayElementGlAccountConfig,UnitConfig,UnpaidLeavesConfig,UserProtectionConfig,
 	SalaryPayRollConfig,EmployeeReportsConfig,EmployeeVarianceReportConfig,PayrollReportsConfig,TerminationConfig,EmployeeVarianceReportDetailConfig,BulkUploadConfig,
 	LoginConfig,DashboardConfig,GtoNReportConfig,CompanyApplicableLawConfig

@@ -406,10 +406,7 @@ class Bank extends Component {
 						>
 							<TabContainer dir={theme.direction}>
 								<Paper className={classes.root}>
-<<<<<<< HEAD
-=======
 				
->>>>>>> 30bc94c96751b2f679d3b6d69f24f6a968df7327
 									<div className="row" style={{marginBottom:"5px"}}  >
 										<div style={{ float: "left",  "margin": "8px" }}>
 											<Button variant="contained" color="secondary" className={classes.button} onClick={this.getBankById}>

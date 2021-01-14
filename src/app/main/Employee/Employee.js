@@ -169,7 +169,8 @@ class Employee extends Component {
 		companyListsel:[],
 		companyIdsel:"",
 		CompanySelected:"",
-		Action: "Insert Record"
+		Action: "Insert Record",
+		Default:localStorage.getItem("state")!=null?JSON.parse(localStorage.getItem("state")):null
 	};
 	constructor(props) {
 		super(props);
@@ -946,10 +947,12 @@ class Employee extends Component {
 		this.setState({ value: val });
 	}
 	getEmployeeList = (IDD) => {
-		
+		if(this.state.Default == null){
+			return false;
+		}
 		axios({
 			method: "get",
-			url: defaultUrl+"employee/",
+			url: defaultUrl+"employee/ByCompany/"+this.state.Default.Id,
 			headers: {
 				// 'Authorization': `bearer ${token}`,
 				"Content-Type": "application/json;charset=utf-8",
@@ -1143,7 +1146,7 @@ class Employee extends Component {
 					root: classes.layoutRoot
 				}}
 				header={
-					<div className="p-24"><h4>Companies</h4></div>
+					<div className="p-24"><h4>Employee-{this.state.Default !=null?this.state.Default.Company:"No Company Selected Yet"}</h4></div>
 				}
 				// contentToolbar={
 				// 	<div className="px-24"><h4>Add New Company</h4></div>
@@ -1176,23 +1179,27 @@ class Employee extends Component {
 						>
 							<TabContainer dir={theme.direction}>
 								<Paper className={classes.root}>
-									<div className="row">
-										<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-											<Button variant="outlined" color="primary" className={classes.button} onClick={this.getEmployeeDetailsForEdit}>
+								<div className="row" style={{marginBottom:"5px"}}  >
+										<div style={{ float: "left",  "margin": "8px" }}>
+											<Button variant="contained" color="secondary" className={classes.button} onClick={this.getEmployeeDetailsForEdit}>
 												Edit
 										</Button>
 										</div>
-										<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-											<Button variant="outlined" color="inherit" className={classes.button} onClick={this.deleteEmployee}>
+										<div style={{ float: "left", "margin": "8px" }}>
+											<Button  variant="contained" color="primary" className={classes.button} onClick={this.deleteEmployee}>
 												Delete
 										</Button>
 										</div>
-										<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-											<Button variant="outlined" color="inherit" className={classes.button} onClick={this.getView}>
+										<div style={{ float: "left", "margin": "8px" }}>
+											<Button  variant="contained" color="success" className={classes.button} onClick={this.getView}>
 												View
 										</Button>
 										</div>
-										<Grid item xs={12} sm={5} style={{ paddingTop: "10px",float:"right",width:"20%" }}  >
+										
+									</div>
+
+								
+										{/* <Grid item xs={12} sm={5} style={{ paddingTop: "10px",float:"right",width:"20%" }}  >
 											<Select1
 
 												name="companyId"
@@ -1203,9 +1210,9 @@ class Employee extends Component {
 												onChange={this.handledropdown}
 
 											/>
-										</Grid>
+										</Grid> */}
 
-									</div>
+									<Grid item xs={12}  className="table-responsive">
 									<Table className={classes.table}>
 										<TableHead>
 											<TableRow>
@@ -1267,6 +1274,8 @@ class Employee extends Component {
 									</Table>
 
 
+									</Grid>
+									
 
 
 								</Paper>

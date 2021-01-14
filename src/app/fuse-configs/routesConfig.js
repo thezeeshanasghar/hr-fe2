@@ -26,20 +26,21 @@ import {TerminationConfig} from 'app/main/Termination/TerminationConfig'
 import {EmployeeVarianceReportDetailConfig} from 'app/main/EmployeeVarianceReportDetail/EmployeeVarianceReportDetailConfig'
 import LoginConfig from 'app/main/Login/LoginConfig';
 import DashboardConfig from 'app/main/Dashboard/DashboardConfig';
-
+import {GtoNReportConfig} from 'app/main/GtoNReport/GtoNReportConfig';
+import {CompanyApplicableLawConfig} from 'app/main/CompanyApplicableLaws/CompanyApplicableLawConfig';
 
 const routeConfigs = [
 	BankConfig,CompanyConfig,CostCenterConfig,CountryLawsConfig,CurrencyExchangeConfig,EmployeeConfig,EmployeeDetailConfig,
 	GLAccountConfig,GradesConfig,PayElementConfig,JobsConfig,PositionConfig,PayElementGlAccountConfig,UnitConfig,UnpaidLeavesConfig,UserProtectionConfig,
 	SalaryPayRollConfig,EmployeeReportsConfig,EmployeeVarianceReportConfig,PayrollReportsConfig,TerminationConfig,EmployeeVarianceReportDetailConfig,BulkUploadConfig,
-	LoginConfig,DashboardConfig
+	LoginConfig,DashboardConfig,GtoNReportConfig,CompanyApplicableLawConfig
 ];
 
 const routes = [
 	...FuseUtils.generateRoutesFromConfigs(routeConfigs),
 	{
 		path: '/',
-		component: () => <Redirect to="/dashboard" />
+		component: () => <Redirect to="/login" />
 	}
 ];
 

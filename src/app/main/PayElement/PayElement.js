@@ -108,7 +108,9 @@ class PayElement extends Component {
 		Action:"Insert Record",
 		table:null,
 		Frequency:"",
-		Default:localStorage.getItem("state")!=null?JSON.parse(localStorage.getItem("state")):null
+		Default:localStorage.getItem("state")!=null?JSON.parse(localStorage.getItem("state")):null,
+		EntitlementList:[]
+		
 	};
 	constructor(props) {
 		super(props);
@@ -123,6 +125,7 @@ class PayElement extends Component {
 		this.getPeriodicity();
 		this.getCurrency();
 		this.getPayElement();
+		this.getEntitlement();
 		
 	}
 	getGroup=()=>{
@@ -205,6 +208,23 @@ class PayElement extends Component {
 			.then((response) => {
 				console.log(response);
 				this.setState({ PeriodicityList: response.data });
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+	}
+	getEntitlement=()=>{
+		axios({
+			method: "get",
+			url: defaultUrl + "lookups/"+Lookups.Entitlement,
+			headers: {
+				// 'Authorization': `bearer ${token}`,
+				"Content-Type": "application/json;charset=utf-8",
+			},
+		})
+			.then((response) => {
+				console.log(response);
+				this.setState({ EntitlementList: response.data });
 			})
 			.catch((error) => {
 				console.log(error);
@@ -629,7 +649,7 @@ class PayElement extends Component {
 											<MenuItem value="">
 												<em>None</em>
 											</MenuItem>
-											{this.state.PeriodicityList.map(row => (
+											{this.state.EntitlementList.map(row => (
 													<MenuItem value={row.Id}>{row.Name}</MenuItem>
 												))} 
 										</Select>

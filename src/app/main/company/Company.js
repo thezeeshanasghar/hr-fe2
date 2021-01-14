@@ -659,7 +659,7 @@ class Company extends Component {
 										</FormControl>
 										{this.validator.message('payrollformula', this.state.payrollformula, 'required')}
 									</Grid>
-									<Grid item xs={12} sm={5}  >
+									{/* <Grid item xs={12} sm={5}  >
 										<TextField id="employeePercentage" type="number" fullWidth label="Social Security(Employee Percentage)" name="employeePercentage" value={this.state.employeePercentage} onChange={this.handleChange} />
 										{this.validator.message('employeePercentage', this.state.employeePercentage, 'required')}
 									</Grid>
@@ -667,7 +667,7 @@ class Company extends Component {
 										<TextField id="companyPercentage" type="number" fullWidth label="Social Security(Company Percentage)" name="companyPercentage" value={this.state.companyPercentage} onChange={this.handleChange} />
 										{this.validator.message('companyPercentage', this.state.companyPercentage, 'required')}
 									</Grid>
-								
+								 */}
 								</form>
 								<div className="row">
 									<div style={{ float: "right", "marginRight": "8px" }}>

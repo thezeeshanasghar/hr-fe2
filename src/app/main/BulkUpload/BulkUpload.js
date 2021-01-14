@@ -88,7 +88,7 @@ class BulkUpload extends Component {
 		File: null,
 		value: 0,
 		FilePath: "",
-		companyId: "",
+		companyId:localStorage.getItem("state")!=null?JSON.parse(localStorage.getItem("state")).Id:0,
 		CompanySelected: "",
 		companyList: [],
 		Action: 'load Sheet',
@@ -96,7 +96,8 @@ class BulkUpload extends Component {
 		},
 		bulkdata: [],
 		Isdisplay: 0,
-		logs: []
+		logs: [],
+		Default:localStorage.getItem("state")!=null?JSON.parse(localStorage.getItem("state")):null
 	};
 	constructor(props) {
 		super(props);
@@ -329,7 +330,7 @@ class BulkUpload extends Component {
 					root: classes.layoutRoot
 				}}
 				header={
-					<div className="p-24"><h4>Bulk Upload</h4></div>
+					<div className="p-24"><h4>Bulk Upload-{this.state.Default !=null?this.state.Default.Company:"No Company Selected Yet"}</h4></div>
 				}
 				contentToolbar={
 					<div className="px-24"><h4>Upload Bulk Data</h4></div>
@@ -373,7 +374,7 @@ class BulkUpload extends Component {
 													<em>None</em>
 												</MenuItem>
 												<MenuItem value="Bank">Bank</MenuItem>
-												<MenuItem value="Company">Company</MenuItem>
+												{/* <MenuItem value="Company">Company</MenuItem> */}
 												<MenuItem value="Exchange">Exchange Rate</MenuItem>
 												<MenuItem value="CountryLaw">Country Laws</MenuItem>
 												<MenuItem value="Grade">Grade</MenuItem>
@@ -387,6 +388,7 @@ class BulkUpload extends Component {
 												<MenuItem value="ApplicableLaws">Employee(ApplicableLaws)</MenuItem>
 												<MenuItem value="UnpaidLeaves">Employee(UnpaidLeaves)</MenuItem>
 												<MenuItem value="overtime">Employee(overTime)</MenuItem>
+												<MenuItem value="EmployeeCostCenter">Employee(Cost Center)</MenuItem>
 												<MenuItem value="CostCenter">Cost Center</MenuItem>
 												<MenuItem value="GlAccount">GL Account</MenuItem>
 												<MenuItem value="PayElement">Pay Element</MenuItem>
@@ -396,7 +398,7 @@ class BulkUpload extends Component {
 											{this.validator.message('Type', this.state.Type, 'required')}
 										</FormControl>
 									</Grid>
-									<Grid item xs={12} sm={5} style={{ marginTop: "10px" }} className={this.state.Type == "Bank" || this.state.Type == "Company" || this.state.Type == "Exchange" || this.state.Type == "CountryLaw" ? 'd-none' : ''} >
+									{/* <Grid item xs={12} sm={5} style={{ marginTop: "10px" }} className={this.state.Type == "Bank" || this.state.Type == "Company" || this.state.Type == "Exchange" || this.state.Type == "CountryLaw" ? 'd-none' : ''} >
 										<FormControl className={classes.formControl}>
 
 											<Select1
@@ -411,7 +413,7 @@ class BulkUpload extends Component {
 											/>
 											{this.validator.message('companyId', this.state.companyId, 'required')}
 										</FormControl>
-									</Grid>
+									</Grid> */}
 
 									<Grid item xs={12} sm={5}  >
 										<TextField type="file" id="File" fullWidth label="File" InputLabelProps={{
@@ -425,10 +427,13 @@ class BulkUpload extends Component {
 								<div className="row">
 									<Grid item xs={12} sm={10}  >
 										<div style={{ float: "right", "marginRight": "8px" }}>
-
-											<Button variant="outlined" color="secondary" className={classes.button} style={{ marginTop: "10px" }} onClick={this.uploadFile} >
+											{
+												this.state.Default !=null?
+												<Button variant="outlined" color="secondary" className={classes.button} style={{ marginTop: "10px" }} onClick={this.uploadFile} >
 												{this.state.Action}
 											</Button>
+											:""
+											}
 										</div>
 									</Grid>
 									{/* <div style={{ height: '200px' }}></div> */}
@@ -476,6 +481,8 @@ class BulkUpload extends Component {
 
 							</div>
 						</Modal>
+
+						
 					</div>
 				}
 			/>

@@ -45,7 +45,7 @@ class RightSideLayout2 extends Component {
 
 	 clicked=(Id,Name)=>{
 		const store = createStore(RightPanel, {Id:Id,Company:Name})
-		window.open("/","_self")
+		window.open("/dashboard","_self")
 	}
 	render(){
 		

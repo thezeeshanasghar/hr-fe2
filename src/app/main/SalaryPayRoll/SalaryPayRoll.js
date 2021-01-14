@@ -134,7 +134,7 @@ class SalaryPayRoll extends Component {
 		Action: "Generate",
 		Id: 0,
 		companyName: "",
-		companyId: "",
+		companyId: localStorage.getItem("state")!=null?JSON.parse(localStorage.getItem("state")).Id:null,
 		companyList: [],
 		type: "",
 		employeeList: [],
@@ -202,7 +202,7 @@ axios({
 
 			})
 			.catch((error) => {
-				console.log(error);
+				//console.log(error);
 			})	
 }
 		
@@ -220,7 +220,7 @@ axios({
 				this.setState({ PayElementList: response.data })
 			})
 			.catch((error) => {
-				console.log(error);
+				//console.log(error);
 			})
 	}
 	loadCompanyData = (val) => {
@@ -234,17 +234,17 @@ axios({
 		})
 			.then((response) => {
 				if (response.data) {
-					console.log(response.data)
+					//console.log(response.data)
 					var data = response.data.data.filter(x => x.CompanyId == val);
 					var dates = [...new Set(data.map(x => x.Paidon))]
 					this.setState({  payroles: response.data.data });
-					console.log(dates);
+					//console.log(dates);
 				} else {
 					this.setState({ Dates: [] });
 				}
 			})
 			.catch((error) => {
-				console.log(error);
+				//console.log(error);
 			})
 	}
 	componentDidMount() {
@@ -252,7 +252,10 @@ axios({
 		// this.getCompanyDetail();
 		this.getSalaryPayRoll();
 
-
+		this.getPayElements(this.state.companyId)
+		this.getEmployeeDetail(this.state.companyId);
+		this.loadCompanyData(this.state.companyId);
+		this.getSelectivePayrolls(this.state.companyId)
 	}
 	getSalaryPayRoll = () => {
 		if(this.state.Default == null){
@@ -267,13 +270,13 @@ axios({
 			},
 		})
 			.then((response) => {
-				console.log(response);
+				//console.log(response);
 
 				this.setState({ salaryPayroll: response.data.data });
 			
 			})
 			.catch((error) => {
-				console.log(error);
+				//console.log(error);
 			})
 		// localStorage.removeItem("ids");
 		// if (!$.fn.dataTable.isDataTable('#PayRoll_Table')) {
@@ -321,14 +324,14 @@ axios({
 	}
 	InsertSalaryPayRoll = () => {
 
-		console.log(this.state)
+		//console.log(this.state)
 		if (this.state.type == "Regular") {
-			if (!this.validator.fieldValid('companyId') || !this.validator.fieldValid('type') || !this.validator.fieldValid('Date') || !this.validator.fieldValid('employeeIds') || !this.validator.fieldValid('PayElement')) {
+			if ( !this.validator.fieldValid('type') || !this.validator.fieldValid('Date') || !this.validator.fieldValid('employeeIds') || !this.validator.fieldValid('PayElement')) {
 				this.validator.showMessages();
 				this.forceUpdate();
-				console.log("error")
+				//console.log("error")
 			} else {
-				console.log("working")
+				//console.log("working")
 				var method = "post";
 				var url = defaultUrl + "payslip";
 
@@ -346,7 +349,7 @@ axios({
 					// document.getElementsByClassName("loader-wrapper")[0].style.display="block"
 					return config;
 				}, function (error) {
-					console.log('Error');
+					//console.log('Error');
 					return Promise.reject(error);
 				});
 				axios({
@@ -360,7 +363,7 @@ axios({
 				})
 					.then((response) => {
 						// document.getElementsByClassName("loader-wrapper")[0].style.display="none"
-						console.log(response);
+						//console.log(response);
 						
 						
 						this.setState({
@@ -380,7 +383,7 @@ axios({
 						toast.success('PayRoll Executed');
 					})
 					.catch((error) => {
-						console.log(error);
+						//console.log(error);
 						// document.getElementsByClassName("loader-wrapper")[0].style.display="none"
 						toast.error('Operation unsuccessfull');
 						this.setState({
@@ -422,7 +425,7 @@ axios({
 					// document.getElementsByClassName("loader-wrapper")[0].style.display="block"
 					return config;
 				}, function (error) {
-					console.log('Error');
+					//console.log('Error');
 					return Promise.reject(error);
 				});
 				axios({
@@ -451,7 +454,7 @@ axios({
 						});
 					})
 					.catch((error) => {
-						console.log(error);
+						//console.log(error);
 						// document.getElementsByClassName("loader-wrapper")[0].style.display="none"
 						toast.error('Operation unsuccessfull');
 						this.setState({
@@ -492,7 +495,7 @@ axios({
 					// document.getElementsByClassName("loader-wrapper")[0].style.display="block"
 					return config;
 				}, function (error) {
-					console.log('Error');
+					//console.log('Error');
 					return Promise.reject(error);
 				});
 				axios({
@@ -520,7 +523,7 @@ axios({
 						});
 					})
 					.catch((error) => {
-						console.log(error);
+						//console.log(error);
 						// document.getElementsByClassName("loader-wrapper")[0].style.display="none"
 						toast.error('Operation unsuccessfull');
 						this.setState({
@@ -542,6 +545,10 @@ axios({
 	}
 	handlePayelementChange = (e) => {
 		var PayElements = "";
+		if(!e){
+			this.setState({ 'PayElement': "", PayElementSelected: [] });
+			return false;
+		}
 		for (var i = 0; i < e.length; i++) {
 			PayElements += e[i].value + ','
 		}
@@ -554,7 +561,6 @@ axios({
 
 	};
 	handledropdown = (e) => {
-		console.log(e, 'afdhsgfjhsdgfjhsdg')
 
 		this.setState({ 'companyId': e.value, employeeIds: "", 'CompanySelected': e, PaymentDetail: [] });
 		this.getPayElements(e.value)
@@ -569,13 +575,18 @@ axios({
 	handleEmployeedropdown = (e) => {
 
 		var employees = "";
+		if(!e){
+			this.setState({ 'employeeIds': "", employeeSelected: [] });
+			return false;
+		}
+		
 		for (var i = 0; i < e.length; i++) {
 			employees += e[i].value + ','
 		}
 		this.setState({ 'employeeIds': employees, employeeSelected: e.value });
 	}
 	handleChange = (e) => {
-		console.log(e)
+		//console.log(e)
 		this.setState({ [e.target.name]: e.target.value });
 
 		if (e.target.name == "File") {
@@ -599,12 +610,12 @@ axios({
 				}
 			})
 				.then((response) => {
-					console.log("success", response);
+					//console.log("success", response);
 					this.setState({ File: response.data });
 					Messages.success();
 					// document.getElementById("fuse-splash-screen").style.display="none";
 				}).catch((error) => {
-					console.log("error", error);
+					//console.log("error", error);
 					Messages.error();
 					// document.getElementById("fuse-splash-screen").style.display="none";
 				});
@@ -620,13 +631,13 @@ axios({
 			},
 		})
 			.then((response) => {
-				console.log(response);
+				//console.log(response);
 
 				this.setState({ companyList: response.data });
 				return response.data;
 			})
 			.catch((error) => {
-				console.log(error);
+				//console.log(error);
 			})
 	}
 	getEmployeeDetail = (id) => {
@@ -639,11 +650,11 @@ axios({
 			},
 		})
 			.then((response) => {
-				console.log(response);
+				//console.log(response);
 				this.setState({ employeeList: response.data });
 			})
 			.catch((error) => {
-				console.log(error);
+				//console.log(error);
 			})
 	}
 	getSelectivePayrolls = (id) => {
@@ -656,13 +667,13 @@ axios({
 			},
 		})
 			.then((response) => {
-				console.log(response.data.data);
+				//console.log(response.data.data);
 
 				this.setState({ Dates: response.data.data  });
 				return response.data;
 			})
 			.catch((error) => {
-				console.log(error);
+				//console.log(error);
 			})
 	}
 	closeCurrent=(code)=>{
@@ -677,11 +688,11 @@ axios({
 				},
 			})
 				.then((response) => {
-					console.log(response.data.data);
+					//console.log(response.data.data);
 					this.getSelectivePayrolls(this.state.companyId);
 				})
 				.catch((error) => {
-					console.log(error);
+					//console.log(error);
 				})
 		}
 	}
@@ -694,7 +705,7 @@ axios({
 					root: classes.layoutRoot
 				}}
 				header={
-					<div className="p-24"><h4>Salary Payroll</h4></div>
+					<div className="p-24"><h4>Salary Payroll-{this.state.Default !=null?this.state.Default.Company:"No Company Selected Yet"}</h4></div>
 				}
 				contentToolbar={
 					<div className="px-24"><h4>Add New Salary PayRoll</h4></div>
@@ -757,7 +768,7 @@ axios({
 							</TabContainer>
 							<TabContainer dir={theme.direction}>
 								<form className={classes.container} noValidate autoComplete="off">
-									<Grid item xs={12} sm={5} >
+									{/* <Grid item xs={12} sm={5} >
 										<FormControl className={classes.formControl}>
 									
 											<Select
@@ -771,7 +782,7 @@ axios({
 											/>
 											{this.validator.message('companyId', this.state.companyId, 'required')}
 										</FormControl>
-									</Grid>
+									</Grid> */}
 									<Grid item xs={12} sm={5}>
 										<FormControl className={classes.formControl}>
 											<Select
@@ -874,10 +885,14 @@ axios({
 
 									<Grid item xs={12} sm={10} style={{ marginBottom: "5px" }}  >
 										<div style={{ float: "right", "marginRight": "8px", "marginTop": "2px", "marginBottom": "2px" }}>
-
+											{
+												this.state.Default?
 											<Button variant="outlined" color="secondary" className={classes.button} onClick={this.InsertSalaryPayRoll} >
 												{this.state.Action}
 											</Button>
+											:""
+											}
+											
 
 										</div>
 									</Grid>

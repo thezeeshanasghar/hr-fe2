@@ -35,7 +35,8 @@ class UserMenu extends React.Component {
 
 	render()
 	{
-	  if(!this.state.redirect){
+	  if(this.state.redirect== undefined || this.state.redirect== null || this.state.redirect== "" || this.state.redirect== false ){
+		  
 		return <Redirect to='/login'/>;
 	  }
 	   var {user, logout} = this.props;

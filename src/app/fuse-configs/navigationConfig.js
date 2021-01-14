@@ -44,6 +44,13 @@ const navigationConfig = [
                 'icon': 'whatshot',
                 'url': '/company'
             },
+              {
+        'id': 'company-laws',
+        'title': 'Company Applicable Laws',
+        'type': 'item',
+        'icon': 'whatshot',
+        'url': '/CompanyApplicableLaws'
+    },
             {
                 'id': 'currencyexchange-component',
                 'title': 'Currency Exchange',
@@ -191,12 +198,18 @@ const navigationConfig = [
         'type': 'collapse',
         'icon': 'money',
         'badge': {
-            'title': 3,
+            'title': 4,
             'bg': '#525e8a',
             'fg': '#FFFFFF'
         },
         'children': [
-           
+            {
+                'id': 'G2NReport',
+                'title': 'G2N Report',
+                'type': 'item',
+                'icon': 'whatshot',
+                'url': '/GtoNReport'
+            },        
     {
         'id': 'EmployeeReports',
         'title': 'Payment Reports',
@@ -218,13 +231,7 @@ const navigationConfig = [
         'icon': 'whatshot',
         'url': '/EmployeeVarianceReportDetail'
     },
-    // {
-    //     'id': 'PayrollReports',
-    //     'title': 'Payroll Reports',
-    //     'type': 'item',
-    //     'icon': 'whatshot',
-    //     'url': '/payrollreports'
-    // },
+  
         ]
     },
     {

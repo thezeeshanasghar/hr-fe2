@@ -355,12 +355,12 @@ axios({
 							Isdisplay:"1",
 							Dates:[]
 						});
-						toast.success('PayRoll Executed');
+						// toastr.success('PayRoll Executed');
 					})
 					.catch((error) => {
 						console.log(error);
 						// document.getElementsByClassName("loader-wrapper")[0].style.display="none"
-						toast.error('Operation unsuccessfull');
+						// toastr.error('Operation unsuccessfull');
 						this.setState({
 							companyId: "",
 							employeeIds: "",
@@ -414,7 +414,7 @@ axios({
 				})
 					.then((response) => {
 						// document.getElementsByClassName("loader-wrapper")[0].style.display="none"
-						toast.success('Operation successfull');
+						// toastr.success('Operation successfull');
 						this.setState({
 							companyId: "",
 							employeeIds: "",
@@ -431,7 +431,7 @@ axios({
 					.catch((error) => {
 						console.log(error);
 						// document.getElementsByClassName("loader-wrapper")[0].style.display="none"
-						toast.error('Operation unsuccessfull');
+						// toastr.error('Operation unsuccessfull');
 						this.setState({
 							companyId: "",
 							employeeIds: "",
@@ -484,7 +484,7 @@ axios({
 				})
 					.then((response) => {
 						// document.getElementsByClassName("loader-wrapper")[0].style.display="none"
-						toast.success('Operation successfull');
+						// toastr.success('Operation successfull');
 						this.setState({
 							companyId: "",
 							employeeIds: "",
@@ -500,7 +500,7 @@ axios({
 					.catch((error) => {
 						console.log(error);
 						// document.getElementsByClassName("loader-wrapper")[0].style.display="none"
-						toast.error('Operation unsuccessfull');
+						// toastr.error('Operation unsuccessfull');
 						this.setState({
 							companyId: "",
 							employeeIds: "",

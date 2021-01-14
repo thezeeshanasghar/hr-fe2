@@ -7,7 +7,14 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleQuickPanel } from './store/stateSlice';
 import reducer from './store';
-
+import Button from '@material-ui/core/Button'
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
+import InboxIcon from '@material-ui/icons/Inbox';
+import DraftsIcon from '@material-ui/icons/Drafts';
 const useStyles = makeStyles(theme => ({
 	root: {
 		width: 280
@@ -17,7 +24,7 @@ const useStyles = makeStyles(theme => ({
 function QuickPanel(props) {
 	const dispatch = useDispatch();
 	const state = useSelector(({ quickPanel }) => quickPanel.state);
-
+	const { companies } = props
 	const classes = useStyles();
 
 	return (
@@ -25,12 +32,36 @@ function QuickPanel(props) {
 			classes={{ paper: classes.root }}
 			open={state}
 			anchor="right"
-			onOpen={ev => {}}
+			onOpen={ev => { }}
 			onClose={ev => dispatch(toggleQuickPanel())}
 			disableSwipeToOpen
 		>
 			<FuseScrollbars>
-				<Typography>Quick Panel</Typography>
+				<Typography className="leading-none text-32 MuiTypography-colorTextSecondary">Select Company</Typography>
+			
+
+				{
+					<List component="nav" aria-label="main mailbox folders">
+						{
+							console.log(companies),
+							companies.map(x =>
+								<ListItem button onClick={()=>props.clicked(x.Id)}  >
+									<ListItemIcon>
+										<InboxIcon />
+									</ListItemIcon>
+									<ListItemText primary={x.CompanyName} />
+								</ListItem>
+							)
+						}
+
+					</List>
+
+
+
+
+				}
+
+
 			</FuseScrollbars>
 		</SwipeableDrawer>
 	);

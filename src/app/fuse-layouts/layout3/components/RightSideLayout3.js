@@ -1,11 +1,16 @@
 import QuickPanel from 'app/fuse-layouts/shared-components/quickPanel/QuickPanel';
-import React from 'react';
+import React,{ useState } from 'react';
 
 function RightSideLayout3() {
+	const [count, setCount] = useState(0);
+	function onClick(){
+		console.log("working")
+	}
 	return (
-		<>
-			<QuickPanel />
-		</>
+		<div>
+	
+			<QuickPanel onClick={onClick()} />
+		</div>
 	);
 }
 

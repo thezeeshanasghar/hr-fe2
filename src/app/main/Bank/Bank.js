@@ -24,11 +24,11 @@ import SimpleReactValidator from 'simple-react-validator';
 import axios from "axios";
 //import toastr from 'toastr'
 import defaultUrl from "../../../app/services/constant/constant";
-
+import Divider from '@material-ui/core/Divider';
 //import $ from 'jquery';
 //import DataTable from "datatables.net";
 //import * as responsive from "datatables.net-responsive";
-
+import TableContainer from '@material-ui/core/TableContainer';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Messages from '../toaster';
@@ -78,11 +78,11 @@ class Bank extends Component {
 		bankName: '',
 		bankCode: '',
 		bankAddress: '',
-		SwiftCode:"",
-		UAEFTSBANKCode:"",
-		code:"",
-		Description:"",
-		RouteCode:"",
+		SwiftCode: "",
+		UAEFTSBANKCode: "",
+		code: "",
+		Description: "",
+		RouteCode: "",
 		Banks: [],
 		Id: 0,
 		Action: 'Insert Record',
@@ -92,20 +92,20 @@ class Bank extends Component {
 			{ title: 'Surname', field: 'surname' },
 			{ title: 'Birth Year', field: 'birthYear', type: 'numeric' },
 			{
-			  title: 'Birth Place',
-			  field: 'birthCity',
-			  lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' },
+				title: 'Birth Place',
+				field: 'birthCity',
+				lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' },
 			},
-		  ],
-		  data: [
+		],
+		data: [
 			{ name: 'Mehmet', surname: 'Baran', birthYear: 1987, birthCity: 63 },
 			{
-			  name: 'Zerya Betül',
-			  surname: 'Baran',
-			  birthYear: 2017,
-			  birthCity: 34,
+				name: 'Zerya Betül',
+				surname: 'Baran',
+				birthYear: 2017,
+				birthCity: 34,
 			},
-		  ],
+		],
 	};
 	constructor(props) {
 		super(props);
@@ -146,7 +146,7 @@ class Bank extends Component {
 	});
 
 	getBankDetail = () => {
-	
+
 		axios({
 			method: "get",
 			url: defaultUrl + "Bank",
@@ -234,11 +234,11 @@ class Bank extends Component {
 			BankName: this.state.bankName,
 			BranchCode: this.state.bankCode,
 			Address: this.state.bankAddress,
-			Code:this.state.code,
-			SwiftCode:this.state.SwiftCode,
-			UAEFTSBANKCode:this.state.UAEFTSBANKCode,
-			RouteCode:this.state.RouteCode,
-			Description:this.state.Description
+			Code: this.state.code,
+			SwiftCode: this.state.SwiftCode,
+			UAEFTSBANKCode: this.state.UAEFTSBANKCode,
+			RouteCode: this.state.RouteCode,
+			Description: this.state.Description
 		};
 		// axios.interceptors.request.use(function (config) {
 		// 	document.getElementById("fuse-splash-screen").style.display = "block"
@@ -262,20 +262,20 @@ class Bank extends Component {
 					bankName: "",
 					bankCode: "",
 					bankAddress: "",
-					SwiftCode:"",
-					UAEFTSBANKCode:"",
-					code:"",
-					Description:"",
-					RouteCode:"",
+					SwiftCode: "",
+					UAEFTSBANKCode: "",
+					code: "",
+					Description: "",
+					RouteCode: "",
 					Action: 'Insert Record',
 					Id: 0,
 					value: 0
 				});
-			//	document.getElementById("fuse-splash-screen").style.display = "none";
+				//	document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.success();
 			})
 			.catch((message) => {
-			//	document.getElementById("fuse-splash-screen").style.display = "none"
+				//	document.getElementById("fuse-splash-screen").style.display = "none"
 				console.log(message);
 				// error();
 				this.setState({
@@ -283,23 +283,24 @@ class Bank extends Component {
 					bankCode: "",
 					bankAddress: "",
 					Action: 'Insert Record',
-					SwiftCode:"",
-					UAEFTSBANKCode:"",
-					code:"",
-					Description:"",
-					RouteCode:"",
+					SwiftCode: "",
+					UAEFTSBANKCode: "",
+					code: "",
+					Description: "",
+					RouteCode: "",
 					Id: 0,
 					value: 0
 				})
 			})
 	}
 	deleteBank = () => {
+		debugger
 		var ids = localStorage.getItem("ids");
 		if (ids === null) {
 			Messages.warning("No Record Selected");
 			return false;
 		}
-	//	document.getElementById("fuse-splash-screen").style.display = "block"
+		//	document.getElementById("fuse-splash-screen").style.display = "block"
 		axios({
 			method: "delete",
 			url: defaultUrl + "Bank/" + ids,
@@ -311,14 +312,14 @@ class Bank extends Component {
 			.then((response) => {
 
 				this.getBankDetail();
-			//	document.getElementById("fuse-splash-screen").style.display = "none";
+				//	document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.success();
 
 			})
 			.catch((error) => {
 				console.log(error);
-			//	document.getElementById("fuse-splash-screen").style.display = "none";
-				Messages.error();
+				//	document.getElementById("fuse-splash-screen").style.display = "none";
+				Messages.error("operation unsuccessfull");
 			})
 	}
 	getBankById = () => {
@@ -327,7 +328,7 @@ class Bank extends Component {
 			Messages.warning("kindly Select one record");
 			return false;
 		}
-	//	document.getElementById("fuse-splash-screen").style.display = "block"
+		//	document.getElementById("fuse-splash-screen").style.display = "block"
 		axios({
 			method: "get",
 			url: defaultUrl + "Bank/" + ids,
@@ -341,16 +342,16 @@ class Bank extends Component {
 				this.setState({
 					Action: 'Update Record', value: 1, bankName: response.data[0].BankName, bankCode: response.data[0].BranchCode, bankAddress: response.data[0].Address,
 					Id: response.data[0].Id,
-					SwiftCode:response.data[0].SwiftCode,
-					UAEFTSBANKCode:response.data[0].UAEFTSBANKCode,
-					code:response.data[0].Code,
-					Description:response.data[0].Description,
-					RouteCode:response.data[0].RouteCode,
+					SwiftCode: response.data[0].SwiftCode,
+					UAEFTSBANKCode: response.data[0].UAEFTSBANKCode,
+					code: response.data[0].Code,
+					Description: response.data[0].Description,
+					RouteCode: response.data[0].RouteCode,
 				});
-		//		document.getElementById("fuse-splash-screen").style.display = "none"
+				//		document.getElementById("fuse-splash-screen").style.display = "none"
 			})
 			.catch((error) => {
-			//	document.getElementById("fuse-splash-screen").style.display = "none"
+				//	document.getElementById("fuse-splash-screen").style.display = "none"
 				console.log(error);
 			})
 	}
@@ -358,11 +359,12 @@ class Bank extends Component {
 	selection = (id) => {
 		console.log("called");
 		const checkboxes = document.querySelectorAll('input[name=radio]:checked');
-									let values = [];
-									checkboxes.forEach((checkbox) => {
-										values.push(checkbox.value);
-									});
-									localStorage.setItem('ids',values);}
+		let values = [];
+		checkboxes.forEach((checkbox) => {
+			values.push(checkbox.value);
+		});
+		localStorage.setItem('ids', values);
+	}
 
 	render() {
 
@@ -404,20 +406,22 @@ class Bank extends Component {
 						>
 							<TabContainer dir={theme.direction}>
 								<Paper className={classes.root}>
-									<div className="row">
-										<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-											<Button variant="outlined" color="primary" className={classes.button} onClick={this.getBankById}>
+									<div className="row" style={{marginBottom:"5px"}}  >
+										<div style={{ float: "left",  "margin": "8px" }}>
+											<Button variant="contained" color="secondary" className={classes.button} onClick={this.getBankById}>
 												Edit
 										</Button>
 										</div>
-										<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-											<Button variant="outlined" color="inherit" className={classes.button} onClick={this.deleteBank}>
+										<div style={{ float: "left", "margin": "8px" }}>
+											<Button  variant="contained" color="primary" className={classes.button} onClick={this.deleteBank}>
 												Delete
 										</Button>
 										</div>
+										
 									</div>
-
-									<Table className={classes.table}>
+									<TableContainer component={Paper}>
+									
+								<Table className={classes.table} >
 										<TableHead>
 											<TableRow>
 												<CustomTableCell align="center" >Code</CustomTableCell>
@@ -428,7 +432,7 @@ class Bank extends Component {
 												<CustomTableCell align="center">UAE FTS BANK Code</CustomTableCell>
 												<CustomTableCell align="center">Route Code</CustomTableCell>
 												<CustomTableCell align="center">Description</CustomTableCell>
-												<CustomTableCell align="center">Action</CustomTableCell>												
+												<CustomTableCell align="center">Action</CustomTableCell>
 											</TableRow>
 										</TableHead>
 										<TableBody>
@@ -442,15 +446,16 @@ class Bank extends Component {
 													<CustomTableCell align="center">{row.UAEFTSBANKCode}</CustomTableCell>
 													<CustomTableCell align="center">{row.RouteCode}</CustomTableCell>
 													<CustomTableCell align="center">{row.Description}</CustomTableCell>
-											<CustomTableCell align="center"><input type="checkbox" name="radio"  value= {row.Id}
-						onChange={()=>this.selection(row.Id)}
-						/>
-						</CustomTableCell>
+													<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
+														onChange={() => this.selection(row.Id)}
+													/>
+													</CustomTableCell>
 												</TableRow>
 											))}
 										</TableBody>
 									</Table>
 
+								</TableContainer>
 									{/* <MaterialTable
       title="Editable Example"
       columns={this.state.columns}
@@ -507,7 +512,7 @@ class Bank extends Component {
 									<Grid item xs={12} sm={10}  >
 										<div style={{ float: "right", "marginRight": "8px" }}>
 
-											<Button variant="outlined" style={{marginTop:"10px"}} color="secondary" className={classes.button} onClick={this.insertUpdateRecord} >
+											<Button variant="outlined" style={{ marginTop: "10px" }} color="secondary" className={classes.button} onClick={this.insertUpdateRecord} >
 												{this.state.Action}
 											</Button>
 										</div>
@@ -515,15 +520,15 @@ class Bank extends Component {
 								</div>
 							</TabContainer>
 						</SwipeableViews>
-					
+
 
 					</div>
 
-					
+
 				}
-				
+
 			/>
-		
+
 		)
 	}
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import FuseUtils from '@fuse/utils';
-import ExampleConfig from 'app/main/example/ExampleConfig';
+import {DashboardConfig} from 'app/main/dashboard/DashboardConfig';
 import {BankConfig} from 'app/main/Bank/BankConfig';
 import {CompanyConfig} from 'app/main/company/CompanyConfig';
 import {CostCenterConfig} from 'app/main/CostCenter/CostCenterConfig';
@@ -28,7 +28,7 @@ import {EmployeeVarianceReportDetailConfig} from 'app/main/EmployeeVarianceRepor
 
 
 const routeConfigs = [
-	ExampleConfig,BankConfig,CompanyConfig,CostCenterConfig,CountryLawsConfig,CurrencyExchangeConfig,EmployeeConfig,EmployeeDetailConfig,
+	DashboardConfig,BankConfig,CompanyConfig,CostCenterConfig,CountryLawsConfig,CurrencyExchangeConfig,EmployeeConfig,EmployeeDetailConfig,
 	GLAccountConfig,GradesConfig,PayElementConfig,JobsConfig,PositionConfig,PayElementGlAccountConfig,UnitConfig,UnpaidLeavesConfig,UserProtectionConfig,
 	SalaryPayRollConfig,EmployeeReportsConfig,EmployeeVarianceReportConfig,PayrollReportsConfig,TerminationConfig,EmployeeVarianceReportDetailConfig,BulkUploadConfig
 ];

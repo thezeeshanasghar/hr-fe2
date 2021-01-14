@@ -4,6 +4,7 @@ import QuickPanel from 'app/fuse-layouts/shared-components/quickPanel/QuickPanel
 function RightSideLayout1(props) {
 	return (
 		<>
+		
 			<QuickPanel />
 		</>
 	);

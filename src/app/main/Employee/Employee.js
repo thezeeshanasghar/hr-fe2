@@ -882,6 +882,15 @@ class Employee extends Component {
 			})
 
 	}
+	selection = (id) => {
+		console.log("called");
+		const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+									let values = [];
+									checkboxes.forEach((checkbox) => {
+										values.push(checkbox.value);
+									});
+									localStorage.setItem('ids',values);
+								}
 	nextTab = (val) => {
 		if (val === 2) {
 			if (
@@ -937,67 +946,22 @@ class Employee extends Component {
 		this.setState({ value: val });
 	}
 	getEmployeeList = (IDD) => {
-		localStorage.removeItem("ids");
-		console.log(IDD)
-		if (!$.fn.dataTable.isDataTable('#employee_Table')) {
-			this.state.table = $('#employee_Table').DataTable({
-				ajax: defaultUrl + "employee/ByCompany/"+IDD,
-				"columns": [
-					{ "data": "EmployeeCode" },
-					{ "data": "Title" },
-					{ "data": "FirstName" },
-					{ "data": "LastName" },
-					{ "data": "Gender" },
-					{ "data": "Email" },
-					{ "data": "Cnic" },
-					{ "data": "DOB" },
-					{ "data": "InsuranceId" },
-					{ "data": "HireDate" },
-					{ "data": "HiringReason" },
-					{ "data": "ServiceStartDate" },
-					{ "data": "ProbationEndDate" },
-					{ "data": "PartTimePercentage" },
-					{ "data": "ContractEndDate" },
-					{ "data": "Address" },
-					{ "data": "Contact" },
-					{ "data": "MaritalStatus" },
-					{ "data": "Country" },
-					{ "data": "CurrentEmployeeStatus" },
-					{ "data": "PartTimeSituation" },
-					{
-						"data": "Action",
-						sortable: false,
-						"render": function (data, type, full, meta) {
-
-							return `<input type="checkbox" name="radio"  value=` + full.Id + `
-						onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
-									let values = [];
-									checkboxes.forEach((checkbox) => {
-										values.push(checkbox.value);
-									});
-									localStorage.setItem('ids',values);	"
-						/>`;
-						}
-					}
-
-				],
-				rowReorder: {
-					selector: 'td:nth-child(2)'
-				},
-				responsive: true,
-				dom: 'Bfrtip',
-				buttons: [
-
-				],
-				columnDefs: [{
-					"defaultContent": "-",
-					"targets": "_all"
-				}]
-			});
-		} else {
-			// this.state.table.ajax.reload();
-			this.state.table.ajax.url( defaultUrl + "employee/ByCompany/"+IDD ).load();
-		}
+		
+		axios({
+			method: "get",
+			url: defaultUrl+"employee/",
+			headers: {
+				// 'Authorization': `bearer ${token}`,
+				"Content-Type": "application/json;charset=utf-8",
+			},
+		})
+			.then((response) => {
+				console.log(response);
+				this.setState({ employeeList: response.data.data });
+			})
+			.catch((error) => {
+				console.log(error);
+			})
 	}
 
 	deleteEmployee = () => {
@@ -1242,34 +1206,68 @@ class Employee extends Component {
 										</Grid>
 
 									</div>
-									<table id="employee_Table" className="nowrap header_custom" style={{ "width": "100%" }}>
-										<thead>
-											<tr>
-												<th>EmployeeCode</th>
-												<th>Title</th>
-												<th>FirstName</th>
-												<th>LastName</th>
-												<th>Gender</th>
-												<th>Email</th>
-												<th>Cnic</th>
-												<th>DOB</th>
-												<th>InsuranceId</th>
-												<th>HireDate</th>
-												<th>HiringReason</th>
-												<th>ServiceStartDate</th>
-												<th>ProbationEndDate</th>
-												<th>PartTimePercentage</th>
-												<th>ContractEndDate</th>
-												<th>Address</th>
-												<th>Contact</th>
-												<th>MaritalStatus</th>
-												<th>Country</th>
-												<th>CurrentEmployeeStatus</th>
-												<th>PartTimeSituation</th>
-												<th>Action</th>
-											</tr>
-										</thead>
-									</table>
+									<Table className={classes.table}>
+										<TableHead>
+											<TableRow>
+												<CustomTableCell align="center" >EmployeeCode</CustomTableCell>
+												<CustomTableCell align="center">Title</CustomTableCell>
+												<CustomTableCell align="center">FirstName</CustomTableCell>
+												<CustomTableCell align="center">LastName</CustomTableCell>
+												<CustomTableCell align="center">Gender</CustomTableCell>
+												<CustomTableCell align="center">Email</CustomTableCell>
+												<CustomTableCell align="center">Cnic</CustomTableCell>
+												<CustomTableCell align="center">DOB</CustomTableCell>
+												<CustomTableCell align="center">InsuranceId</CustomTableCell>
+												<CustomTableCell align="center">HireDate</CustomTableCell>		
+												<CustomTableCell align="center">HiringReason</CustomTableCell>	
+												<CustomTableCell align="center">ServiceStartDate</CustomTableCell>
+												<CustomTableCell align="center">ProbationEndDate</CustomTableCell>
+												<CustomTableCell align="center">PartTimePercentage</CustomTableCell>		
+												<CustomTableCell align="center">ContractEndDate</CustomTableCell>	
+												<CustomTableCell align="center">Address</CustomTableCell>	
+												<CustomTableCell align="center">Contact</CustomTableCell>
+												<CustomTableCell align="center">MaritalStatus</CustomTableCell>
+												<CustomTableCell align="center">Country</CustomTableCell>		
+												<CustomTableCell align="center">CurrentEmployeeStatus</CustomTableCell>	
+												<CustomTableCell align="center">PartTimeSituation</CustomTableCell>		
+												<CustomTableCell align="center">Action</CustomTableCell>														
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{this.state.employeeList.map(row => (
+												<TableRow className={classes.row} key={row.Code}>
+													<CustomTableCell align="center">{row.EmployeeCode}</CustomTableCell>
+													<CustomTableCell align="center">{row.Title}</CustomTableCell>
+													<CustomTableCell align="center">{row.FirstName}</CustomTableCell>
+													<CustomTableCell align="center">{row.LastName}</CustomTableCell>
+													<CustomTableCell align="center">{row.Gender}</CustomTableCell>
+													<CustomTableCell align="center">{row.Email}</CustomTableCell>
+													<CustomTableCell align="center">{row.Cnic}</CustomTableCell>
+													<CustomTableCell align="center">{row.DOB}</CustomTableCell>
+													<CustomTableCell align="center">{row.InsuranceId}</CustomTableCell>
+													<CustomTableCell align="center">{row.HireDate}</CustomTableCell>
+													<CustomTableCell align="center">{row.HiringReason}</CustomTableCell>
+													<CustomTableCell align="center">{row.ServiceStartDate}</CustomTableCell>
+													<CustomTableCell align="center">{row.ProbationEndDate}</CustomTableCell>
+													<CustomTableCell align="center">{row.PartTimePercentage}</CustomTableCell>
+													<CustomTableCell align="center">{row.ContractEndDate}</CustomTableCell>
+													<CustomTableCell align="center">{row.Address}</CustomTableCell>
+													<CustomTableCell align="center">{row.Contact}</CustomTableCell>
+													<CustomTableCell align="center">{row.MaritalStatus}</CustomTableCell>
+													<CustomTableCell align="center">{row.Country}</CustomTableCell>
+													<CustomTableCell align="center">{row.CurrentEmployeeStatus}</CustomTableCell>
+													<CustomTableCell align="center">{row.PartTimeSituation}</CustomTableCell>
+													<CustomTableCell align="center"><input type="checkbox" name="radio"  value= {row.Id}
+						onChange={()=>this.selection(row.Id)}
+						/>
+						</CustomTableCell>
+												</TableRow>
+											))}
+										</TableBody>
+									</Table>
+
+
+
 
 								</Paper>
 							</TabContainer>

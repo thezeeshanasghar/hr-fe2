@@ -38,14 +38,21 @@ function QuickPanel(props) {
 		>
 			<FuseScrollbars>
 				<Typography className="leading-none text-32 MuiTypography-colorTextSecondary">Select Company</Typography>
+<<<<<<< HEAD
 			
+=======
+>>>>>>> 30bc94c96751b2f679d3b6d69f24f6a968df7327
 
 				{
 					<List component="nav" aria-label="main mailbox folders">
 						{
 							console.log(companies),
 							companies.map(x =>
+<<<<<<< HEAD
 								<ListItem button onClick={()=>props.clicked(x.Id)}  >
+=======
+								<ListItem button onClick={()=>props.clicked(x.Id,x.CompanyName)}  >
+>>>>>>> 30bc94c96751b2f679d3b6d69f24f6a968df7327
 									<ListItemIcon>
 										<InboxIcon />
 									</ListItemIcon>
@@ -53,6 +60,7 @@ function QuickPanel(props) {
 								</ListItem>
 							)
 						}
+<<<<<<< HEAD
 
 					</List>
 
@@ -62,6 +70,11 @@ function QuickPanel(props) {
 				}
 
 
+=======
+					</List>
+				}
+
+>>>>>>> 30bc94c96751b2f679d3b6d69f24f6a968df7327
 			</FuseScrollbars>
 		</SwipeableDrawer>
 	);

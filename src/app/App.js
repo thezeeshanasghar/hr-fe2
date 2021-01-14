@@ -25,6 +25,7 @@ const jss = create({
 const generateClassName = createGenerateClassName();
 
 const App = () => {
+	
 	return (
 		<AppContext.Provider
 			value={{

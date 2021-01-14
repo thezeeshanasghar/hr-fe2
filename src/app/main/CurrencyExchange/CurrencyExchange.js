@@ -180,6 +180,15 @@ class CurrencyExchange extends Component {
 			}
 		
 	}
+
+	selection = (id) => {
+		console.log("called");
+		const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+									let values = [];
+									checkboxes.forEach((checkbox) => {
+										values.push(checkbox.value);
+									});
+									localStorage.setItem('ids',values);}
 	getCurrency = () => {
 		axios({
 			method: "get",
@@ -198,47 +207,22 @@ class CurrencyExchange extends Component {
 			})
 	}
 	getExchangeRate = () => {
-		localStorage.removeItem("ids");
-		if (!$.fn.dataTable.isDataTable('#Currency_Table')) {
-			this.state.table = $('#Currency_Table').DataTable({
-				ajax: defaultUrl + "Currency",
-				"columns": [
-					{ "data": "CurrencyName" },
-					{ "data": "ToCurrencyName" },
-					{ "data": "Rate" },
-					{ "data": "EffectiveDate"},
-					{ "data": "Action",
-					sortable: false,
-					"render": function ( data, type, full, meta ) {
-					   
-						return `<input type="checkbox" name="radio"  value=`+full.Id+`
-						onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
-									let values = [];
-									checkboxes.forEach((checkbox) => {
-										values.push(checkbox.value);
-									});
-									localStorage.setItem('ids',values);	"
-						/>`;
-					}
-				 }
-
-				],
-				rowReorder: {
-					selector: 'td:nth-child(2)'
-				},
-				responsive: true,
-				dom: 'Bfrtip',
-				buttons: [
-
-				],
-				columnDefs: [{
-					"defaultContent": "-",
-					"targets": "_all"
-				  }]
-			});
-		} else {
-			this.state.table.ajax.reload();
-		}
+		axios({
+			method: "get",
+			url: defaultUrl+"currency/",
+			headers: {
+				// 'Authorization': `bearer ${token}`,
+				"Content-Type": "application/json;charset=utf-8",
+			},
+		})
+			.then((response) => {
+				console.log(response);
+				this.setState({ ExchangeRate: response.data.data });
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+		
 	}
 
 	getExchangeById=()=>{
@@ -362,29 +346,50 @@ class CurrencyExchange extends Component {
 						>
 							<TabContainer dir={theme.direction}>
 								<Paper className={classes.root}>
-								<div className="row">
-									<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-										<Button variant="outlined" color="primary" className={classes.button} onClick={this.getExchangeById}>
-											Edit
+								<div className="row" style={{marginBottom:"5px"}}  >
+										<div style={{ float: "left",  "margin": "8px" }}>
+											<Button variant="contained" color="secondary" className={classes.button} onClick={this.getExchangeById}>
+												Edit
 										</Button>
-									</div>
-									<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-										<Button variant="outlined" color="inherit" className={classes.button} onClick={this.deleteExchange}>
-											Delete
+										</div>
+										<div style={{ float: "left", "margin": "8px" }}>
+											<Button  variant="contained" color="primary" className={classes.button} onClick={this.deleteExchange}>
+												Delete
 										</Button>
+										</div>										
 									</div>
-								</div>
-								<table id="Currency_Table" className="nowrap header_custom" style={{ "width": "100%" }}>
-										<thead>
-											<tr>
-												<th>CurrencyName</th>
-												<th>ToCurrencyName</th>
-												<th>Rate</th>
-												<th>EffectiveDate</th>
-												<th>Action</th>
-											</tr>
-										</thead>
-									</table>
+
+
+
+
+
+
+
+									<Table className={classes.table}>
+										<TableHead>
+											<TableRow>
+												<CustomTableCell align="center" >CurrencyName</CustomTableCell>
+												<CustomTableCell align="center">ToCurrencyName</CustomTableCell>
+												<CustomTableCell align="center">Rate</CustomTableCell>
+												<CustomTableCell align="center">EffectiveDate</CustomTableCell>
+												<CustomTableCell align="center">Action</CustomTableCell>											
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{this.state.ExchangeRate.map(row => (
+												<TableRow className={classes.row} key={row.Code}>
+													<CustomTableCell align="center">{row.CurrencyName}</CustomTableCell>
+													<CustomTableCell align="center">{row.ToCurrencyName}</CustomTableCell>
+													<CustomTableCell align="center">{row.Rate}</CustomTableCell>
+													<CustomTableCell align="center">{row.EffectiveDate}</CustomTableCell>
+											<CustomTableCell align="center"><input type="checkbox" name="radio"  value= {row.Id}
+						onChange={()=>this.selection(row.Id)}
+						/>
+						</CustomTableCell>
+												</TableRow>
+											))}
+										</TableBody>
+									</Table>
 								</Paper>
 							</TabContainer>
 							<TabContainer dir={theme.direction}>

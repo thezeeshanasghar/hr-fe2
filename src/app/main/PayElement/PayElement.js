@@ -107,7 +107,8 @@ class PayElement extends Component {
 		Id:0,
 		Action:"Insert Record",
 		table:null,
-		Frequency:""
+		Frequency:"",
+		Default:localStorage.getItem("state")!=null?JSON.parse(localStorage.getItem("state")):null
 	};
 	constructor(props) {
 		super(props);
@@ -312,7 +313,7 @@ class PayElement extends Component {
 						Frequency:""
 					})
 					//document.getElementById("fuse-splash-screen").style.display="none";
-					Messages.error();
+					Messages.error(error.message);
 
 				})
 
@@ -320,52 +321,72 @@ class PayElement extends Component {
 		}
 	}
 	getPayElement = () => {
-		localStorage.removeItem("ids");
-		if (!$.fn.dataTable.isDataTable('#payelement_Table')) {
-			this.state.table = $('#payelement_Table').DataTable({
-				ajax: defaultUrl + "payelement",
-				"columns": [
-					{ "data": "Code" },
-					{ "data": "Description" },
-					{ "data": "GroupId" },
-					{ "data": "Periodicity" },
-					{ "data": "CurrencyCode" },
-					{ "data": "lumpsum" },
-					{ "data": "noofDays" },
-					{ "data": "ofMonth" },
-					{ "data": "CompanyId" },
-					{ "data": "Increment" },
-					{ "data": "Action",
-					sortable: false,
-					"render": function ( data, type, full, meta ) {
-					   
-						return `<input type="checkbox" name="radio"  value=`+full.Id+`
-						onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
-									let values = [];
-									checkboxes.forEach((checkbox) => {
-										values.push(checkbox.value);
-									});
-									localStorage.setItem('ids',values);	"
-						/>`;
-					}
-				 }
-				],
-				rowReorder: {
-					selector: 'td:nth-child(2)'
-				},
-				responsive: true,
-				dom: 'Bfrtip',
-				buttons: [
-
-				],
-				columnDefs: [{
-					"defaultContent": "-",
-					"targets": "_all"
-				  }]
-			});
-		} else {
-			this.state.table.ajax.reload();
+		if(this.state.Default == null){
+			return false;
 		}
+		axios({
+			method: "get",
+			url: defaultUrl + "/payelement/ByCompany/"+this.state.Default.Id,
+			headers: {
+				// 'Authorization': `bearer ${token}`,
+				"Content-Type": "application/json;charset=utf-8",
+			},
+		})
+			.then((response) => {
+				console.log(response);
+
+				this.setState({ payElements: response.data });
+			
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+		// localStorage.removeItem("ids");
+		// if (!$.fn.dataTable.isDataTable('#payelement_Table')) {
+		// 	this.state.table = $('#payelement_Table').DataTable({
+		// 		ajax: defaultUrl + "payelement",
+		// 		"columns": [
+		// 			{ "data": "Code" },
+		// 			{ "data": "Description" },
+		// 			{ "data": "GroupId" },
+		// 			{ "data": "Periodicity" },
+		// 			{ "data": "CurrencyCode" },
+		// 			{ "data": "lumpsum" },
+		// 			{ "data": "noofDays" },
+		// 			{ "data": "ofMonth" },
+		// 			{ "data": "CompanyId" },
+		// 			{ "data": "Increment" },
+		// 			{ "data": "Action",
+		// 			sortable: false,
+		// 			"render": function ( data, type, full, meta ) {
+					   
+		// 				return `<input type="checkbox" name="radio"  value=`+full.Id+`
+		// 				onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+		// 							let values = [];
+		// 							checkboxes.forEach((checkbox) => {
+		// 								values.push(checkbox.value);
+		// 							});
+		// 							localStorage.setItem('ids',values);	"
+		// 				/>`;
+		// 			}
+		// 		 }
+		// 		],
+		// 		rowReorder: {
+		// 			selector: 'td:nth-child(2)'
+		// 		},
+		// 		responsive: true,
+		// 		dom: 'Bfrtip',
+		// 		buttons: [
+
+		// 		],
+		// 		columnDefs: [{
+		// 			"defaultContent": "-",
+		// 			"targets": "_all"
+		// 		  }]
+		// 	});
+		// } else {
+		// 	this.state.table.ajax.reload();
+		// }
 	}
 	getPayElementById = () => {
 		let ids = localStorage.getItem("ids")
@@ -438,7 +459,7 @@ class PayElement extends Component {
 			.catch((error) => {
 				//document.getElementById("fuse-splash-screen").style.display="none";
 				console.log(error);
-				Messages.error();
+				Messages.error(error.message);
 			})
 	  }
 	handleTabChange = (event, value) => {
@@ -449,6 +470,15 @@ class PayElement extends Component {
 	handleChange = (e) => {
 		this.setState({ [e.target.name]: e.target.value });
 	};
+	selection = (id) => {
+		console.log("called");
+		const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+		let values = [];
+		checkboxes.forEach((checkbox) => {
+			values.push(checkbox.value);
+		});
+		localStorage.setItem('ids', values);
+	}
 	render() {
 		const { classes, theme } = this.props;
 
@@ -458,7 +488,7 @@ class PayElement extends Component {
 					root: classes.layoutRoot
 				}}
 				header={
-					<div className="p-24"><h4>Pay Element</h4></div>
+					<div className="p-24"><h4>Pay Element-{this.state.Default !=null?this.state.Default.Company:"No Company Selected Yet"}</h4></div>
 				}
 				contentToolbar={
 					<div className="px-24"><h4>Add New PayElement</h4></div>
@@ -488,36 +518,52 @@ class PayElement extends Component {
 						>
 							<TabContainer dir={theme.direction}>
 								<Paper className={classes.root}>
-								<div className="row">
-									<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-										<Button variant="outlined" color="primary" className={classes.button} onClick={this.getPayElementById}>
-											Edit
+						
+									
+								<div className="row" style={{marginBottom:"5px"}}  >
+										<div style={{ float: "left",  "margin": "8px" }}>
+											<Button variant="contained" color="secondary" className={classes.button} onClick={this.getPayElementById}>
+												Edit
 										</Button>
-									</div>
-									<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-										<Button variant="outlined" color="inherit" className={classes.button} onClick={this.deletePayElement}>
-											Delete
+										</div>
+										<div style={{ float: "left", "margin": "8px" }}>
+											<Button  variant="contained" color="primary" className={classes.button} onClick={this.deletePayElement}>
+												Delete
 										</Button>
+										</div>
+										
 									</div>
-								</div>
-									<table id="payelement_Table" className="nowrap header_custom" style={{ "width": "100%" }}>
-										<thead>
-											<tr>
-												<th>Code</th>
-												<th>Description</th>
-												<th>Group</th>
-												<th>Periodicity</th>
-												<th>CurrencyCode</th>
-												<th>lumpsum</th>
-												<th>noofDays</th>
-												<th>ofMonth</th>
-												<th>Company</th>
-												<th>Increment</th>
-												<th>Action</th>
-											</tr>
-										</thead>
+								<Table className={classes.table}>
+										<TableHead>
+											<TableRow>
+												<CustomTableCell align="center" >Code</CustomTableCell>
+												<CustomTableCell align="center" >Description</CustomTableCell>
+												<CustomTableCell align="center" >lumpsum</CustomTableCell>
+												<CustomTableCell align="center">Action</CustomTableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{
+												this.state.payElements.length>0?
+												this.state.payElements.map(row => (
+													<TableRow className={classes.row} key={row.Code}>
+	
+														<CustomTableCell align="center">{row.Code == "" || row.Code == null || row.Code == undefined ? 'N/A' : row.Code}</CustomTableCell>
+														<CustomTableCell align="center">{row.Description == "" || row.Description == null || row.Description == undefined ? 'N/A' : row.Description}</CustomTableCell>
+														<CustomTableCell align="center">{row.lumpsum == "" || row.lumpsum == null || row.lumpsum == undefined ? 'N/A' : row.lumpsum}</CustomTableCell>
+														
+														<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
+															onChange={() => this.selection(row.Id)}
+														/>
+														</CustomTableCell>
+													</TableRow>
+												))
+												:
+												<div style={{fontSize: "calc(1em + 1vw)",textAlign: "center"}} >{this.state.Default==null?"No Company Selected Yet":"No Record Found"}</div>
+											}
+										</TableBody>
+									</Table>
 
-									</table>
 								</Paper>
 							</TabContainer>
 							<TabContainer dir={theme.direction}>

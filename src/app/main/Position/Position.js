@@ -94,15 +94,53 @@ class Position extends Component {
 		Positions: [],
 		Id: 0,
 		Action: 'Insert Record',
-		table: null
+		table: null,
+		Companies:[],
+		jobList:[],
+		Default:localStorage.getItem("state")!=null?JSON.parse(localStorage.getItem("state")):null
 	};
 
 	constructor(props) {
 		super(props);
 		this.validator = new SimpleReactValidator();
 		this.SelectedIds = [];
+		this.getCompanies();
+		this.getJobs();
 	}
-
+	getJobs = () => {
+		axios({
+			method: "get",
+			url: defaultUrl+"job",
+			headers: {
+			  // 'Authorization': `bearer ${token}`,
+			  "Content-Type": "application/json;charset=utf-8",
+			},
+		  })
+			.then((response) => {
+				console.log(response);
+				this.setState({jobList:response.data.data});
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+	}
+	getCompanies = () => {
+		axios({
+			method: "get",
+			url: defaultUrl+"company",
+			headers: {
+			  // 'Authorization': `bearer ${token}`,
+			  "Content-Type": "application/json;charset=utf-8",
+			},
+		  })
+			.then((response) => {
+				console.log(response);
+				this.setState({Companies:response.data.data});
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+	}
 	componentDidMount() {
 		this.getPositionDetail();
 		this.getUnitDetail();
@@ -113,53 +151,76 @@ class Position extends Component {
 	};
 
 	handleChange = (e) => {
+		console.log(e.target.value);
 		this.setState({ [e.target.name]: e.target.value });
 	};
 
 	getPositionDetail = () => {
-		if (!$.fn.dataTable.isDataTable('#position_Table')) {
-			this.state.table = $('#position_Table').DataTable({
-				ajax: defaultUrl + "position",
-				"columns": [
-					{ "data": "UnitId" },
-					{ "data": "JobId" },
-					{ "data": "Code" },
-					{ "data": "Title" },
-					{ "data": "CompanyId" },
-					{
-						"data": "Action",
-						sortable: false,
-						"render": function (data, type, full, meta) {
 
-							return `<input type="checkbox" name="radio"  value=` + full.Id + `
-						onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
-									let values = [];
-									checkboxes.forEach((checkbox) => {
-										values.push(checkbox.value);
-									});
-									localStorage.setItem('ids',values);
-									"
-						/>`;
-						}
-					}
-
-				],
-				rowReorder: {
-					selector: 'td:nth-child(2)'
-				},
-				responsive: true,
-				dom: 'Bfrtip',
-				buttons: [
-
-				],
-				columnDefs: [{
-					"defaultContent": "-",
-					"targets": "_all"
-				}]
-			});
-		} else {
-			this.state.table.ajax.reload();
+		if(this.state.Default == null){
+			return false;
 		}
+		axios({
+			method: "get",
+			url: defaultUrl + "/position/ByCompany/"+this.state.Default.Id,
+			headers: {
+				// 'Authorization': `bearer ${token}`,
+				"Content-Type": "application/json;charset=utf-8",
+			},
+		})
+			.then((response) => {
+				console.log(response);
+
+				this.setState({ Positions: response.data });
+			
+			})
+			.catch((error) => {
+				console.log(error);
+			})	
+
+		// if (!$.fn.dataTable.isDataTable('#position_Table')) {
+		// 	this.state.table = $('#position_Table').DataTable({
+		// 		ajax: defaultUrl + "position",
+		// 		"columns": [
+		// 			{ "data": "UnitId" },
+		// 			{ "data": "JobId" },
+		// 			{ "data": "Code" },
+		// 			{ "data": "Title" },
+		// 			{ "data": "CompanyId" },
+		// 			{
+		// 				"data": "Action",
+		// 				sortable: false,
+		// 				"render": function (data, type, full, meta) {
+
+		// 					return `<input type="checkbox" name="radio"  value=` + full.Id + `
+		// 				onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+		// 							let values = [];
+		// 							checkboxes.forEach((checkbox) => {
+		// 								values.push(checkbox.value);
+		// 							});
+		// 							localStorage.setItem('ids',values);
+		// 							"
+		// 				/>`;
+		// 				}
+		// 			}
+
+		// 		],
+		// 		rowReorder: {
+		// 			selector: 'td:nth-child(2)'
+		// 		},
+		// 		responsive: true,
+		// 		dom: 'Bfrtip',
+		// 		buttons: [
+
+		// 		],
+		// 		columnDefs: [{
+		// 			"defaultContent": "-",
+		// 			"targets": "_all"
+		// 		}]
+		// 	});
+		// } else {
+		// 	this.state.table.ajax.reload();
+		// }
 		// axios({
 		// 	method: "get",
 		// 	url: defaultUrl+"position",
@@ -215,10 +276,9 @@ class Position extends Component {
 		var obj = {
 			Code: this.state.code,
 			Title: this.state.title,
-			//	CompanyId: 2
+			CompanyId:this.state.companyId,
 			UnitId: this.state.unitId,
-			Job: "N/A",
-			Action: 'Insert Record'
+			JobId: this.state.jobId
 		};
 		axios.interceptors.request.use(function (config) {
 			//document.getElementById("fuse-splash-screen").style.display = "block";
@@ -266,10 +326,10 @@ class Position extends Component {
 					value: 0
 				})
 				//document.getElementById("fuse-splash-screen").style.display = "none";
-				Messages.error();
+				Messages.error(error.message);
 			})
 	}
-	deleteposition = (id) => {
+	deleteposition = () => {
 		var ids = localStorage.getItem("ids");
 		if (ids === null) {
 			Messages.warning("No Record Selected");
@@ -279,7 +339,7 @@ class Position extends Component {
 
 		axios({
 			method: "delete",
-			url: defaultUrl + "position/" + id,
+			url: defaultUrl + "position/" + ids,
 			headers: {
 				// 'Authorization': `bearer ${token}`,
 				"Content-Type": "application/json;charset=utf-8",
@@ -295,7 +355,7 @@ class Position extends Component {
 			.catch((error) => {
 				console.log(error);
 				//document.getElementById("fuse-splash-screen").style.display = "none";
-				Messages.warning();
+				Messages.error(error.message);
 
 			})
 	}
@@ -318,13 +378,22 @@ class Position extends Component {
 		})
 			.then((response) => {
 				console.log(response);
-				this.setState({ Action: 'Update Record', value: 1, jobId: response.data[0].JobId, code: response.data[0].Code, title: response.data[0].Title, Id: response.data[0].Id, unitId: response.data[0].UnitId });
+				this.setState({ Action: 'Update Record', value: 1, jobId: response.data[0].JobId, code: response.data[0].Code, title: response.data[0].Title, Id: response.data[0].Id,unitId: response.data[0].UnitId, companyId:response.data[0].CompanyId });
 				//document.getElementById("fuse-splash-screen").style.display = "none";
 			})
 			.catch((error) => {
 				console.log(error);
 				//document.getElementById("fuse-splash-screen").style.display = "none";
 			})
+	}
+	selection = (id) => {
+		console.log("called");
+		const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+		let values = [];
+		checkboxes.forEach((checkbox) => {
+			values.push(checkbox.value);
+		});
+		localStorage.setItem('ids', values);
 	}
 	render() {
 		const { classes, theme } = this.props;
@@ -335,7 +404,7 @@ class Position extends Component {
 					root: classes.layoutRoot
 				}}
 				header={
-					<div className="p-24"><h4>Position</h4></div>
+					<div className="p-24"><h4>Position-{this.state.Default !=null?this.state.Default.Company:"No Company Selected Yet"}</h4></div>
 				}
 				contentToolbar={
 					<div className="px-24"><h4>Add New Position</h4></div>
@@ -365,19 +434,20 @@ class Position extends Component {
 						>
 							<TabContainer dir={theme.direction}>
 								<Paper className={classes.root}>
-									<div className="row">
-										<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-											<Button variant="outlined" color="primary" className={classes.button} onClick={this.getPositionById}>
+									<div className="row" style={{marginBottom:"5px"}}  >
+										<div style={{ float: "left",  "margin": "8px" }}>
+											<Button variant="contained" color="secondary" className={classes.button} onClick={this.getPositionById}>
 												Edit
 										</Button>
 										</div>
-										<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-											<Button variant="outlined" color="inherit" className={classes.button} onClick={this.deleteposition}>
+										<div style={{ float: "left", "margin": "8px" }}>
+											<Button  variant="contained" color="primary" className={classes.button} onClick={this.deleteposition}>
 												Delete
 										</Button>
 										</div>
+										
 									</div>
-									<table id="position_Table" className="nowrap header_custom" style={{ "width": "100%" }}>
+									{/* <table id="position_Table" className="nowrap header_custom" style={{ "width": "100%" }}>
 										<thead>
 											<tr>
 												<th>Unit</th>
@@ -390,7 +460,39 @@ class Position extends Component {
 											</tr>
 										</thead>
 
-									</table>
+									</table> */}
+										<Table className={classes.table}>
+										<TableHead>
+											<TableRow>
+												<CustomTableCell align="center" >Code</CustomTableCell>
+												<CustomTableCell align="center" >Title</CustomTableCell>
+												{/* <CustomTableCell align="center" >Company</CustomTableCell> */}
+												<CustomTableCell align="center">Action</CustomTableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{
+												this.state.Positions.length>0?
+												this.state.Positions.map(row => (
+													<TableRow className={classes.row} key={row.Code}>
+	
+														<CustomTableCell align="center">{row.Code == "" || row.Code == null || row.Code == undefined ? 'N/A' : row.Code}</CustomTableCell>
+														<CustomTableCell align="center" component="th" scope="row">
+															{row.Title == "" || row.Title == null || row.Title == undefined ? 'N/A' : row.Title}
+														</CustomTableCell>
+														{/* <CustomTableCell align="center">{row.Company == "" || row.Company == null || row.Company == undefined ? 'N/A' : row.Company}</CustomTableCell> */}
+	
+														<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
+															onChange={() => this.selection(row.Id)}
+														/>
+														</CustomTableCell>
+													</TableRow>
+												))
+												:
+												<div style={{fontSize: "calc(1em + 1vw)",textAlign: "center"}} >{this.state.Default==null?"No Company Selected Yet":"No Record Found"}</div>
+											}
+										</TableBody>
+									</Table>
 								</Paper>
 							</TabContainer>
 							<TabContainer dir={theme.direction}>
@@ -418,11 +520,53 @@ class Position extends Component {
 										{this.validator.message('unitId', this.state.unitId, 'required')}
 									</Grid>
 									<Grid item xs={12} sm={5} >
-										<TextField id="jobId" fullWidth label="Job" name="jobId" value={this.state.jobId} onChange={this.handleChange} />
-										{this.validator.message('jobId', this.state.Job, 'required')}
+
+										<FormControl className={classes.formControl}>
+											<InputLabel htmlFor="Job">Job</InputLabel>
+											<Select
+												value={this.state.jobId}
+												onChange={this.handleChange}
+												inputProps={{
+													name: 'jobId',
+													id: 'jobId',
+												}}
+											>
+												<MenuItem value="">
+													<em>None</em>
+												</MenuItem>
+
+												{this.state.jobList.map(row => (
+													<MenuItem value={row.Id}>{row.Code}</MenuItem>
+												))}
+											</Select>
+										</FormControl>
+
+
+										{this.validator.message('jobId', this.state.jobId, 'required')}
 									</Grid>
 									<Grid item xs={12} sm={5} style={{ marginRight: '5px' }}>
-										<TextField id="companyId" fullWidth label="Company" name="companyId" value={this.state.companyId} onChange={this.handleChange} />
+									<FormControl className={classes.formControl}>
+											<InputLabel htmlFor="company">Company</InputLabel>
+											<Select
+												value={this.state.companyId}
+												onChange={this.handleChange}
+												inputProps={{
+													name: 'companyId',
+													id: 'companyId',
+												}}
+											>
+												<MenuItem value="">
+													<em>None</em>
+												</MenuItem>
+
+												{this.state.Companies.map(row => (
+													<MenuItem value={row.Id}>{row.CompanyName}</MenuItem>
+												))}
+											</Select>
+										</FormControl>
+
+										
+
 										{this.validator.message('companyId', this.state.companyId, 'required')}
 									</Grid>
 									<Grid item xs={12} sm={5}>

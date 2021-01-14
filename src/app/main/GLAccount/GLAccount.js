@@ -15,6 +15,10 @@ import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { Icon, Input, MuiThemeProvider} from '@material-ui/core';
@@ -43,6 +47,10 @@ const styles = theme => ({
 	menu: {
 		width: 200,
 	},
+	formControl: {
+		margin: theme.spacing.unit,
+		minWidth: "99%",
+	}
 });
 
 const CustomTableCell = withStyles(theme => ({
@@ -77,10 +85,12 @@ class GLAccount extends Component {
 		account: '',
 		description: '',
 		companyId: '',
+		Companies:[],
 		GlAccounts: [],
 		Id: 0,
 		Action: 'Insert Record',
-		table:null
+		table:null,
+		Default:localStorage.getItem("state")!=null?JSON.parse(localStorage.getItem("state")):null
 	};
 
 	constructor(props) {
@@ -89,9 +99,26 @@ class GLAccount extends Component {
 	
 	  }
 	  componentDidMount() {
+		this.getCompanies();
 		this.getGlAccountDetail();
 	}
-	
+	getCompanies = () => {
+		axios({
+			method: "get",
+			url: defaultUrl + "Company",
+			headers: {
+				// 'Authorization': `bearer ${token}`,
+				"Content-Type": "application/json;charset=utf-8",
+			},
+		})
+			.then((response) => {
+				console.log(response);
+				this.setState({ Companies: response.data.data });
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+	}
 	handleTab = (event, value) => {
 		this.setState({ value });
 	};
@@ -101,46 +128,66 @@ class GLAccount extends Component {
 	};
 	
 	getGlAccountDetail=()=>{
-		localStorage.removeItem("ids");
-		if (!$.fn.dataTable.isDataTable('#glaccount_Table')) {
-			this.state.table = $('#glaccount_Table').DataTable({
-				ajax: defaultUrl + "glaccount",
-				"columns": [
-					{ "data": "Account" },
-					{ "data": "Description" },
-					{ "data": "CompanyId" },
-					{ "data": "Action",
-					sortable: false,
-					"render": function ( data, type, full, meta ) {
-					   
-						return `<input type="checkbox" name="radio"  value=`+full.Id+`
-						onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
-									let values = [];
-									checkboxes.forEach((checkbox) => {
-										values.push(checkbox.value);
-									});
-									localStorage.setItem('ids',values);	"
-						/>`;
-					}
-				 }
-
-				],
-				rowReorder: {
-					selector: 'td:nth-child(2)'
-				},
-				responsive: true,
-				dom: 'Bfrtip',
-				buttons: [
-
-				],
-				columnDefs: [{
-					"defaultContent": "-",
-					"targets": "_all"
-				  }]
-			});
-		} else {
-			this.state.table.ajax.reload();
+		if(this.state.Default == null){
+			return false;
 		}
+		axios({
+			method: "get",
+			url: defaultUrl + "/glaccount/ByCompany/"+this.state.Default.Id,
+			headers: {
+				// 'Authorization': `bearer ${token}`,
+				"Content-Type": "application/json;charset=utf-8",
+			},
+		})
+			.then((response) => {
+				console.log(response);
+
+				this.setState({ GlAccounts: response.data });
+			
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+		// localStorage.removeItem("ids");
+		// if (!$.fn.dataTable.isDataTable('#glaccount_Table')) {
+		// 	this.state.table = $('#glaccount_Table').DataTable({
+		// 		ajax: defaultUrl + "glaccount",
+		// 		"columns": [
+		// 			{ "data": "Account" },
+		// 			{ "data": "Description" },
+		// 			{ "data": "CompanyId" },
+		// 			{ "data": "Action",
+		// 			sortable: false,
+		// 			"render": function ( data, type, full, meta ) {
+					   
+		// 				return `<input type="checkbox" name="radio"  value=`+full.Id+`
+		// 				onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+		// 							let values = [];
+		// 							checkboxes.forEach((checkbox) => {
+		// 								values.push(checkbox.value);
+		// 							});
+		// 							localStorage.setItem('ids',values);	"
+		// 				/>`;
+		// 			}
+		// 		 }
+
+		// 		],
+		// 		rowReorder: {
+		// 			selector: 'td:nth-child(2)'
+		// 		},
+		// 		responsive: true,
+		// 		dom: 'Bfrtip',
+		// 		buttons: [
+
+		// 		],
+		// 		columnDefs: [{
+		// 			"defaultContent": "-",
+		// 			"targets": "_all"
+		// 		  }]
+		// 	});
+		// } else {
+		// 	this.state.table.ajax.reload();
+		// }
 	  }
 	  
 	  insertUpdateRecord=()=>{
@@ -165,7 +212,7 @@ class GLAccount extends Component {
 		var obj = {
 			Account: this.state.account,
 			Description: this.state.description,
-			CompanyId: 2
+			CompanyId: this.state.companyId
 		  };
 		  axios.interceptors.request.use(function(config) {
 			//document.getElementById("fuse-splash-screen").style.display="block";
@@ -207,7 +254,7 @@ class GLAccount extends Component {
 				value:0
 				})
 				//document.getElementById("fuse-splash-screen").style.display="none";
-				Messages.error();
+				Messages.error(error.message);
 			})
 	  }
 
@@ -238,7 +285,7 @@ class GLAccount extends Component {
 			.catch((error) => {
 				console.log(error);
 				//document.getElementById("fuse-splash-screen").style.display="none";
-				Messages.error();
+				Messages.error(error.message);
 
 			})
 	  }
@@ -264,15 +311,23 @@ class GLAccount extends Component {
 				console.log(response);
 				this.setState({Action:'Update Record',value:1,account:response.data[0].Account,description:response.data[0].Description,companyId:response.data[0].CompanyId, Id:response.data[0].Id });
 				//document.getElementById("fuse-splash-screen").style.display="none";
-				Messages.success();
-
+			
 			})
 			.catch((error) => {
 				console.log(error);
 				//document.getElementById("fuse-splash-screen").style.display="none";
-				Messages.error();
+				
 			})
 	  }
+	  selection = (id) => {
+		console.log("called");
+		const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+		let values = [];
+		checkboxes.forEach((checkbox) => {
+			values.push(checkbox.value);
+		});
+		localStorage.setItem('ids', values);
+	}
 	render() {
 		const { classes, theme } = this.props;
 
@@ -282,7 +337,7 @@ class GLAccount extends Component {
 					root: classes.layoutRoot
 				}}
 				header={
-					<div className="p-24"><h4>GL Account</h4></div>
+					<div className="p-24"><h4>GL Account-{this.state.Default !=null?this.state.Default.Company:"No Company Selected Yet"}</h4></div>
 				}
 				contentToolbar={
 					<div className="px-24"><h4>Add New GL Account</h4></div>
@@ -312,29 +367,49 @@ class GLAccount extends Component {
 						>
 							<TabContainer dir={theme.direction}>
 								<Paper className={classes.root}>
-								<div className="row">
-									<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-										<Button variant="outlined" color="primary" className={classes.button} onClick={this.getGlAccountById}>
-											Edit
+							
+								<div className="row" style={{marginBottom:"5px"}}  >
+										<div style={{ float: "left",  "margin": "8px" }}>
+											<Button variant="contained" color="secondary" className={classes.button} onClick={this.getGlAccountById}>
+												Edit
 										</Button>
-									</div>
-									<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-										<Button variant="outlined" color="inherit" className={classes.button} onClick={this.deleteGlAccount}>
-											Delete
+										</div>
+										<div style={{ float: "left", "margin": "8px" }}>
+											<Button  variant="contained" color="primary" className={classes.button} onClick={this.deleteGlAccount}>
+												Delete
 										</Button>
+										</div>
+										
 									</div>
-								</div>
-									<table id="glaccount_Table" className="nowrap header_custom" style={{ "width": "100%" }}>
-										<thead>
-											<tr>
-												<th>Account</th>
-												<th>Description</th>
-												<th>Company</th>
-												<th>Action</th>
-											</tr>
-										</thead>
 
-									</table>
+									<Table className={classes.table}>
+										<TableHead>
+											<TableRow>
+												<CustomTableCell align="center" >Account</CustomTableCell>
+												<CustomTableCell align="center" >Description</CustomTableCell>
+												<CustomTableCell align="center">Action</CustomTableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{
+												this.state.GlAccounts.length>0?
+												this.state.GlAccounts.map(row => (
+													<TableRow className={classes.row} key={row.Code}>
+	
+														<CustomTableCell align="center">{row.Account == "" || row.Account == null || row.Account == undefined ? 'N/A' : row.Account}</CustomTableCell>
+														<CustomTableCell align="center">{row.Description == "" || row.Description == null || row.Description == undefined ? 'N/A' : row.Description}</CustomTableCell>
+														
+														<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
+															onChange={() => this.selection(row.Id)}
+														/>
+														</CustomTableCell>
+													</TableRow>
+												))
+												:
+												<div style={{fontSize: "calc(1em + 1vw)",textAlign: "center"}} >{this.state.Default==null?"No Company Selected Yet":"No Record Found"}</div>
+											}
+										</TableBody>
+									</Table>
 							</Paper>
 							</TabContainer>
 							<TabContainer dir={theme.direction}>
@@ -347,6 +422,27 @@ class GLAccount extends Component {
 									<TextField id="description" fullWidth label="Description" name="description" value={this.state.description} onChange={this.handleChange} />
 									{this.validator.message('decription', this.state.description, 'required')}
 									</Grid>
+									<Grid item xs={12} sm={5} style={{ marginRight: '5px' }}   >
+										<FormControl className={classes.formControl}>
+											<InputLabel htmlFor="company">Company</InputLabel>
+											<Select
+												value={this.state.companyId}
+												onChange={this.handleChange}
+												inputProps={{
+													name: 'companyId',
+													id: 'companyId',
+												}}
+											>
+												<MenuItem value="">
+													<em>None</em>
+												</MenuItem>
+												{this.state.Companies.map(row => (
+													<MenuItem value={row.Id}>{row.CompanyName}</MenuItem>
+												))}
+											</Select>
+											{this.validator.message('companyId', this.state.companyId, 'required')}
+										</FormControl>
+									</Grid>
 								</form>
 								<div className="row">
 									<div style={{float: "right","marginRight":"8px"}}>
@@ -356,6 +452,7 @@ class GLAccount extends Component {
       								</Button>
 									</div>
 								</div>
+								
 							</TabContainer>
 						</SwipeableViews>
 					</div>

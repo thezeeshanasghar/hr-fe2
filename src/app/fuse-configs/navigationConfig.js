@@ -8,6 +8,7 @@ i18next.addResourceBundle('tr', 'navigation', tr);
 i18next.addResourceBundle('ar', 'navigation', ar);
 
 const navigationConfig = [
+<<<<<<< HEAD
 	{
 		id: 'applications',
 		title: 'Applications',
@@ -25,6 +26,9 @@ const navigationConfig = [
 			}
 		]
 	},
+=======
+	
+>>>>>>> 30bc94c96751b2f679d3b6d69f24f6a968df7327
 
 	{
         'id': 'Dashboard-component',

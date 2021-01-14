@@ -1,7 +1,10 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import FuseUtils from '@fuse/utils';
+<<<<<<< HEAD
 import {DashboardConfig} from 'app/main/dashboard/DashboardConfig';
+=======
+>>>>>>> 30bc94c96751b2f679d3b6d69f24f6a968df7327
 import {BankConfig} from 'app/main/Bank/BankConfig';
 import {CompanyConfig} from 'app/main/company/CompanyConfig';
 import {CostCenterConfig} from 'app/main/CostCenter/CostCenterConfig';
@@ -25,19 +28,26 @@ import {PayrollReportsConfig} from 'app/main/PayrollReports/PayrollReportsConfig
 import {BulkUploadConfig} from 'app/main/BulkUpload/BulkUploadConfig'
 import {TerminationConfig} from 'app/main/Termination/TerminationConfig'
 import {EmployeeVarianceReportDetailConfig} from 'app/main/EmployeeVarianceReportDetail/EmployeeVarianceReportDetailConfig'
+import LoginConfig from 'app/main/Login/LoginConfig';
+import DashboardConfig from 'app/main/Dashboard/DashboardConfig';
 
 
 const routeConfigs = [
+<<<<<<< HEAD
 	DashboardConfig,BankConfig,CompanyConfig,CostCenterConfig,CountryLawsConfig,CurrencyExchangeConfig,EmployeeConfig,EmployeeDetailConfig,
+=======
+	BankConfig,CompanyConfig,CostCenterConfig,CountryLawsConfig,CurrencyExchangeConfig,EmployeeConfig,EmployeeDetailConfig,
+>>>>>>> 30bc94c96751b2f679d3b6d69f24f6a968df7327
 	GLAccountConfig,GradesConfig,PayElementConfig,JobsConfig,PositionConfig,PayElementGlAccountConfig,UnitConfig,UnpaidLeavesConfig,UserProtectionConfig,
-	SalaryPayRollConfig,EmployeeReportsConfig,EmployeeVarianceReportConfig,PayrollReportsConfig,TerminationConfig,EmployeeVarianceReportDetailConfig,BulkUploadConfig
+	SalaryPayRollConfig,EmployeeReportsConfig,EmployeeVarianceReportConfig,PayrollReportsConfig,TerminationConfig,EmployeeVarianceReportDetailConfig,BulkUploadConfig,
+	LoginConfig,DashboardConfig
 ];
 
 const routes = [
 	...FuseUtils.generateRoutesFromConfigs(routeConfigs),
 	{
 		path: '/',
-		component: () => <Redirect to="/example" />
+		component: () => <Redirect to="/dashboard" />
 	}
 ];
 

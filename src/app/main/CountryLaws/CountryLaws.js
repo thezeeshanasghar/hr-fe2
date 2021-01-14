@@ -139,6 +139,16 @@ class CountryLaws extends Component {
 			this.getEmployees(e.target.value);
 		}
 	};
+	selection = (id) => {
+		console.log("called");
+		const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+									let values = [];
+									checkboxes.forEach((checkbox) => {
+										values.push(checkbox.value);
+									});
+									localStorage.setItem('ids',values);
+								}
+
 	getDeclarationMode = () => {
 
 		axios({
@@ -372,55 +382,21 @@ class CountryLaws extends Component {
 			})
 	}
 	getCountryLaw = () => {
-		localStorage.removeItem("ids");
-		if (!$.fn.dataTable.isDataTable('#CountryLaw_Table')) {
-			this.state.table = $('#CountryLaw_Table').DataTable({
-				ajax: defaultUrl + "countrylaw",
-				"columns": [
-					{ "data": "Detail" },
-					{ "data": "CountryCode" },
-					{ "data": "Currency" },
-					{ "data": "StartDate" },
-					{ "data": "EndDate" },
-					{ "data": "AdultAge" },
-					{ "data": "CalculationMode" },
-					{ "data": "MaxSalary" },
-					{ "data": "MinSalary" },
-					{ "data": "Percentage" },
-					{ "data": "Type" },
-					{
-						"data": "Action",
-						sortable: false,
-						"render": function (data, type, full, meta) {
-
-							return `<input type="checkbox" name="radio"  value=` + full.Id + `
-						onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
-									let values = [];
-									checkboxes.forEach((checkbox) => {
-										values.push(checkbox.value);
-									});
-									localStorage.setItem('ids',values);	"
-						/>`;
-						}
-					}
-
-				],
-				rowReorder: {
-					selector: 'td:nth-child(2)'
-				},
-				responsive: true,
-				dom: 'Bfrtip',
-				buttons: [
-
-				],
-				columnDefs: [{
-					"defaultContent": "-",
-					"targets": "_all"
-				}]
-			});
-		} else {
-			this.state.table.ajax.reload();
-		}
+		axios({
+			method: "get",
+			url: defaultUrl+"countrylaw/",
+			headers: {
+				// 'Authorization': `bearer ${token}`,
+				"Content-Type": "application/json;charset=utf-8",
+			},
+		})
+			.then((response) => {
+				console.log(response);
+				this.setState({ CountryLaws: response.data.data });
+			})
+			.catch((error) => {
+				console.log(error);
+			})
 	}
 	deleteCountryLaw = () => {
 		let ids = localStorage.getItem("ids");
@@ -487,37 +463,58 @@ class CountryLaws extends Component {
 							onChangeIndex={this.handleChangeIndex}
 						>
 							<TabContainer dir={theme.direction}>
-								<Paper className={classes.root}>
-									<div className="row">
-										<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-											<Button variant="outlined" color="primary" className={classes.button} onClick={this.getCountryLawById}>
+								<Paper className={classes.root}>									
+									<div className="row" style={{marginBottom:"5px"}}  >
+										<div style={{ float: "left",  "margin": "8px" }}>
+											<Button variant="contained" color="secondary" className={classes.button}  onClick={this.getCountryLawById}>
 												Edit
 										</Button>
 										</div>
-										<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-											<Button variant="outlined" color="inherit" className={classes.button} onClick={this.deleteCountryLaw}>
+										<div style={{ float: "left", "margin": "8px" }}>
+											<Button  variant="contained" color="primary" className={classes.button} onClick={this.deleteCountryLaw}>
 												Delete
 										</Button>
-										</div>
+										</div>										
 									</div>
-									<table id="CountryLaw_Table" className="nowrap header_custom" style={{ "width": "100%" }}>
-										<thead>
-											<tr>
-												<th>Detail</th>
-												<th>CountryCode</th>
-												<th>Currency</th>
-												<th>StartDate</th>
-												<th>EndDate</th>
-												<th>AdultAge</th>
-												<th>CalculationMode</th>
-												<th>MaxSalary</th>
-												<th>MinSalary</th>
-												<th>Percentage</th>
-												<th>Type</th>
-												<th>Action</th>
-											</tr>
-										</thead>
-									</table>
+									<Table className={classes.table}>
+										<TableHead>
+											<TableRow>
+												<CustomTableCell align="center" >Detail</CustomTableCell>
+												<CustomTableCell align="center">CountryCode</CustomTableCell>
+												<CustomTableCell align="center">Currency</CustomTableCell>
+												<CustomTableCell align="center">StartDate</CustomTableCell>
+												<CustomTableCell align="center">EndDate</CustomTableCell>
+												<CustomTableCell align="center">AdultAge</CustomTableCell>
+												<CustomTableCell align="center">CalculationMode</CustomTableCell>
+												<CustomTableCell align="center">MaxSalary</CustomTableCell>
+												<CustomTableCell align="center">MinSalary</CustomTableCell>
+												<CustomTableCell align="center">Percentage</CustomTableCell>		
+												<CustomTableCell align="center">Type</CustomTableCell>	
+												<CustomTableCell align="center">Action</CustomTableCell>														
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{this.state.CountryLaws.map(row => (
+												<TableRow className={classes.row} key={row.Code}>
+													<CustomTableCell align="center">{row.Detail}</CustomTableCell>
+													<CustomTableCell align="center">{row.CountryCode}</CustomTableCell>
+													<CustomTableCell align="center">{row.Currency}</CustomTableCell>
+													<CustomTableCell align="center">{row.StartDate}</CustomTableCell>
+													<CustomTableCell align="center">{row.EndDate}</CustomTableCell>
+													<CustomTableCell align="center">{row.AdultAge}</CustomTableCell>
+													<CustomTableCell align="center">{row.CalculationMode}</CustomTableCell>
+													<CustomTableCell align="center">{row.MaxSalary}</CustomTableCell>
+													<CustomTableCell align="center">{row.MinSalary}</CustomTableCell>
+													<CustomTableCell align="center">{row.Percentage}</CustomTableCell>
+													<CustomTableCell align="center">{row.Type}</CustomTableCell>
+													<CustomTableCell align="center"><input type="checkbox" name="radio"  value= {row.Id}
+						onChange={()=>this.selection(row.Id)}
+						/>
+						</CustomTableCell>
+												</TableRow>
+											))}
+										</TableBody>
+									</Table>
 								</Paper>
 							</TabContainer>
 							<TabContainer dir={theme.direction}>

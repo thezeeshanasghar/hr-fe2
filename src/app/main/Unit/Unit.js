@@ -90,13 +90,14 @@ class Unit extends Component {
 	state = {
 		value: 0,
 		code: "",
-		description: "",
+		Name: "",
 		companyId: "",
 		Companies: [],
 		Units: [],
 		Id: 0,
 		Action: 'Insert Record',
-		table:null
+		table:null,
+		Default:localStorage.getItem("state")!=null?JSON.parse(localStorage.getItem("state")):null
 
 	};
 	constructor(props) {
@@ -119,46 +120,65 @@ class Unit extends Component {
 	};
 
 	getUnitDetail = () => {
-				
-		if (!$.fn.dataTable.isDataTable('#unit_Table')) {
-			this.state.table = $('#unit_Table').DataTable({
-				ajax: defaultUrl + "unit",
-				"columns": [
-					{ "data": "Code" },
-					{ "data": "Name" },
-					{ "data": "Action",
-					sortable: false,
-					"render": function ( data, type, full, meta ) {
-					   
-						return `<input type="checkbox" name="radio"  value=`+full.Id+`
-						onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
-									let values = [];
-									checkboxes.forEach((checkbox) => {
-										values.push(checkbox.value);
-									});
-									localStorage.setItem('ids',values);
-									"
-						/>`;
-					}
-				 }
-
-				],
-				rowReorder: {
-					selector: 'td:nth-child(2)'
-				},
-				responsive: true,
-				dom: 'Bfrtip',
-				buttons: [
-
-				],
-				columnDefs: [{
-					"defaultContent": "-",
-					"targets": "_all"
-				  }]
-			});
-		} else {
-			this.state.table.ajax.reload();
+		if(this.state.Default == null){
+			return false;
 		}
+		axios({
+			method: "get",
+			url: defaultUrl + "/Unit/ByCompany/"+this.state.Default.Id,
+			headers: {
+				// 'Authorization': `bearer ${token}`,
+				"Content-Type": "application/json;charset=utf-8",
+			},
+		})
+			.then((response) => {
+				console.log(response);
+
+				this.setState({ Units: response.data });
+			
+			})
+			.catch((error) => {
+				console.log(error);
+			})	
+		// if (!$.fn.dataTable.isDataTable('#unit_Table')) {
+		// 	this.state.table = $('#unit_Table').DataTable({
+		// 		ajax: defaultUrl + "unit",
+		// 		"columns": [
+		// 			{ "data": "Code" },
+		// 			{ "data": "Name" },
+		// 			{ "data": "Action",
+		// 			sortable: false,
+		// 			"render": function ( data, type, full, meta ) {
+					   
+		// 				return `<input type="checkbox" name="radio"  value=`+full.Id+`
+		// 				onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+		// 							let values = [];
+		// 							checkboxes.forEach((checkbox) => {
+		// 								values.push(checkbox.value);
+		// 							});
+		// 							localStorage.setItem('ids',values);
+		// 							"
+		// 				/>`;
+		// 			}
+		// 		 }
+
+		// 		],
+		// 		rowReorder: {
+		// 			selector: 'td:nth-child(2)'
+		// 		},
+		// 		responsive: true,
+		// 		dom: 'Bfrtip',
+		// 		buttons: [
+
+		// 		],
+		// 		columnDefs: [{
+		// 			"defaultContent": "-",
+		// 			"targets": "_all"
+		// 		  }]
+		// 	});
+		// } else {
+		// 	this.state.table.ajax.reload();
+		// }
 	}
 
 	insertUpdateRecord = () => {
@@ -180,7 +200,7 @@ class Unit extends Component {
 
 		var obj = {
 			Code: this.state.code,
-			Description: this.state.description,
+			Name: this.state.Name,
 			CompanyId: this.state.companyId
 		};
 		axios.interceptors.request.use(function (config) {
@@ -206,7 +226,7 @@ class Unit extends Component {
 				this.setState({
 					value: 0,
 					code: "",
-					description: '',
+					Name: '',
 					companyId: 0,
 					Action: 'Insert Record',
 					Id: 0,
@@ -220,7 +240,7 @@ class Unit extends Component {
 				console.log(error);
 				this.setState({
 					code: "",
-					description: '',
+					Name: '',
 					Action: 'Insert Record',
 					Id: 0,
 					value:0
@@ -258,7 +278,7 @@ class Unit extends Component {
 			.catch((error) => {
 				console.log(error);
 				//document.getElementById("fuse-splash-screen").style.display="none";
-				Messages.error();
+				Messages.error(error.message);
 
 			})
 	}
@@ -281,7 +301,7 @@ class Unit extends Component {
 		})
 			.then((response) => {
 				console.log(response);
-				this.setState({ Action: 'Update Record', value: 1, code: response.data[0].Code, description: response.data[0].Description, Id: response.data[0].Id,companyId:response.data[0].CompanyId });
+				this.setState({ Action: 'Update Record', value: 1, code: response.data[0].Code, Name: response.data[0].Name, Id: response.data[0].Id,companyId:response.data[0].CompanyId });
 				//document.getElementById("fuse-splash-screen").style.display="none";
 
 			})
@@ -308,6 +328,15 @@ class Unit extends Component {
 				console.log(error);
 			})
 	}
+	selection = (id) => {
+		console.log("called");
+		const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+		let values = [];
+		checkboxes.forEach((checkbox) => {
+			values.push(checkbox.value);
+		});
+		localStorage.setItem('ids', values);
+	}
 	render() {
 		const { classes, theme } = this.props;
 
@@ -317,7 +346,7 @@ class Unit extends Component {
 					root: classes.layoutRoot
 				}}
 				header={
-					<div className="p-24"><h4>Unit</h4></div>
+					<div className="p-24"><h4>Unit-{this.state.Default !=null?this.state.Default.Company:"No Company Selected Yet"}</h4></div>
 				}
 				contentToolbar={
 					<div className="px-24"><h4>Add New Unit</h4></div>
@@ -347,29 +376,54 @@ class Unit extends Component {
 						>
 							<TabContainer dir={theme.direction}>
 								<Paper className={classes.root}>
-								<div className="row">
-									<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-										<Button variant="outlined" color="primary" className={classes.button} onClick={this.getUnitById}>
-											Edit
+								
+								<div className="row" style={{marginBottom:"5px"}}  >
+										<div style={{ float: "left",  "margin": "8px" }}>
+											<Button variant="contained" color="secondary" className={classes.button} onClick={this.getUnitById}>
+												Edit
 										</Button>
-									</div>
-									<div style={{ float: "left", "marginLeft": "8px", "marginTop": "8px" }}>
-										<Button variant="outlined" color="inherit" className={classes.button} onClick={this.deleteUnit}>
-											Delete
+										</div>
+										<div style={{ float: "left", "margin": "8px" }}>
+											<Button  variant="contained" color="primary" className={classes.button} onClick={this.deleteUnit}>
+												Delete
 										</Button>
+										</div>
+										
 									</div>
-								</div>
-									<table id="unit_Table" className="nowrap header_custom" style={{ "width": "100%" }}>
-										<thead>
-											<tr>
-												<th>Code</th>
-												<th>Name</th>
-												<th>Action</th>
-
-											</tr>
-										</thead>
-
-									</table>
+								<Table className={classes.table}>
+										<TableHead>
+											<TableRow>
+												<CustomTableCell align="center" >Code</CustomTableCell>
+												<CustomTableCell align="center" >Name</CustomTableCell>
+												{/* <CustomTableCell align="center" >Company</CustomTableCell> */}
+												<CustomTableCell align="center">Action</CustomTableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{
+												this.state.Units.length>0?
+												this.state.Units.map(row => (
+													<TableRow className={classes.row} key={row.Code}>
+	
+														<CustomTableCell align="center">{row.Code == "" || row.Code == null || row.Code == undefined ? 'N/A' : row.Code}</CustomTableCell>
+														<CustomTableCell align="center" component="th" scope="row">
+															{row.Name == "" || row.Name == null || row.Name == undefined ? 'N/A' : row.Name}
+														</CustomTableCell>
+														{/* <CustomTableCell align="center">{row.Company == "" || row.Company == null || row.Company == undefined ? 'N/A' : row.Company}</CustomTableCell> */}
+	
+														<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
+															onChange={() => this.selection(row.Id)}
+														/>
+														</CustomTableCell>
+													</TableRow>
+												))
+												:
+												<div style={{fontSize: "calc(1em + 1vw)",textAlign: "center"}} >{this.state.Default==null?"No Company Selected Yet":"No Record Found"}</div>
+											}
+										</TableBody>
+									</Table>
+								
+									
 								</Paper>
 							</TabContainer>
 							<TabContainer dir={theme.direction}>
@@ -380,8 +434,8 @@ class Unit extends Component {
 										{this.validator.message('code', this.state.code, 'required')}
 									</Grid>
 									<Grid item xs={12} sm={5}  >
-										<TextField id="description" fullWidth label="Description" name="description" value={this.state.description} onChange={this.handleChange} />
-										{this.validator.message('decription', this.state.description, 'required')}
+										<TextField id="Name" fullWidth label="Name" name="Name" value={this.state.Name} onChange={this.handleChange} />
+										{this.validator.message('Name', this.state.Name, 'required')}
 									</Grid>
 
 									<Grid item xs={12} sm={5} >

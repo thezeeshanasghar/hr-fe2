@@ -25,6 +25,7 @@ const navbarSlice = createSlice({
 		navbarCloseMobile: (state, action) => {
 			state.mobileOpen = false;
 		}
+		
 	}
 });
 

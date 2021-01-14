@@ -33,6 +33,7 @@
         "jquery": "^3.5.1",
         "jsonwebtoken": "8.5.1",
         "jss": "10.4.0",
+        "jss-extend": "^6.2.0",
         "jss-plugin-extend": "10.4.0",
         "jss-rtl": "0.3.0",
         "jwt-decode": "2.2.0",

@@ -5,7 +5,11 @@ import {saveState,loadState} from './../../../store/StoreState';
 import { createStore } from 'redux'
 import axios from "axios";
 import defaultUrl from "./../../../services/constant/constant";
+<<<<<<< HEAD
+import { Redirect } from "react-router-dom";
+=======
 import { useHistory } from "react-router-dom";
+>>>>>>> 30bc94c96751b2f679d3b6d69f24f6a968df7327
 const store = createStore(RightPanel)
 console.log(store.getState());
 
@@ -22,7 +26,11 @@ class RightSideLayout2 extends Component {
 		
 	}
 	componentDidMount() {
+<<<<<<< HEAD
+	
+=======
 	this.setState({redirect:false});
+>>>>>>> 30bc94c96751b2f679d3b6d69f24f6a968df7327
 		this.GetCompanies();
 	}
 	 GetCompanies=()=>{
@@ -43,6 +51,18 @@ class RightSideLayout2 extends Component {
 			})
 	}
 
+<<<<<<< HEAD
+	 clicked=(Id)=>{
+		const store = createStore(RightPanel, Id)
+		this.setState({redirect:true})
+
+	}
+	render(){
+		if (this.state.redirect) {
+		
+			return <Redirect to="/" />
+		}
+=======
 	 clicked=(Id,Name)=>{
 		const store = createStore(RightPanel, {Id:Id,Company:Name})
 		window.open("/dashboard","_self")
@@ -53,6 +73,7 @@ class RightSideLayout2 extends Component {
 		
 		// 	return <Redirect to="/" />
 		// }
+>>>>>>> 30bc94c96751b2f679d3b6d69f24f6a968df7327
 		return(
 		<div>
 		<QuickPanel companies={this.state.Companies}  clicked={this.clicked} />

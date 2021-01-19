@@ -1,5 +1,9 @@
+
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import {connect} from 'react-redux';
 //import { FusePageSimple, DemoContent } from '@fuse';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import SwipeableViews from 'react-swipeable-views';
@@ -33,9 +37,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Messages from '../toaster';
 //import { Message } from 'semantic-ui-react';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
 
 import MaterialTable from 'material-table';
-
 const styles = theme => ({
 	container: {
 		display: 'flex',
@@ -110,7 +114,7 @@ class Bank extends Component {
 	constructor(props) {
 		super(props);
 		this.validator = new SimpleReactValidator();
-
+		console.log(props)
 
 	}
 	componentDidMount() {
@@ -146,7 +150,7 @@ class Bank extends Component {
 	});
 
 	getBankDetail = () => {
-
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "Bank",
@@ -157,7 +161,7 @@ class Bank extends Component {
 		})
 			.then((response) => {
 				console.log(response);
-
+				this.props.hideLoading();
 				this.setState({ Banks: response.data.data });
 				console(this.state.Banks);
 				return response.data;
@@ -223,6 +227,7 @@ class Bank extends Component {
 			return false;
 		}
 		var method = "post";
+		this.props.showLoading();
 		var url = defaultUrl + "Bank";
 		if (this.state.Action != "Insert Record") {
 			method = "put";
@@ -247,6 +252,7 @@ class Bank extends Component {
 		// 	console.log('Error');
 		// 	return Promise.reject(error);
 		// });
+		
 		axios({
 			method: method,
 			url: url,
@@ -257,6 +263,7 @@ class Bank extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				this.getBankDetail();
 				this.setState({
 					bankName: "",
@@ -273,6 +280,7 @@ class Bank extends Component {
 				});
 				//	document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.success();
+				
 			})
 			.catch((message) => {
 				//	document.getElementById("fuse-splash-screen").style.display = "none"
@@ -292,7 +300,7 @@ class Bank extends Component {
 					value: 0
 				})
 			})
-	}
+	};
 	deleteBank = () => {
 		debugger
 		var ids = localStorage.getItem("ids");
@@ -300,6 +308,7 @@ class Bank extends Component {
 			Messages.warning("No Record Selected");
 			return false;
 		}
+		this.props.showLoading();
 		//	document.getElementById("fuse-splash-screen").style.display = "block"
 		axios({
 			method: "delete",
@@ -310,10 +319,11 @@ class Bank extends Component {
 			},
 		})
 			.then((response) => {
-
+				this.props.hideLoading();
 				this.getBankDetail();
 				//	document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.success();
+				
 
 			})
 			.catch((error) => {
@@ -328,6 +338,7 @@ class Bank extends Component {
 			Messages.warning("kindly Select one record");
 			return false;
 		}
+		this.props.showLoading();
 		//	document.getElementById("fuse-splash-screen").style.display = "block"
 		axios({
 			method: "get",
@@ -338,6 +349,7 @@ class Bank extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({
 					Action: 'Update Record', value: 1, bankName: response.data[0].BankName, bankCode: response.data[0].BranchCode, bankAddress: response.data[0].Address,
@@ -349,12 +361,13 @@ class Bank extends Component {
 					RouteCode: response.data[0].RouteCode,
 				});
 				//		document.getElementById("fuse-splash-screen").style.display = "none"
+				
 			})
 			.catch((error) => {
 				//	document.getElementById("fuse-splash-screen").style.display = "none"
 				console.log(error);
 			})
-	}
+	};
 
 	selection = (id) => {
 		console.log("called");
@@ -369,9 +382,10 @@ class Bank extends Component {
 	render() {
 
 		const { classes, theme } = this.props;
-
 		return (
-			<FusePageSimple
+			<React.Fragment>
+					<FusePageSimple
+				
 				classes={{
 					root: classes.layoutRoot
 				}}
@@ -379,7 +393,9 @@ class Bank extends Component {
 					<div className="p-24"><h4>Bank</h4></div>
 				}
 				contentToolbar={
-					<div className="px-24"><h4>Add New Bank</h4></div>
+					<div className="px-24">
+						<h4>Add New Bank</h4>
+					</div>
 				}
 				content={
 
@@ -388,6 +404,7 @@ class Bank extends Component {
 							<ToastContainer />
 						</div>
 						<AppBar position="static" color="default">
+							
 							<Tabs
 								value={this.state.value}
 								onChange={this.handleTab}
@@ -457,18 +474,7 @@ class Bank extends Component {
 									</Table>
 
 								</TableContainer>
-									{/* <MaterialTable
-      title="Editable Example"
-      columns={this.state.columns}
-	  data={this.state.data}
-	  editable={{
-		onSelectionChange: (newData, oldData) =>
-		new Promise(() => {
-		  setTimeout(() => {
-		  }, 600);
-		}),  
-      }}
-    /> */}
+									
 
 
 								</Paper>
@@ -529,9 +535,26 @@ class Bank extends Component {
 				}
 
 			/>
-
+			<Splash />
+			</React.Fragment>
 		)
 	}
 }
 
-export default withStyles(styles, { withTheme: true })(Bank);
+const mapStateToProps = (state) =>({
+	loading: state.fuse.loading
+})
+
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(Bank));

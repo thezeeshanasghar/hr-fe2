@@ -1,4 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
+
 import { withStyles } from '@material-ui/core/styles';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import SwipeableViews from 'react-swipeable-views';
@@ -282,6 +289,7 @@ class Employee extends Component {
 		}
 	};
 	getMaritalStatus = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/lookups/" + Lookups.marital_Status,
@@ -291,6 +299,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ maritallist: response.data });
 			})
@@ -300,6 +309,7 @@ class Employee extends Component {
 	}
 
 	getGender = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/lookups/" + Lookups.gender,
@@ -309,6 +319,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ genderList: response.data });
 			})
@@ -317,6 +328,7 @@ class Employee extends Component {
 			})
 	}
 	getCountry = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/lookups/" + Lookups.Country,
@@ -326,6 +338,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ countryList: response.data });
 			})
@@ -334,6 +347,7 @@ class Employee extends Component {
 			})
 	}
 	getContractType = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/lookups/" + Lookups.Contract_Type,
@@ -343,6 +357,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ contractTypeList: response.data });
 			})
@@ -351,6 +366,7 @@ class Employee extends Component {
 			})
 	}
 	getEmployeeStatus = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/lookups/" + Lookups.EmployeeStatus,
@@ -360,6 +376,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ statusList: response.data });
 			})
@@ -368,6 +385,7 @@ class Employee extends Component {
 			})
 	}
 	getCurrency = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/lookups/" + Lookups.Currency,
@@ -377,6 +395,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ currencyList: response.data });
 			})
@@ -385,6 +404,7 @@ class Employee extends Component {
 			})
 	}
 	getSalaryStatus = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/lookups/" + Lookups.salarystatus,
@@ -395,6 +415,7 @@ class Employee extends Component {
 		})
 			.then((response) => {
 				console.log(response);
+				this.props.hideLoading();
 				this.setState({ salaryStatusList: response.data });
 			})
 			.catch((error) => {
@@ -402,6 +423,7 @@ class Employee extends Component {
 			})
 	}
 	getPaymentMethod = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/lookups/" + Lookups.paymentmethod,
@@ -411,6 +433,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ paymentmethodList: response.data });
 			})
@@ -419,6 +442,7 @@ class Employee extends Component {
 			})
 	}
 	getselectiveCompanyDetail = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "company/Selective/data",
@@ -428,6 +452,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 
 				this.setState({ companyList: response.data });
@@ -438,6 +463,7 @@ class Employee extends Component {
 			})
 	}
 	getCompanyDetail = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "company",
@@ -447,6 +473,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ Companies: response.data.data });
 			})
@@ -455,7 +482,7 @@ class Employee extends Component {
 			})
 	}
 	getPartTime = () => {
-
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/lookups/" + Lookups.parttime,
@@ -465,6 +492,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ parttimeList: response.data });
 			})
@@ -474,6 +502,7 @@ class Employee extends Component {
 	}
 	getPosition = (id) => {
 		console.log(id);
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "position/ByCompany/" + id,
@@ -483,6 +512,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response.data);
 				this.setState({
 					positionList: response.data
@@ -494,7 +524,7 @@ class Employee extends Component {
 			})
 	}
 	getGrades = (id) => {
-
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "Grades/ByCompany/" + id,
@@ -505,6 +535,7 @@ class Employee extends Component {
 		})
 			.then((response) => {
 				console.log(response.data);
+				this.props.hideLoading();
 				this.setState({
 					gradeList: response.data
 				});
@@ -519,6 +550,7 @@ class Employee extends Component {
 		this.getEmployeeList(e.value)
 	}
 	getSocialSecurity = (id) => {
+		this.props.showLoading();
 
 		axios({
 			method: "get",
@@ -529,6 +561,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response.data);
 				this.setState({
 					socialList: response.data
@@ -541,6 +574,8 @@ class Employee extends Component {
 	}
 	getTaxation = (id) => {
 
+		this.props.showLoading();
+
 		axios({
 			method: "get",
 			url: defaultUrl + "taxation",
@@ -550,6 +585,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response.data);
 				this.setState({
 					taxationList: response.data
@@ -561,6 +597,7 @@ class Employee extends Component {
 			})
 	}
 	getBanks = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "Bank",
@@ -570,6 +607,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ bankList: response.data.data });
 			})
@@ -578,6 +616,7 @@ class Employee extends Component {
 			})
 	}
 	getPayElement = (id) => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "payelement/ByCompany/" + id,
@@ -587,6 +626,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ payElements: response.data });
 			})
@@ -626,6 +666,7 @@ class Employee extends Component {
 
 	}
 	getOneTimePayroll = (Id) => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/Employee/onetime/" + Id,
@@ -635,6 +676,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ oneTimePayRoll: response.data });
 			})
@@ -668,6 +710,7 @@ class Employee extends Component {
 	}
 
 	getEntitlement = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/lookups/" + Lookups.Entitlement,
@@ -677,6 +720,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ entitlementList: response.data });
 			})
@@ -685,6 +729,7 @@ class Employee extends Component {
 			})
 	}
 	getTitle = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/lookups/" + Lookups.Title,
@@ -694,6 +739,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ TitleList: response.data });
 			})
@@ -702,6 +748,7 @@ class Employee extends Component {
 			})
 	}
 	getCountryLaws = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "countryLaw",
@@ -711,6 +758,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ lawsList: response.data.data });
 			})
@@ -768,6 +816,7 @@ class Employee extends Component {
 		};
 		axios.interceptors.request.use(function (config) {
 			////document.getElementById("fuse-splash-screen").style.display = "block";
+			this.props.showLoading();
 			return config;
 		}, function (error) {
 			console.log('Error');
@@ -783,6 +832,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				this.getEmployeeList(0);
 				this.setState({
 					firstName: "",
@@ -950,6 +1000,7 @@ class Employee extends Component {
 		if(this.state.Default == null){
 			return false;
 		}
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl+"employee/ByCompany/"+this.state.Default.Id,
@@ -959,6 +1010,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ employeeList: response.data.data });
 			})
@@ -975,7 +1027,7 @@ class Employee extends Component {
 		// 	return false;
 		// }
 		////document.getElementById("fuse-splash-screen").style.display = "block";
-
+		this.props.showLoading();
 		axios({
 			method: "delete",
 			url: defaultUrl + "/employee/" + ids,
@@ -985,6 +1037,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				this.getEmployeeList(0);
 				//document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.success();
@@ -1004,7 +1057,7 @@ class Employee extends Component {
 			return false;
 		}
 		////document.getElementById("fuse-splash-screen").style.display = "block";
-
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/employee/" + ids,
@@ -1014,6 +1067,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				this.getPosition(response.data[0].CompanyId);
 				this.getGrades(response.data[0].CompanyId);
 				this.getPayElement(response.data[0].CompanyId);
@@ -1058,6 +1112,7 @@ class Employee extends Component {
 			})
 	}
 	getEmployeeBankById = (EmployeeId) => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/BankAccount/ByEmployee/" + EmployeeId,
@@ -1067,6 +1122,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response.data, "Bank Detail");
 				this.setState({
 					Bank: response.data[0].BankId,
@@ -1081,6 +1137,7 @@ class Employee extends Component {
 			})
 	}
 	getEmployeePayRollById = (EmployeeId) => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/Employee/PayRoll/" + EmployeeId,
@@ -1090,6 +1147,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				this.setState({
 					PayRoll: response.data
 				})
@@ -1099,6 +1157,7 @@ class Employee extends Component {
 			})
 	}
 	getApplicableLaws = (EmployeeId) => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/Employee/ApplicableLaw/" + EmployeeId,
@@ -1108,6 +1167,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				this.setState({
 					selectedLaws: response.data
 				})
@@ -1141,6 +1201,7 @@ class Employee extends Component {
 		const { classes, theme } = this.props;
 
 		return (
+			<React.Fragment>
 			<FusePageSimple
 				classes={{
 					root: classes.layoutRoot
@@ -2179,7 +2240,20 @@ class Employee extends Component {
 					</div>
 				}
 			/>
+			<Splash/>
+			</React.Fragment>
 		)
 	}
 }
-export default withStyles(styles, { withTheme: true })(Employee);
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
+
+export default connect(null, mapDispatchToProps)(withStyles(styles, { withTheme: true })(Employee));

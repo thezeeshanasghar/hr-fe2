@@ -1,4 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
+
 import { withStyles } from '@material-ui/core/styles';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import SwipeableViews from 'react-swipeable-views';
@@ -99,6 +106,7 @@ class UnpaidLeaves extends Component {
 		this.getUnPaidLeaves();
 	}
 	getCompanies = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl+"Company",
@@ -108,6 +116,7 @@ class UnpaidLeaves extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ Companies: response.data.data });
 			})
@@ -116,6 +125,7 @@ class UnpaidLeaves extends Component {
 			})
 	}
 	getEmployees = (companyId) => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl+"Employee/ByCompany/" + companyId,
@@ -125,6 +135,7 @@ class UnpaidLeaves extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ Employees: response.data.data });
 			})
@@ -167,6 +178,7 @@ class UnpaidLeaves extends Component {
 			};
 			axios.interceptors.request.use(function (config) {
 				//document.getElementById("fuse-splash-screen").style.display="block";
+				this.props.showLoading();
 
 				return config;
 			}, function (error) {
@@ -183,6 +195,7 @@ class UnpaidLeaves extends Component {
 				},
 			})
 				.then((response) => {
+					this.props.hideLoading();
 					toast.success('Operation successfull');
 					this.getUnPaidLeaves();
 					this.setState({
@@ -222,6 +235,7 @@ class UnpaidLeaves extends Component {
 		if(this.state.Default == null){
 			return false;
 		}
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/unpaidleaves/ByCompany/"+this.state.Default.Id,
@@ -232,7 +246,7 @@ class UnpaidLeaves extends Component {
 		})
 			.then((response) => {
 				console.log(response);
-
+				this.props.hideLoading();
 				this.setState({ leaves: response.data });
 			
 			})
@@ -288,6 +302,7 @@ class UnpaidLeaves extends Component {
 			Messages.warning("kindly Select one record");
 			return false;
 		}
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl+"Unpaidleaves/" + ids,
@@ -297,6 +312,7 @@ class UnpaidLeaves extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.getEmployees(response.data[0].CompanyId);
 				this.setState({
@@ -321,7 +337,7 @@ class UnpaidLeaves extends Component {
 		Messages.warning("No Record Selected");
 		return false;
 		}
-		
+		this.props.showLoading();
 		axios({
 			method: "delete",
 			url: defaultUrl+"Unpaidleaves/"+ids,
@@ -331,6 +347,7 @@ class UnpaidLeaves extends Component {
 			},
 		  })
 			.then((response) => {
+				this.props.hideLoading();
 				Messages.success();
 				this.getUnPaidLeaves();
 			})
@@ -352,6 +369,7 @@ class UnpaidLeaves extends Component {
 		const { classes, theme } = this.props;
 
 		return (
+			<React.Fragment>
 			<FusePageSimple
 				classes={{
 					root: classes.layoutRoot
@@ -515,8 +533,19 @@ class UnpaidLeaves extends Component {
 					</ div>
 				}
 			/>
+			<Splash/>
+			</React.Fragment>
 		)
 	}
 }
-
-export default withStyles(styles, { withTheme: true })(UnpaidLeaves);
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
+export default connect(null, mapDispatchToProps)(withStyles(styles, { withTheme: true })(UnpaidLeaves));

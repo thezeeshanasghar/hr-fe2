@@ -1,4 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
+
 import { withStyles } from '@material-ui/core/styles';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import SwipeableViews from 'react-swipeable-views';
@@ -108,6 +115,7 @@ class Termination extends Component {
 		localStorage.setItem('ids', values);
 	}
 	getCompanies = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl+"Company",
@@ -117,6 +125,7 @@ class Termination extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ Companies: response.data.data });
 			})
@@ -125,6 +134,7 @@ class Termination extends Component {
 			})
 	}
 	getEmployees = (companyId) => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl+"Employee/ByCompany/" + companyId,
@@ -134,6 +144,7 @@ class Termination extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ Employees: response.data.data });
 			})
@@ -176,7 +187,7 @@ class Termination extends Component {
 			};
 			axios.interceptors.request.use(function (config) {
 				//document.getElementById("fuse-splash-screen").style.display="block";
-
+				this.props.showLoading();
 				return config;
 			}, function (error) {
 				console.log('Error');
@@ -192,6 +203,7 @@ class Termination extends Component {
 				},
 			})
 				.then((response) => {
+					this.props.hideLoading();
 					toast.success('Operation successfull');
 					this.getEmployeeTermination();
 					this.setState({
@@ -231,6 +243,7 @@ class Termination extends Component {
 		if(this.state.Default == null){
 			return false;
 		}
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/termination/ByCompany/"+this.state.Default.Id,
@@ -240,6 +253,7 @@ class Termination extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 
 				this.setState({ TerminationList: response.data.data });
@@ -257,6 +271,7 @@ class Termination extends Component {
 			Messages.warning("kindly Select one record");
 			return false;
 		}
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl+"Termination/" + ids,
@@ -266,6 +281,7 @@ class Termination extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				//document.getElementById("fuse-splash-screen").style.display="none";
 				console.log(response);
 				this.getEmployees(response.data[0].CompanyId);
@@ -293,7 +309,7 @@ class Termination extends Component {
 		Messages.warning("No Record Selected");
 		return false;
 		}
-		
+		this.props.showLoading();
 		axios({
 			method: "delete",
 			url: defaultUrl+"Termination/"+ids,
@@ -303,6 +319,7 @@ class Termination extends Component {
 			},
 		  })
 			.then((response) => {
+				this.props.hideLoading();
 				Messages.success();
 				this.getEmployeeTermination();
 			})
@@ -314,6 +331,7 @@ class Termination extends Component {
 		const { classes, theme } = this.props;
 
 		return (
+			<React.Fragment>
 			<FusePageSimple
 				classes={{
 					root: classes.layoutRoot
@@ -478,8 +496,20 @@ class Termination extends Component {
 					</ div>
 				}
 			/>
+			<Splash/>
+			</React.Fragment>
 		)
 	}
 }
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
 
-export default withStyles(styles, { withTheme: true })(Termination);
+export default connect(null, mapDispatchToProps)(withStyles(styles, { withTheme: true })(Termination));

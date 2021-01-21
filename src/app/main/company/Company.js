@@ -1,4 +1,10 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
 import { withStyles } from '@material-ui/core/styles';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import SwipeableViews from 'react-swipeable-views';
@@ -135,6 +141,7 @@ class Company extends Component {
 		this.setState({ value });
 	};
 	getBanks = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "Bank",
@@ -144,6 +151,7 @@ class Company extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ bankList: response.data.data });
 			})
@@ -162,6 +170,7 @@ class Company extends Component {
 									localStorage.setItem('ids',values);
 								}
 	getCurrency = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl+"lookups/"+Lookups.Currency,
@@ -171,6 +180,7 @@ class Company extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ CurrencyList: response.data });
 			})
@@ -180,6 +190,7 @@ class Company extends Component {
 	}
 	
 	getCurrency = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/lookups/" + Lookups.Currency,
@@ -189,6 +200,7 @@ class Company extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ currencyList: response.data });
 			})
@@ -198,6 +210,7 @@ class Company extends Component {
 	}
 	getCountry = () => {
 
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "lookups/" + Lookups.Country,
@@ -207,6 +220,7 @@ class Company extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ countryCode: response.data });
 			})
@@ -218,6 +232,7 @@ class Company extends Component {
 		this.setState({ [e.target.name]: e.target.value });
 	};
 	getCompanyDetail = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl+"Company/",
@@ -227,6 +242,7 @@ class Company extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ Companies: response.data.data });
 			})
@@ -273,6 +289,7 @@ class Company extends Component {
 			console.log('Error');
 			return Promise.reject(error);
 		});
+		this.props.showLoading();
 		axios({
 			method: method,
 			url: url,
@@ -285,6 +302,7 @@ class Company extends Component {
 			.then((response) => {
 				this.getCompanyDetail();
 				console.log(response);
+				this.props.hideLoading();
 				this.setState({
 					Name: "",
 					Code: "",
@@ -344,6 +362,7 @@ class Company extends Component {
 			return false;
 		}
 		////document.getElementById("fuse-splash-screen").style.display = "block"
+		this.props.showLoading();
 		axios({
 			method: "delete",
 			url: defaultUrl + "company/" + ids,
@@ -354,6 +373,7 @@ class Company extends Component {
 		})
 			.then((response) => {
 				this.getCompanyDetail();
+				this.props.hideLoading();
 				////document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.success();
 			})
@@ -371,7 +391,7 @@ class Company extends Component {
 			return false;
 		}
 		////document.getElementById("fuse-splash-screen").style.display = "block"
-
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "company/" + ids,
@@ -382,6 +402,7 @@ class Company extends Component {
 		})
 			.then((response) => {
 				console.log(response.data);
+				this.props.hideLoading();
 				if(response.data)
 				{
 					this.setState({
@@ -409,6 +430,7 @@ class Company extends Component {
 		const { classes, theme } = this.props;
 		// if (this.state.loading == true)
 		return (
+			<React.Fragment>
 			<FusePageSimple
 
 				classes={{
@@ -686,8 +708,21 @@ class Company extends Component {
 					</div>
 				}
 			/>
+			<Splash />
+			</React.Fragment>
 		)
 	}
 }
 
-export default withStyles(styles, { withTheme: true })(Company);
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
+
+export default connect(null,mapDispatchToProps)(withStyles(styles, { withTheme: true })(Company));

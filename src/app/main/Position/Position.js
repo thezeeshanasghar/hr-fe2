@@ -1,4 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
+
 import { withStyles } from '@material-ui/core/styles';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import SwipeableViews from 'react-swipeable-views';
@@ -108,6 +115,7 @@ class Position extends Component {
 		this.getJobs();
 	}
 	getJobs = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl+"job",
@@ -117,6 +125,7 @@ class Position extends Component {
 			},
 		  })
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({jobList:response.data.data});
 			})
@@ -125,6 +134,7 @@ class Position extends Component {
 			})
 	}
 	getCompanies = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl+"company",
@@ -134,6 +144,7 @@ class Position extends Component {
 			},
 		  })
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({Companies:response.data.data});
 			})
@@ -160,6 +171,7 @@ class Position extends Component {
 		if(this.state.Default == null){
 			return false;
 		}
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/position/ByCompany/"+this.state.Default.Id,
@@ -169,6 +181,7 @@ class Position extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 
 				this.setState({ Positions: response.data });
@@ -239,6 +252,7 @@ class Position extends Component {
 	}
 
 	getUnitDetail = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "unit",
@@ -248,6 +262,7 @@ class Position extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ Units: response.data.data });
 			})
@@ -282,6 +297,7 @@ class Position extends Component {
 		};
 		axios.interceptors.request.use(function (config) {
 			//document.getElementById("fuse-splash-screen").style.display = "block";
+			this.props.showLoading();
 			return config;
 		}, function (error) {
 			console.log('Error');
@@ -297,7 +313,7 @@ class Position extends Component {
 			},
 		})
 			.then((response) => {
-
+				this.props.hideLoading();
 				console.log(response);
 				this.getPositionDetail();
 				this.setState({
@@ -336,7 +352,7 @@ class Position extends Component {
 			return false;
 		}
 		//document.getElementById("fuse-splash-screen").style.display = "block";
-
+		this.props.showLoading();
 		axios({
 			method: "delete",
 			url: defaultUrl + "position/" + ids,
@@ -346,6 +362,7 @@ class Position extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				localStorage.removeItem("ids");
 				this.getPositionDetail();
 				//document.getElementById("fuse-splash-screen").style.display = "none";
@@ -367,7 +384,7 @@ class Position extends Component {
 			return false;
 		}
 		//document.getElementById("fuse-splash-screen").style.display = "block";
-
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "position/" + ids,
@@ -377,6 +394,7 @@ class Position extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ Action: 'Update Record', value: 1, jobId: response.data[0].JobId, code: response.data[0].Code, title: response.data[0].Title, Id: response.data[0].Id,unitId: response.data[0].UnitId, companyId:response.data[0].CompanyId });
 				//document.getElementById("fuse-splash-screen").style.display = "none";
@@ -399,6 +417,7 @@ class Position extends Component {
 		const { classes, theme } = this.props;
 
 		return (
+			<React.Fragment>
 			<FusePageSimple
 				classes={{
 					root: classes.layoutRoot
@@ -591,8 +610,20 @@ class Position extends Component {
 					</div>
 				}
 			/>
+			<Splash/>
+			</React.Fragment>
 		)
 	}
 }
 
-export default withStyles(styles, { withTheme: true })(Position);
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
+export default connect(null, mapDispatchToProps)(withStyles(styles, { withTheme: true })(Position));

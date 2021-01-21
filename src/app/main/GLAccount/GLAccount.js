@@ -1,4 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
+
 import { withStyles } from '@material-ui/core/styles';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import SwipeableViews from 'react-swipeable-views';
@@ -103,6 +110,7 @@ class GLAccount extends Component {
 		this.getGlAccountDetail();
 	}
 	getCompanies = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "Company",
@@ -112,6 +120,7 @@ class GLAccount extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ Companies: response.data.data });
 			})
@@ -131,6 +140,7 @@ class GLAccount extends Component {
 		if(this.state.Default == null){
 			return false;
 		}
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/glaccount/ByCompany/"+this.state.Default.Id,
@@ -140,6 +150,7 @@ class GLAccount extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 
 				this.setState({ GlAccounts: response.data });
@@ -216,6 +227,7 @@ class GLAccount extends Component {
 		  };
 		  axios.interceptors.request.use(function(config) {
 			//document.getElementById("fuse-splash-screen").style.display="block";
+			this.props.showLoading();
 			return config;
 		  }, function(error) {
 			console.log('Error');
@@ -231,6 +243,7 @@ class GLAccount extends Component {
 			},
 		  })
 			.then((response) => {
+				this.props.hideLoading();
 			  console.log(response);
 			  this.getGlAccountDetail();
 			  this.setState({
@@ -266,7 +279,7 @@ class GLAccount extends Component {
 		return false;
 		}
 		//document.getElementById("fuse-splash-screen").style.display="block";
-
+		this.props.showLoading();
 		axios({
 			method: "delete",
 			url: defaultUrl+"glaccount/"+ids,
@@ -276,7 +289,7 @@ class GLAccount extends Component {
 			},
 		  })
 			.then((response) => {
-				
+				this.props.hideLoading();
 				this.getGlAccountDetail();
 				//document.getElementById("fuse-splash-screen").style.display="none";
 				Messages.success();
@@ -298,7 +311,7 @@ class GLAccount extends Component {
 			return false;	
 		}
 		//document.getElementById("fuse-splash-screen").style.display="block";
-
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl+"glaccount/"+ids,
@@ -308,6 +321,7 @@ class GLAccount extends Component {
 			},
 		  })
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({Action:'Update Record',value:1,account:response.data[0].Account,description:response.data[0].Description,companyId:response.data[0].CompanyId, Id:response.data[0].Id });
 				//document.getElementById("fuse-splash-screen").style.display="none";
@@ -332,6 +346,7 @@ class GLAccount extends Component {
 		const { classes, theme } = this.props;
 
 		return (
+			<React.Fragment>
 			<FusePageSimple
 				classes={{
 					root: classes.layoutRoot
@@ -458,8 +473,20 @@ class GLAccount extends Component {
 					</div>
 				}
 			/>
+		<Splash/>
+		</React.Fragment>
 		)
 	}
 }
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
 
-export default withStyles(styles, { withTheme: true })(GLAccount);
+export default connect(null, mapDispatchToProps)(withStyles(styles, { withTheme: true })(GLAccount));

@@ -1,4 +1,8 @@
 import FuseAnimate from '@fuse/core/FuseAnimate';
+import { connect } from 'react-redux';
+
+
+
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { makeStyles } from '@material-ui/core/styles';
@@ -21,7 +25,6 @@ import defaultUrl from '../../../app/services/constant/constant';
 import { Redirect } from "react-router-dom";
 import _ from '@lodash';
 import { ToastContainer, toast } from 'react-toastify';
-import { connect } from 'react-redux'
 import { setUser } from '../../../app/auth/store/userSlice'
 import { createBrowserHistory } from 'history';
 const useStyles = makeStyles(theme => ({
@@ -97,7 +100,6 @@ handleChange = (event) => {
             Password: this.state.password,
         };
         axios.interceptors.request.use(function (config) {
-          
             return config;
         }, function (error) {
             console.log('Error');
@@ -113,7 +115,7 @@ handleChange = (event) => {
             },
         })
             .then((response) => {
-             
+               
                 if(response.data!="Invalid Credentials"){
                       localStorage.setItem('IsLoggedIn', true);
                 localStorage.setItem('token', response.data);
@@ -317,6 +319,7 @@ handleChange = (event) => {
                         </div>
                     </div>
                 </FuseAnimate>
+               
             </div>
         );
     

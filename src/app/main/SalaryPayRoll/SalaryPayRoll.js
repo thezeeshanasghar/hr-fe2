@@ -1,5 +1,11 @@
-
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
+
 import { withStyles } from '@material-ui/core/styles';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import SwipeableViews from 'react-swipeable-views';
@@ -189,6 +195,7 @@ class SalaryPayRoll extends Component {
 		
 		var check=window.confirm("do you want to reverse this payroll of date:"+group)
 if(check==true){
+this.props.showLoading();
 axios({
 			method: "post",
 			url: defaultUrl + "payslip/reversePayroll",
@@ -199,7 +206,7 @@ axios({
 			},
 		})
 			.then((response) => {
-
+				this.props.hideLoading();
 			})
 			.catch((error) => {
 				//console.log(error);
@@ -208,6 +215,7 @@ axios({
 		
 	}
 	getPayElements = (id) => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "payelement/Selective/" + id,
@@ -217,6 +225,7 @@ axios({
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				this.setState({ PayElementList: response.data })
 			})
 			.catch((error) => {
@@ -224,6 +233,7 @@ axios({
 			})
 	}
 	loadCompanyData = (val) => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "payslip",
@@ -233,6 +243,7 @@ axios({
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				if (response.data) {
 					//console.log(response.data)
 					var data = response.data.data.filter(x => x.CompanyId == val);
@@ -261,6 +272,7 @@ axios({
 		if(this.state.Default == null){
 			return false;
 		}
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/payslip/ByCompany/"+this.state.Default.Id,
@@ -270,6 +282,7 @@ axios({
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				//console.log(response);
 
 				this.setState({ salaryPayroll: response.data.data });
@@ -347,6 +360,7 @@ axios({
 				};
 				axios.interceptors.request.use(function (config) {
 					// document.getElementsByClassName("loader-wrapper")[0].style.display="block"
+					this.props.showLoading();
 					return config;
 				}, function (error) {
 					//console.log('Error');
@@ -362,6 +376,7 @@ axios({
 					},
 				})
 					.then((response) => {
+						this.props.hideLoading();
 						// document.getElementsByClassName("loader-wrapper")[0].style.display="none"
 						//console.log(response);
 						
@@ -422,6 +437,7 @@ axios({
 					PayElement: this.state.PayElement
 				};
 				axios.interceptors.request.use(function (config) {
+					this.props.showLoading();
 					// document.getElementsByClassName("loader-wrapper")[0].style.display="block"
 					return config;
 				}, function (error) {
@@ -438,6 +454,7 @@ axios({
 					},
 				})
 					.then((response) => {
+						this.props.hideLoading();
 						// document.getElementsByClassName("loader-wrapper")[0].style.display="none"
 						// toastr.success('Operation successfull');
 						this.setState({
@@ -493,6 +510,7 @@ axios({
 				};
 				axios.interceptors.request.use(function (config) {
 					// document.getElementsByClassName("loader-wrapper")[0].style.display="block"
+					this.props.showLoading();
 					return config;
 				}, function (error) {
 					//console.log('Error');
@@ -508,6 +526,7 @@ axios({
 					},
 				})
 					.then((response) => {
+						this.props.hideLoading();
 						// document.getElementsByClassName("loader-wrapper")[0].style.display="none"
 						// toastr.success('Operation successfull');
 						this.setState({
@@ -602,6 +621,7 @@ axios({
 			//   document.getElementById("fuse-splash-screen").style.display="block";
 			const formData = new FormData();
 			formData.append("file", e.target.files[0]);
+			this.props.showLoading();
 			axios.post(defaultUrl + "/Upload", formData, {
 				headers: {
 					'accept': 'application/json',
@@ -610,6 +630,7 @@ axios({
 				}
 			})
 				.then((response) => {
+					this.props.hideLoading();
 					//console.log("success", response);
 					this.setState({ File: response.data });
 					Messages.success();
@@ -622,6 +643,7 @@ axios({
 		}
 	};
 	getCompanyDetail = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "company/Selective/data",
@@ -632,7 +654,7 @@ axios({
 		})
 			.then((response) => {
 				//console.log(response);
-
+				this.props.hideLoading();
 				this.setState({ companyList: response.data });
 				return response.data;
 			})
@@ -641,6 +663,7 @@ axios({
 			})
 	}
 	getEmployeeDetail = (id) => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "employee/selective/data/" + id,
@@ -650,6 +673,7 @@ axios({
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				//console.log(response);
 				this.setState({ employeeList: response.data });
 			})
@@ -658,6 +682,7 @@ axios({
 			})
 	}
 	getSelectivePayrolls = (id) => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "payslip/specific/"+id,
@@ -668,7 +693,7 @@ axios({
 		})
 			.then((response) => {
 				//console.log(response.data.data);
-
+				this.props.hideLoading();
 				this.setState({ Dates: response.data.data  });
 				return response.data;
 			})
@@ -678,7 +703,7 @@ axios({
 	}
 	closeCurrent=(code)=>{
 		if(window.confirm("do you want to close current payroll"))
-		{
+		{	this.props.showLoading();
 			axios({
 				method: "get",
 				url: defaultUrl + "payslip/status/closed/"+code,
@@ -688,6 +713,7 @@ axios({
 				},
 			})
 				.then((response) => {
+					this.props.hideLoading(); 
 					//console.log(response.data.data);
 					this.getSelectivePayrolls(this.state.companyId);
 				})
@@ -700,6 +726,7 @@ axios({
 		const { classes, theme } = this.props;
 
 		return (
+			<React.Fragment>
 			<FusePageSimple
 				classes={{
 					root: classes.layoutRoot
@@ -974,8 +1001,19 @@ axios({
 					</div>
 				}
 			/>
+			<Splash/>
+			</React.Fragment>
 		)
 	}
 }
-
-export default withStyles(styles, { withTheme: true })(SalaryPayRoll);
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
+export default connect(null, mapDispatchToProps)(withStyles(styles, { withTheme: true })(SalaryPayRoll));

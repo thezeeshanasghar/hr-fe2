@@ -1,4 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
+
 import { withStyles } from '@material-ui/core/styles';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import SwipeableViews from 'react-swipeable-views';
@@ -150,7 +157,7 @@ class CountryLaws extends Component {
 								}
 
 	getDeclarationMode = () => {
-
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "lookups/" + Lookups.Declaration,
@@ -160,6 +167,7 @@ class CountryLaws extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ declarationModelList: response.data });
 			})
@@ -168,7 +176,7 @@ class CountryLaws extends Component {
 			})
 	}
 	getCountry = () => {
-
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "lookups/" + Lookups.Country,
@@ -178,6 +186,7 @@ class CountryLaws extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ countryCode: response.data });
 			})
@@ -203,6 +212,7 @@ class CountryLaws extends Component {
 			})
 	}
 	getMode = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "lookups/" + Lookups.mode,
@@ -212,6 +222,7 @@ class CountryLaws extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ modeList: response.data });
 			})
@@ -221,6 +232,7 @@ class CountryLaws extends Component {
 	}
 
 	getType = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "lookups/" + Lookups.lawtypes,
@@ -230,6 +242,7 @@ class CountryLaws extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ typeList: response.data });
 			})
@@ -271,6 +284,7 @@ class CountryLaws extends Component {
 			//document.getElementById("fuse-splash-screen").style.display = "block";
 			axios.interceptors.request.use(function (config) {
 				// document.getElementsByClassName("loader-wrapper")[0].style.display="block"
+				this.props.showLoading();
 				return config;
 			}, function (error) {
 				console.log('Error');
@@ -286,6 +300,7 @@ class CountryLaws extends Component {
 				},
 			})
 				.then((response) => {
+					this.props.hideLoading();
 					toast.success('Operation successfull');
 					this.getCountryLaw();
 					this.setState({
@@ -345,6 +360,7 @@ class CountryLaws extends Component {
 			return false;
 		}
 		//document.getElementById("fuse-splash-screen").style.display = "block";
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "countrylaw/" + ids,
@@ -354,6 +370,7 @@ class CountryLaws extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				this.setState({
 					description: response.data[0].Detail,
 					code: response.data[0].CountryCode,
@@ -382,6 +399,7 @@ class CountryLaws extends Component {
 			})
 	}
 	getCountryLaw = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl+"countrylaw/",
@@ -391,6 +409,7 @@ class CountryLaws extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ CountryLaws: response.data.data });
 			})
@@ -405,6 +424,7 @@ class CountryLaws extends Component {
 			return false;
 		}
 		//document.getElementById("fuse-splash-screen").style.display = "block";
+		this.props.showLoading();
 		axios({
 			method: "delete",
 			url: defaultUrl + "countrylaw/" + ids,
@@ -414,7 +434,7 @@ class CountryLaws extends Component {
 			},
 		})
 			.then((response) => {
-
+				this.props.hideLoading();
 				this.getCountryLaw();
 				//document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.success();
@@ -429,6 +449,7 @@ class CountryLaws extends Component {
 		const { classes, theme } = this.props;
 
 		return (
+			<React.Fragment>
 			<FusePageSimple
 				classes={{
 					root: classes.layoutRoot
@@ -794,8 +815,20 @@ class CountryLaws extends Component {
 					</div>
 				}
 			/>
+			<Splash/>
+			</React.Fragment>
 		)
 	}
 }
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
 
-export default withStyles(styles, { withTheme: true })(CountryLaws);
+export default connect(null, mapDispatchToProps)(withStyles(styles, { withTheme: true })(CountryLaws));

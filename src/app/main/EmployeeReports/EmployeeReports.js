@@ -1,4 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
+
 import { withStyles } from '@material-ui/core/styles';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import AppBar from '@material-ui/core/AppBar';
@@ -82,6 +89,7 @@ class EmployeeReports extends Component {
 		this.setState({company:e.value})
 	}
 	getselectiveCompanyDetail = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "company/Selective/data",
@@ -91,6 +99,7 @@ class EmployeeReports extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 
 				this.setState({ companyList: response.data });
@@ -101,6 +110,7 @@ class EmployeeReports extends Component {
 			})
 	}
 	getEmployeeDetail = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "report/employee",
@@ -110,6 +120,7 @@ class EmployeeReports extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 
 				this.setState({ data: response.data.data.filter(x=>x.Id==this.state.company) });
@@ -125,6 +136,7 @@ class EmployeeReports extends Component {
 		const { classes, theme } = this.props;
 
 		return (
+			<React.Fragment>
 			<FusePageSimple
 				
 				header={
@@ -225,8 +237,19 @@ class EmployeeReports extends Component {
 					</div>
 				}
 			/>
+			<Splash/>
+			</React.Fragment>
 		)
 	}
 }
-
-export default withStyles(styles, { withTheme: true })(EmployeeReports);
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
+export default connect(null, mapDispatchToProps)(withStyles(styles, { withTheme: true })(EmployeeReports));

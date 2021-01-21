@@ -1,4 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
+
 import { withStyles } from '@material-ui/core/styles';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import AppBar from '@material-ui/core/AppBar';
@@ -92,6 +99,7 @@ class GtoNReport extends Component {
 	  }
 	
 	getselectiveCompanyDetail = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "company/Selective/data",
@@ -101,6 +109,7 @@ class GtoNReport extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 
 				this.setState({ companyList: response.data });
@@ -119,6 +128,7 @@ class GtoNReport extends Component {
 				Date:this.state.Month+"-01",
 				CompanyId:this.state.Company
 		  }
+		  this.props.showLoading();
 		axios({
 			method: "post",
 			url: defaultUrl + "Report/GTN",
@@ -129,6 +139,7 @@ class GtoNReport extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				this.setState({data:response.data.recordset,columns:Object.keys(response.data.recordset[0])})
 				console.log(response.data.recordset,Object.keys(response.data.recordset[0]))
 			})
@@ -146,6 +157,7 @@ class GtoNReport extends Component {
 		const { classes, theme } = this.props;
 		
 		return (
+			<React.Fragment>
 			<FusePageSimple
 				
 				header={
@@ -255,8 +267,20 @@ class GtoNReport extends Component {
 					</div>
 				}
 			/>
+			<Splash/>
+			</React.Fragment>
 		)
 	}
 }
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
 
-export default withStyles(styles, { withTheme: true })(GtoNReport);
+export default connect(null,mapDispatchToProps )(withStyles(styles, { withTheme: true })(GtoNReport));

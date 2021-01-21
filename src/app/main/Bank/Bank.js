@@ -114,7 +114,6 @@ class Bank extends Component {
 	constructor(props) {
 		super(props);
 		this.validator = new SimpleReactValidator();
-		console.log(props)
 
 	}
 	componentDidMount() {
@@ -541,9 +540,9 @@ class Bank extends Component {
 	}
 }
 
-const mapStateToProps = (state) =>({
-	loading: state.fuse.loading
-})
+// const mapStateToProps = (state) =>({
+// 	loading: state.fuse.loading
+// })
 
 function mapDispatchToProps(dispatch) {
 	return bindActionCreators(
@@ -557,4 +556,4 @@ function mapDispatchToProps(dispatch) {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(Bank));
+export default connect(null, mapDispatchToProps)(withStyles(styles, { withTheme: true })(Bank));

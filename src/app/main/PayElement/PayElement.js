@@ -1,4 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
+
 import { withStyles } from '@material-ui/core/styles';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import SwipeableViews from 'react-swipeable-views';
@@ -129,6 +136,7 @@ class PayElement extends Component {
 		
 	}
 	getGroup=()=>{
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "lookups/"+Lookups.Group,
@@ -138,6 +146,7 @@ class PayElement extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ groupList: response.data });
 			})
@@ -146,6 +155,7 @@ class PayElement extends Component {
 			})
 	}
 	getCurrency=()=>{
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "lookups/"+Lookups.Currency,
@@ -155,6 +165,7 @@ class PayElement extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ currencyList: response.data });
 			})
@@ -163,6 +174,7 @@ class PayElement extends Component {
 			})
 	}
 	getDays=()=>{
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "lookups/"+Lookups.days,
@@ -172,6 +184,7 @@ class PayElement extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ daysList: response.data });
 			})
@@ -180,6 +193,7 @@ class PayElement extends Component {
 			})
 	}
 	getMonth=()=>{
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "lookups/"+Lookups.month,
@@ -189,6 +203,7 @@ class PayElement extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ monthList: response.data });
 			})
@@ -197,6 +212,7 @@ class PayElement extends Component {
 			})
 	}
 	getPeriodicity=()=>{
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "lookups/"+Lookups.periodicity,
@@ -206,6 +222,7 @@ class PayElement extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ PeriodicityList: response.data });
 			})
@@ -214,6 +231,7 @@ class PayElement extends Component {
 			})
 	}
 	getEntitlement=()=>{
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "lookups/"+Lookups.Entitlement,
@@ -223,6 +241,7 @@ class PayElement extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ EntitlementList: response.data });
 			})
@@ -231,6 +250,7 @@ class PayElement extends Component {
 			})
 	}
 	getCompanies = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "Company",
@@ -240,6 +260,7 @@ class PayElement extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ companies: response.data.data });
 			})
@@ -275,6 +296,7 @@ class PayElement extends Component {
 			};
 			axios.interceptors.request.use(function (config) {
 				//document.getElementById("fuse-splash-screen").style.display="block";
+				this.props.showLoading();
 				return config;
 			}, function (error) {
 				console.log('Error');
@@ -290,6 +312,7 @@ class PayElement extends Component {
 				},
 			})
 				.then((response) => {
+					this.props.hideLoading();
 					toast.success('Operation successfull');
 					this.getPayElement();
 				
@@ -344,6 +367,7 @@ class PayElement extends Component {
 		if(this.state.Default == null){
 			return false;
 		}
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/payelement/ByCompany/"+this.state.Default.Id,
@@ -353,6 +377,7 @@ class PayElement extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 
 				this.setState({ payElements: response.data });
@@ -416,7 +441,7 @@ class PayElement extends Component {
 			return false;	
 		}
 		//document.getElementById("fuse-splash-screen").style.display="block";
-
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl+"payelement/" + ids,
@@ -426,7 +451,7 @@ class PayElement extends Component {
 			},
 		})
 			.then((response) => {
-				
+				this.props.hideLoading();
 				this.setState({
 					Periodicity : response.data[0].Periodicity,
 					code : response.data[0].Code,
@@ -460,7 +485,7 @@ class PayElement extends Component {
 		return false;
 		}
 		//document.getElementById("fuse-splash-screen").style.display="block";
-
+		this.props.showLoading();
 		axios({
 			method: "delete",
 			url: defaultUrl+"payelement/"+ids,
@@ -472,6 +497,7 @@ class PayElement extends Component {
 			.then((response) => {
 				
 				this.getPayElement();
+				this.props.hideLoading();
 				//document.getElementById("fuse-splash-screen").style.display="none";
 				Messages.success();
 
@@ -503,6 +529,7 @@ class PayElement extends Component {
 		const { classes, theme } = this.props;
 
 		return (
+			<React.Fragment>
 			<FusePageSimple
 				classes={{
 					root: classes.layoutRoot
@@ -808,8 +835,20 @@ class PayElement extends Component {
 					</div>
 				}
 			/>
+			<Splash/>
+			</React.Fragment>
 		)
 	}
 }
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
 
-export default withStyles(styles, { withTheme: true })(PayElement);
+export default connect(null, mapDispatchToProps)(withStyles(styles, { withTheme: true })(PayElement));

@@ -1,4 +1,10 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
 import { withStyles } from '@material-ui/core/styles';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import SwipeableViews from 'react-swipeable-views';
@@ -113,6 +119,7 @@ class Jobs extends Component {
 		this.setState({ [e.target.name]: e.target.value });
 	};
 	getCompanies = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl+"company",
@@ -122,6 +129,7 @@ class Jobs extends Component {
 			},
 		  })
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({Companies:response.data.data});
 			})
@@ -149,6 +157,7 @@ class Jobs extends Component {
 			};
 			axios.interceptors.request.use(function (config) {
 				//document.getElementById("fuse-splash-screen").style.display="block";
+				this.props.showLoading();
 				return config;
 			}, function (error) {
 				console.log('Error');
@@ -164,6 +173,7 @@ class Jobs extends Component {
 				},
 			})
 				.then((response) => {
+					this.props.hideLoading();
 					toast.success('Operation successfull');
 					this.getJobs();
 				
@@ -203,6 +213,7 @@ class Jobs extends Component {
 		if(this.state.Default == null){
 			return false;
 		}
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/job/ByCompany/"+this.state.Default.Id,
@@ -212,6 +223,7 @@ class Jobs extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 
 				this.setState({ jobsList: response.data });
@@ -270,7 +282,7 @@ class Jobs extends Component {
 			return false;
 		}
 		//document.getElementById("fuse-splash-screen").style.display="block";
-
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl+"Job/" + ids,
@@ -280,6 +292,7 @@ class Jobs extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				
 				this.setState({
 					company:response.data[0].CompanyId,
@@ -306,7 +319,7 @@ class Jobs extends Component {
 		return false;
 		}
 		//document.getElementById("fuse-splash-screen").style.display="block";
-
+		this.props.showLoading();
 		axios({
 			method: "delete",
 			url: defaultUrl+"Job/"+ids,
@@ -316,6 +329,7 @@ class Jobs extends Component {
 			},
 		  })
 			.then((response) => {
+				this.props.hideLoading();
 				localStorage.removeItem("ids");
 				this.getJobs();
 				//document.getElementById("fuse-splash-screen").style.display="none";
@@ -342,6 +356,7 @@ class Jobs extends Component {
 		const { classes, theme } = this.props;
 
 		return (
+			<React.Fragment>
 			<FusePageSimple
 				classes={{
 					root: classes.layoutRoot
@@ -496,8 +511,21 @@ class Jobs extends Component {
 					</div>
 				}
 			/>
+			<Splash/>
+			</React.Fragment>
 		)
 	}
 }
 
-export default withStyles(styles, { withTheme: true })(Jobs);
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
+
+export default connect(null, mapDispatchToProps)(withStyles(styles, { withTheme: true })(Jobs));

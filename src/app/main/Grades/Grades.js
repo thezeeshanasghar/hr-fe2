@@ -1,4 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
+
 import { withStyles } from '@material-ui/core/styles';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import SwipeableViews from 'react-swipeable-views';
@@ -123,6 +130,7 @@ class Grades extends Component {
 		if(this.state.Default == null){
 			return false;
 		}
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/grades/ByCompany/"+this.state.Default.Id,
@@ -132,6 +140,7 @@ class Grades extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 
 				this.setState({ Grades: response.data });
@@ -169,6 +178,7 @@ class Grades extends Component {
 		};
 		axios.interceptors.request.use(function (config) {
 			// document.getElementsByClassName("loader-wrapper")[0].style.display="block"
+			this.props.showLoading();
 			return config;
 		}, function (error) {
 			console.log('Error');
@@ -184,6 +194,7 @@ class Grades extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.getGradeDetail();
 				this.setState({
@@ -216,6 +227,7 @@ class Grades extends Component {
 			Messages.warning("No Record Selected");
 			return false;
 		}
+		this.props.showLoading();
 		axios({
 			method: "delete",
 			url: defaultUrl + "grades/" + ids,
@@ -225,6 +237,7 @@ class Grades extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				localStorage.removeItem("ids");
 				this.getGradeDetail();
 				Messages.success();
@@ -241,6 +254,7 @@ class Grades extends Component {
 			Messages.warning("kindly Select one record");
 			return false;
 		}
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "grades/" + ids,
@@ -250,6 +264,7 @@ class Grades extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ Action: 'Update Record', value: 1, code: response.data[0].Code, description: response.data[0].Description, Id: response.data[0].Id, companyId: response.data[0].CompanyId });
 			})
@@ -259,7 +274,7 @@ class Grades extends Component {
 	}
 
 	getCompanyDetail = () => {
-
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "company",
@@ -269,6 +284,7 @@ class Grades extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ Companies: response.data.data });
 			})
@@ -281,6 +297,7 @@ class Grades extends Component {
 		const { classes, theme } = this.props;
 
 		return (
+			<React.Fragment>
 			<FusePageSimple
 				classes={{
 					root: classes.layoutRoot
@@ -413,8 +430,21 @@ class Grades extends Component {
 					</div>
 				}
 			/>
+			<Splash/>
+			</React.Fragment>
 		)
 	}
 }
 
-export default withStyles(styles, { withTheme: true })(Grades);
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
+
+export default connect(null, mapDispatchToProps)(withStyles(styles, { withTheme: true })(Grades));

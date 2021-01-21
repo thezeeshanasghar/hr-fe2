@@ -1,4 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
+
 import { withStyles } from '@material-ui/core/styles';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import SwipeableViews from 'react-swipeable-views';
@@ -137,7 +144,7 @@ class CompanyApplicableLaws extends Component {
 	}
 	
 	getCompanyDetail = () => {
-
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "company",
@@ -148,6 +155,7 @@ class CompanyApplicableLaws extends Component {
 		})
 			.then((response) => {
 				console.log(response);
+				this.props.hideLoading();
 				this.setState({ Companies: response.data.data });
 			})
 			.catch((error) => {
@@ -193,6 +201,7 @@ class CompanyApplicableLaws extends Component {
 									localStorage.setItem('ids',values);
 								}
 								getPayElements = (id) => {
+									this.props.showLoading();
 									axios({
 										method: "get",
 										url: defaultUrl + "payelement/Selective/" + id,
@@ -202,6 +211,7 @@ class CompanyApplicableLaws extends Component {
 										},
 									})
 										.then((response) => {
+											this.props.hideLoading();
 											this.setState({ PayElementList: response.data })
 										})
 										.catch((error) => {
@@ -209,7 +219,7 @@ class CompanyApplicableLaws extends Component {
 										})
 								}
 	countrylawByCompany = (Id) => {
-
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "countrylaw/ByCompany/" + Id,
@@ -220,6 +230,7 @@ class CompanyApplicableLaws extends Component {
 		})
 			.then((response) => {
 				console.log(response);
+				this.props.hideLoading();
 				this.setState({ LawsList: response.data.data });
 			})
 			.catch((error) => {
@@ -227,7 +238,7 @@ class CompanyApplicableLaws extends Component {
 			})
 	}
 	getCountry = () => {
-
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "lookups/" + Lookups.Country,
@@ -238,6 +249,7 @@ class CompanyApplicableLaws extends Component {
 		})
 			.then((response) => {
 				console.log(response);
+				this.props.hideLoading();
 				this.setState({ countryCode: response.data });
 			})
 			.catch((error) => {
@@ -245,6 +257,7 @@ class CompanyApplicableLaws extends Component {
 			})
 	}
 	getCurrency = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "lookups/" + Lookups.Currency,
@@ -255,6 +268,7 @@ class CompanyApplicableLaws extends Component {
 		})
 			.then((response) => {
 				console.log(response);
+				this.props.hideLoading();
 				this.setState({ CurrencyList: response.data });
 			})
 			.catch((error) => {
@@ -262,6 +276,7 @@ class CompanyApplicableLaws extends Component {
 			})
 	}
 	getMode = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "lookups/" + Lookups.mode,
@@ -272,6 +287,7 @@ class CompanyApplicableLaws extends Component {
 		})
 			.then((response) => {
 				console.log(response);
+				this.props.hideLoading();
 				this.setState({ modeList: response.data });
 			})
 			.catch((error) => {
@@ -280,6 +296,7 @@ class CompanyApplicableLaws extends Component {
 	}
 
 	getType = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "lookups/" + Lookups.lawtypes,
@@ -290,6 +307,7 @@ class CompanyApplicableLaws extends Component {
 		})
 			.then((response) => {
 				console.log(response);
+				this.props.hideLoading();
 				this.setState({ typeList: response.data });
 			})
 			.catch((error) => {
@@ -446,6 +464,7 @@ class CompanyApplicableLaws extends Component {
 			return false;
 		}
 		//document.getElementById("fuse-splash-screen").style.display = "block";
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "countrylaw/" + ids,
@@ -455,6 +474,7 @@ class CompanyApplicableLaws extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				this.setState({
 					description: response.data[0].Detail,
 					code: response.data[0].CountryCode,
@@ -483,6 +503,7 @@ class CompanyApplicableLaws extends Component {
 			})
 	}
 	getCountryLaw = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl+"countrylaw/",
@@ -493,6 +514,7 @@ class CompanyApplicableLaws extends Component {
 		})
 			.then((response) => {
 				console.log(response);
+				this.props.hideLoading();
 				this.setState({ CountryLaws: response.data.data });
 			})
 			.catch((error) => {
@@ -506,6 +528,7 @@ class CompanyApplicableLaws extends Component {
 			return false;
 		}
 		//document.getElementById("fuse-splash-screen").style.display = "block";
+		this.props.showLoading();
 		axios({
 			method: "delete",
 			url: defaultUrl + "countrylaw/" + ids,
@@ -515,7 +538,7 @@ class CompanyApplicableLaws extends Component {
 			},
 		})
 			.then((response) => {
-
+				this.props.hideLoading();
 				this.getCountryLaw();
 				//document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.success();
@@ -541,6 +564,7 @@ class CompanyApplicableLaws extends Component {
 		const { classes, theme } = this.props;
 
 		return (
+			<React.Fragment>
 			<FusePageSimple
 				classes={{
 					root: classes.layoutRoot
@@ -776,8 +800,23 @@ class CompanyApplicableLaws extends Component {
 					</div>
 				}
 			/>
+			<Splash/>
+			</React.Fragment>
 		)
 	}
 }
 
-export default withStyles(styles, { withTheme: true })(CompanyApplicableLaws);
+
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
+
+
+export default connect(null, mapDispatchToProps)(withStyles(styles, { withTheme: true })(CompanyApplicableLaws));

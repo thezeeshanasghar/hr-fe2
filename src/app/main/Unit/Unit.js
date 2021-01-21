@@ -1,4 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
+
 import { withStyles } from '@material-ui/core/styles';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import SwipeableViews from 'react-swipeable-views';
@@ -123,6 +130,7 @@ class Unit extends Component {
 		if(this.state.Default == null){
 			return false;
 		}
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/Unit/ByCompany/"+this.state.Default.Id,
@@ -132,6 +140,7 @@ class Unit extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 
 				this.setState({ Units: response.data });
@@ -205,6 +214,7 @@ class Unit extends Component {
 		};
 		axios.interceptors.request.use(function (config) {
 			//document.getElementById("fuse-splash-screen").style.display="block";
+			this.props.showLoading();
 			return config;
 		}, function (error) {
 			console.log('Error');
@@ -220,7 +230,7 @@ class Unit extends Component {
 			},
 		})
 			.then((response) => {
-				
+				this.props.hideLoading();
 				this.getUnitDetail();
 
 				this.setState({
@@ -259,7 +269,7 @@ class Unit extends Component {
 		return false;
 		}
 		//document.getElementById("fuse-splash-screen").style.display="block";
-
+		this.props.showLoading();
 		axios({
 			method: "delete",
 			url: defaultUrl + "unit/"+ids,
@@ -272,6 +282,7 @@ class Unit extends Component {
 				localStorage.removeItem("ids");
 				this.getUnitDetail();
 				//document.getElementById("fuse-splash-screen").style.display="none";
+				this.props.hideLoading();
 				Messages.success();
 
 			})
@@ -290,7 +301,7 @@ class Unit extends Component {
 			return false;
 		}
 		//document.getElementById("fuse-splash-screen").style.display="block";
-
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "unit/" + ids,
@@ -300,6 +311,7 @@ class Unit extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ Action: 'Update Record', value: 1, code: response.data[0].Code, Name: response.data[0].Name, Id: response.data[0].Id,companyId:response.data[0].CompanyId });
 				//document.getElementById("fuse-splash-screen").style.display="none";
@@ -312,6 +324,7 @@ class Unit extends Component {
 			})
 	}
 	getCompanyDetail = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "company",
@@ -321,6 +334,7 @@ class Unit extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ Companies: response.data.data });
 			})
@@ -341,6 +355,7 @@ class Unit extends Component {
 		const { classes, theme } = this.props;
 
 		return (
+			<React.Fragment>
 			<FusePageSimple
 				classes={{
 					root: classes.layoutRoot
@@ -475,8 +490,19 @@ class Unit extends Component {
 					</div>
 				}
 			/>
+			<Splash/>
+			</React.Fragment>
 		)
 	}
 }
-
-export default withStyles(styles, { withTheme: true })(Unit);
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
+export default connect(null, mapDispatchToProps)(withStyles(styles, { withTheme: true })(Unit));

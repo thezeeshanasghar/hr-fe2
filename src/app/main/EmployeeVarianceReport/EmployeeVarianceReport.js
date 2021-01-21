@@ -1,4 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
+
 import { withStyles } from '@material-ui/core/styles';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import AppBar from '@material-ui/core/AppBar';
@@ -90,6 +97,7 @@ class EmployeeVarianceReport extends Component {
 	  }
 	
 	getselectiveCompanyDetail = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "company/Selective/data",
@@ -99,6 +107,7 @@ class EmployeeVarianceReport extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 
 				this.setState({ companyList: response.data });
@@ -118,6 +127,7 @@ class EmployeeVarianceReport extends Component {
 				Date:this.state.Month+"-01",
 				CompanyId:this.state.Company
 		  }
+		  this.props.showLoading();
 		axios({
 			method: "post",
 			url: defaultUrl + "report/varriance",
@@ -128,6 +138,7 @@ class EmployeeVarianceReport extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				this.setState({data:response.data})
 			})
 			.catch((error) => {
@@ -144,6 +155,7 @@ class EmployeeVarianceReport extends Component {
 		const { classes, theme } = this.props;
 		
 		return (
+			<React.Fragment>
 			<FusePageSimple
 				
 				header={
@@ -245,8 +257,20 @@ class EmployeeVarianceReport extends Component {
 					</div>
 				}
 			/>
+			<Splash/>
+			</React.Fragment>
 		)
 	}
 }
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
 
-export default withStyles(styles, { withTheme: true })(EmployeeVarianceReport);
+export default connect(null, mapDispatchToProps)(withStyles(styles, { withTheme: true })(EmployeeVarianceReport));

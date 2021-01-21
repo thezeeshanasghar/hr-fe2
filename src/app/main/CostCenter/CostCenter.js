@@ -1,4 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
+
 import { withStyles } from '@material-ui/core/styles';
 //import { FusePageSimple, DemoContent } from '@fuse';
 import FusePageSimple from '@fuse/core/FusePageSimple';
@@ -107,6 +114,7 @@ class CostCenter extends Component {
 		this.getCostCenter();
 	}
 	getCompanies = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "Company",
@@ -116,6 +124,7 @@ class CostCenter extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ Companies: response.data.data });
 			})
@@ -147,6 +156,7 @@ class CostCenter extends Component {
 				console.log('Error');
 				return Promise.reject(error);
 			});
+			this.props.showLoading();
 			axios({
 				method: method,
 				url: url,
@@ -157,6 +167,7 @@ class CostCenter extends Component {
 				},
 			})
 				.then((response) => {
+					this.props.hideLoading();
 					toast.success('Operation successfull');
 					this.getCostCenter();
 					this.setState({
@@ -192,6 +203,7 @@ class CostCenter extends Component {
 		if(this.state.Default == null){
 			return false;
 		}
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/CostCenter/ByCompany/"+this.state.Default.Id,
@@ -201,6 +213,7 @@ class CostCenter extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 
 				this.setState({ costcenter: response.data });
@@ -258,6 +271,7 @@ class CostCenter extends Component {
 			return false;
 		}
 		//document.getElementById("fuse-splash-screen").style.display = "block";
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "CostCenter/" + ids,
@@ -267,6 +281,7 @@ class CostCenter extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({
 					code: response.data[0].Code,
@@ -290,6 +305,7 @@ class CostCenter extends Component {
 			return false;
 		}
 		//document.getElementById("fuse-splash-screen").style.display = "block";
+		this.props.showLoading();
 		axios({
 			method: "delete",
 			url: defaultUrl + "CostCenter/" + ids,
@@ -299,7 +315,7 @@ class CostCenter extends Component {
 			},
 		})
 			.then((response) => {
-
+				this.props.hideLoading();
 				this.getCostCenter();
 				//document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.success();
@@ -332,6 +348,7 @@ class CostCenter extends Component {
 		const { classes, theme } = this.props;
 
 		return (
+			<React.Fragment>
 			<FusePageSimple
 				classes={{
 					root: classes.layoutRoot
@@ -463,8 +480,22 @@ class CostCenter extends Component {
 					</div>
 				}
 			/>
+			<Splash/>
+			</React.Fragment>
 		)
 	}
 }
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
 
-export default withStyles(styles, { withTheme: true })(CostCenter);
+
+
+export default connect(null, mapDispatchToProps)(withStyles(styles, { withTheme: true })(CostCenter));

@@ -1,5 +1,11 @@
-
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
+
 import { withStyles } from '@material-ui/core/styles';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import SwipeableViews from 'react-swipeable-views';
@@ -131,6 +137,7 @@ class CurrencyExchange extends Component {
 				};
 				axios.interceptors.request.use(function (config) {
 					//document.getElementById("fuse-splash-screen").style.display="block";
+					this.props.showLoading();
 					return config;
 				}, function (error) {
 					console.log('Error');
@@ -146,6 +153,7 @@ class CurrencyExchange extends Component {
 					},
 				})
 					.then((response) => {
+						this.props.hideLoading();
 						toast.success('Operation successfull');
 						this.getExchangeRate();
 						this.setState({
@@ -190,6 +198,7 @@ class CurrencyExchange extends Component {
 									});
 									localStorage.setItem('ids',values);}
 	getCurrency = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl+"lookups/"+Lookups.Currency,
@@ -199,6 +208,7 @@ class CurrencyExchange extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ CurrencyList: response.data });
 			})
@@ -207,6 +217,7 @@ class CurrencyExchange extends Component {
 			})
 	}
 	getExchangeRate = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl+"currency/",
@@ -216,6 +227,7 @@ class CurrencyExchange extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ ExchangeRate: response.data.data });
 			})
@@ -234,6 +246,7 @@ class CurrencyExchange extends Component {
 		return false;
 		}
 		//document.getElementById("fuse-splash-screen").style.display="block";
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url:  defaultUrl+"Currency/"+ids,
@@ -243,6 +256,7 @@ class CurrencyExchange extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({
 				currency:response.data[0].Currency,
@@ -268,6 +282,7 @@ class CurrencyExchange extends Component {
 			return false;
 		}
 		//document.getElementById("fuse-splash-screen").style.display="block";
+		this.props.showLoading();
 		axios({
 			method: "delete",
 			url:  defaultUrl+"Currency/"+ids,
@@ -277,7 +292,7 @@ class CurrencyExchange extends Component {
 			},
 		  })
 			.then((response) => {
-				
+				this.props.hideLoading();
 				this.getExchangeRate();
 				//document.getElementById("fuse-splash-screen").style.display="none";
 				Messages.success();
@@ -311,6 +326,7 @@ class CurrencyExchange extends Component {
 		const { classes, theme } = this.props;
 
 		return (
+			<React.Fragment>
 			<FusePageSimple
 				classes={{
 					root: classes.layoutRoot
@@ -480,8 +496,21 @@ class CurrencyExchange extends Component {
 					</div>
 				}
 			/>
+			<Splash/>
+			</React.Fragment>
 		)
 	}
 }
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
 
-export default withStyles(styles, { withTheme: true })(CurrencyExchange);
+
+export default connect(null, mapDispatchToProps)(withStyles(styles, { withTheme: true })(CurrencyExchange));

@@ -1,4 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
+
 import { withStyles } from '@material-ui/core/styles';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import SwipeableViews from 'react-swipeable-views';
@@ -118,6 +125,7 @@ class EmployeeDetail extends Component {
 
 	getEmployeeById = (id) => {
 
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/employee/details/" + id,
@@ -127,6 +135,7 @@ class EmployeeDetail extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				this.setState({
 					Employee: response.data,
 					// Action: "Update Record",
@@ -201,6 +210,7 @@ class EmployeeDetail extends Component {
 			})
 	}
 	getEmployeeBankById = (EmployeeId) => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/BankAccount/ByEmployee/" + EmployeeId,
@@ -210,6 +220,7 @@ class EmployeeDetail extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				this.setState({
 					Bank: response.data[0].BankId,
 					Currency: response.data[0].CurrencyCode,
@@ -223,6 +234,7 @@ class EmployeeDetail extends Component {
 			})
 	}
 	getEmployeePayRollById = (EmployeeId) => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/Employee/PayRoll/" + EmployeeId,
@@ -232,6 +244,7 @@ class EmployeeDetail extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				this.setState({
 					PayRoll: response.data
 				})
@@ -241,6 +254,7 @@ class EmployeeDetail extends Component {
 			})
 	}
 	getApplicableLaws = (EmployeeId) => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/Employee/ApplicableLaw/" + EmployeeId,
@@ -250,6 +264,7 @@ class EmployeeDetail extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				this.setState({
 					selectedLaws: response.data
 				})
@@ -271,6 +286,7 @@ class EmployeeDetail extends Component {
 
 
 		return (
+			<React.Fragment>
 			<FusePageSimple
 				classes={{
 					root: classes.layoutRoot
@@ -460,7 +476,20 @@ class EmployeeDetail extends Component {
 					</div>
 				}
 			/>
+			<Splash/>
+			</React.Fragment>
 		)
 	}
 }
-export default withStyles(styles, { withTheme: true })(EmployeeDetail);
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
+
+export default connect(null, mapDispatchToProps)(withStyles(styles, { withTheme: true })(EmployeeDetail));

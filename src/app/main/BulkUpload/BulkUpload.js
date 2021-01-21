@@ -1,4 +1,10 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
 import { withStyles } from '@material-ui/core/styles';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import SwipeableViews from 'react-swipeable-views';
@@ -118,6 +124,7 @@ class BulkUpload extends Component {
 		this.setState({ 'companyId': e.value, 'CompanySelected': e });
 	}
 	getCompanyDetail = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "company/Selective/data",
@@ -128,6 +135,7 @@ class BulkUpload extends Component {
 		})
 			.then((response) => {
 				console.log(response);
+				this.props.hideLoading();
 
 				this.setState({ companyList: response.data });
 				return response.data;
@@ -158,6 +166,7 @@ class BulkUpload extends Component {
 			//document.getElementById("fuse-splash-screen").style.display = "block";
 			const formData = new FormData();
 			formData.append("file", e.target.files[0]);
+			this.props.showLoading();
 			axios.post(defaultUrl + "/Upload", formData, {
 				headers: {
 					'accept': 'application/json',
@@ -166,6 +175,7 @@ class BulkUpload extends Component {
 				}
 			})
 				.then((response) => {
+					this.props.hideLoading();
 					console.log("success", response);
 					this.setState({ File: response.data });
 					Messages.success();
@@ -192,6 +202,7 @@ class BulkUpload extends Component {
 					Type: this.state.Type,
 					Company: 0
 				}
+				this.props.showLoading();
 				axios({
 					method: "post",
 					url: defaultUrl + "bulkupload",
@@ -204,6 +215,7 @@ class BulkUpload extends Component {
 					.then((response) => {
 						var newval = cleaner.clean(response);
 						console.log(newval.data);
+						this.props.hideLoading();
 						var keys = Object.keys(newval.data[0]);
 						var columns = [];
 						for (var i = 0; i < keys.length; i++) {
@@ -228,6 +240,7 @@ class BulkUpload extends Component {
 					Type: this.state.Type,
 					Company: this.state.companyId
 				}
+				this.props.showLoading();
 				axios({
 					method: "post",
 					url: defaultUrl + "bulkupload",
@@ -238,7 +251,7 @@ class BulkUpload extends Component {
 					},
 				})
 					.then((response) => {
-
+						this.props.hideLoading();
 						var newval = cleaner.clean(response);
 						console.log(newval.data);
 						var keys = Object.keys(newval.data[0]);
@@ -268,6 +281,7 @@ class BulkUpload extends Component {
 			Type: this.state.Type,
 			Company: this.state.companyId
 		}
+		this.props.showLoading();
 		axios({
 			method: "post",
 			url: defaultUrl + "bulkupload/data",
@@ -278,6 +292,7 @@ class BulkUpload extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response)
 				this.setState({ content: {}, bulkdata: [], Isdisplay: 1, logs: response.data.recordset });
 				//document.getElementById("fuse-splash-screen").style.display = "none";
@@ -325,6 +340,7 @@ class BulkUpload extends Component {
 			}
 		}
 		return (
+			<React.Fragment>
 			<FusePageSimple
 				classes={{
 					root: classes.layoutRoot
@@ -486,8 +502,21 @@ class BulkUpload extends Component {
 					</div>
 				}
 			/>
+			<Splash />
+			</React.Fragment>
 		)
 	}
 }
 
-export default withStyles(styles, { withTheme: true })(BulkUpload);
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
+
+export default connect(null, mapDispatchToProps)(withStyles(styles, { withTheme: true })(BulkUpload));

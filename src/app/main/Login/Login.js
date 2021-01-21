@@ -1,7 +1,9 @@
 import FuseAnimate from '@fuse/core/FuseAnimate';
 import { connect } from 'react-redux';
 
-
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
 
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -58,6 +60,7 @@ class Login extends Component {
         super(props)
         this.setUser = this.props;
         this.submit = this.submit.bind(this);
+        console.log(this);
     }
     submit(event) {
         console.log(event.keyCode);
@@ -105,6 +108,7 @@ handleChange = (event) => {
             console.log('Error');
             return Promise.reject(error);
         });
+        this.props.showLoading();
         axios({
             method: "get",
             url: defaultUrl + "userLogin/" + this.state.email + "/" + this.state.password,
@@ -115,7 +119,7 @@ handleChange = (event) => {
             },
         })
             .then((response) => {
-               
+                this.props.hideLoading();
                 if(response.data!="Invalid Credentials"){
                       localStorage.setItem('IsLoggedIn', true);
                 localStorage.setItem('token', response.data);
@@ -319,15 +323,24 @@ handleChange = (event) => {
                         </div>
                     </div>
                 </FuseAnimate>
-               
+            <Splash />
             </div>
         );
     
 }
 }
 
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			setUser,
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
 
 
 
-
-export default connect(null, { setUser })(Login);
+export default connect(null, mapDispatchToProps)(Login);

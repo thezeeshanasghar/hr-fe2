@@ -108,7 +108,6 @@
         "eslint-plugin-react": "^7.21.5",
         "eslint-plugin-react-hooks": "^4.2.0",
         "js-beautify": "1.13.0",
-        "prettier": "^2.0.5",
         "promise": "8.1.0",
         "purgecss": "1.4.2",
         "source-map-explorer": "2.5.0",

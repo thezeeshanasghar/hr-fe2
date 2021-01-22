@@ -1,4 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import { showLoading, hideLoading } from '../../../app/store/fuse/loadingSlice';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import Splash from '../../fuse-layouts/layout2/components/splash-screen/splash-screen.component';
+
+
 import { withStyles } from '@material-ui/core/styles';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import SwipeableViews from 'react-swipeable-views';
@@ -111,6 +118,7 @@ class UserProtection extends Component {
 		if(this.state.Default == null){
 			return false;
 		}
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "/userProtection/ByCompany/"+this.state.Default.Id,
@@ -120,6 +128,7 @@ class UserProtection extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 
 				this.setState({ UserProtection: response.data });
@@ -177,7 +186,7 @@ class UserProtection extends Component {
 			return false;
 		}
 		//document.getElementById("fuse-splash-screen").style.display="block";
-
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "userProtection/" + ids,
@@ -187,6 +196,7 @@ class UserProtection extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ Action: 'Update Record', value: 1, 
 				companyId: response.data[0].CompanyId, labourId: response.data[0].LabourId, Id: response.data[0].Id,countryId:response.data[0].Country });
@@ -208,7 +218,7 @@ class UserProtection extends Component {
 		return false;
 		}
 		//document.getElementById("fuse-splash-screen").style.display="block";
-
+		this.props.showLoading();
 		axios({
 			method: "delete",
 			url: defaultUrl + "userProtection/"+ids,
@@ -218,6 +228,7 @@ class UserProtection extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				localStorage.removeItem("ids");
 				this.getUserProtection();
 				//document.getElementById("fuse-splash-screen").style.display="none";
@@ -255,11 +266,13 @@ class UserProtection extends Component {
 		};
 		axios.interceptors.request.use(function (config) {
 			//document.getElementById("fuse-splash-screen").style.display="block";
+			
 			return config;
 		}, function (error) {
 			console.log('Error');
 			return Promise.reject(error);
 		});
+		this.props.showLoading();
 		axios({
 			method: method,
 			url: url,
@@ -270,6 +283,7 @@ class UserProtection extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				Messages.success();
 				this.getUserProtection();
 
@@ -302,6 +316,7 @@ class UserProtection extends Component {
 	}
 
 	getCompanyDetail = () => {
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "company",
@@ -311,6 +326,7 @@ class UserProtection extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ Companies: response.data.data });
 			})
@@ -319,7 +335,7 @@ class UserProtection extends Component {
 			})
 	}
 	getCountry = () => {
-
+		this.props.showLoading();
 		axios({
 			method: "get",
 			url: defaultUrl + "lookups/" + Lookups.Country,
@@ -329,6 +345,7 @@ class UserProtection extends Component {
 			},
 		})
 			.then((response) => {
+				this.props.hideLoading();
 				console.log(response);
 				this.setState({ countryCode: response.data });
 			})
@@ -355,6 +372,7 @@ class UserProtection extends Component {
 		const { classes, theme } = this.props;
 
 		return (
+			<React.Fragment>
 			<FusePageSimple
 				classes={{
 					root: classes.layoutRoot
@@ -500,8 +518,19 @@ class UserProtection extends Component {
 					</div>
 				}
 			/>
+			<Splash/>
+			</React.Fragment>
 		)
 	}
 }
-
-export default withStyles(styles, { withTheme: true })(UserProtection);
+function mapDispatchToProps(dispatch) {
+	return bindActionCreators(
+		{
+			
+			showLoading,
+			hideLoading
+		},
+		dispatch
+	);
+}
+export default connect(null, mapDispatchToProps)(withStyles(styles, { withTheme: true })(UserProtection));

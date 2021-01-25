@@ -36,7 +36,8 @@ import Select1 from 'react-select';
 import $ from 'jquery';
 import DataTable from "datatables.net";
 import * as responsive from "datatables.net-responsive";
-
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 const styles = theme => ({
 	container: {
 		display: 'flex',
@@ -166,11 +167,14 @@ class Employee extends Component {
 		entitlementList: [],
 		oneTimePayRoll: [],
 		Id: 0,
-		companyListsel:[],
-		companyIdsel:"",
-		CompanySelected:"",
+		companyListsel: [],
+		companyIdsel: "",
+		CompanySelected: "",
 		Action: "Insert Record",
-		Default:localStorage.getItem("state")!=null?JSON.parse(localStorage.getItem("state")):null
+		Default: localStorage.getItem("state") != null ? JSON.parse(localStorage.getItem("state")) : null,
+		SocialSecurityApplicable: true,
+		TaxationApplicable: true,
+
 	};
 	constructor(props) {
 		super(props);
@@ -259,21 +263,21 @@ class Employee extends Component {
 	}
 
 	handleTabChange = (event, value) => {
-		if(this.state.Action == "Insert Record" )
-		{
+		if (this.state.Action == "Insert Record") {
 			if ((value == 1 || value == 0)) {
 				this.setState({ value });
 				this.setState({ [event.target.name]: event.target.value });
 			}
-	
-		}else{
+
+		} else {
 			this.setState({ value });
 			this.setState({ [event.target.name]: event.target.value });
 		}
-	
+
 
 	};
 	handleChange = (e) => {
+		console.log({ [e.target.name]: e.target.value })
 		this.setState({ [e.target.name]: e.target.value });
 		if (e.target.name == "company") {
 			this.getPosition(e.target.value);
@@ -515,7 +519,7 @@ class Employee extends Component {
 			})
 	}
 	handledropdown = (e) => {
-		console.log("working",e.value)
+		console.log("working", e.value)
 		this.getEmployeeList(e.value)
 	}
 	getSocialSecurity = (id) => {
@@ -595,7 +599,7 @@ class Employee extends Component {
 			})
 	}
 	AddoneTimePayRoll = () => {
-
+		debugger
 		if (!this.validator.fieldValid('oneTimePayElement') ||
 			!this.validator.fieldValid('oneTimeEntitlement') ||
 			!this.validator.fieldValid('oneTimeDate') ||
@@ -635,7 +639,7 @@ class Employee extends Component {
 			},
 		})
 			.then((response) => {
-				console.log(response);
+				console.log(response, "ddddddddddddddddd");
 				this.setState({ oneTimePayRoll: response.data });
 			})
 			.catch((error) => {
@@ -644,7 +648,7 @@ class Employee extends Component {
 	}
 	getOneTimePayrollDetail = () => {
 		var detail = "";
-
+		console.log(this.state.oneTimePayRoll, 'sdfdsfhsdfsdh')
 		for (var i = 0; i < this.state.oneTimePayRoll.length; i++) {
 			detail += this.state.oneTimePayRoll[i].PayelementId + '@' + this.state.oneTimePayRoll[i].Amount + "_" + this.state.oneTimePayRoll[i].Currency + "&" + this.state.oneTimePayRoll[i].EffectiveDate + "|" + this.state.oneTimePayRoll[i].entitlement + "!;";
 		}
@@ -718,8 +722,62 @@ class Employee extends Component {
 				console.log(error);
 			})
 	}
+	
+	 handlecheckboxChange = (event) => {
+		this.setState({ [event.target.name]: event.target.checked });
+	  };
 	insertUpdateEmployee = (TYPE) => {
+		if (TYPE == "employee") {
+			if (!this.validator.fieldValid('firstName') ||
+				!this.validator.fieldValid('lastName') ||
+				!this.validator.fieldValid('Gender') ||
+				!this.validator.fieldValid('Country') ||
+				!this.validator.fieldValid('Status') ||
+				!this.validator.fieldValid('dateOfBirth') ||
+				!this.validator.fieldValid('email') ||
+				!this.validator.fieldValid('employeeCode') ||
+				!this.validator.fieldValid('insuranceId') ||
+				!this.validator.fieldValid('texationId') ||
+				!this.validator.fieldValid('cnic') ||
+				!this.validator.fieldValid('ContractType') ||
+				!this.validator.fieldValid('EmployeeStatus') ||
+				!this.validator.fieldValid('HireDate') ||
+				!this.validator.fieldValid('reason') ||
+				!this.validator.fieldValid('PartTime') ||
+				!this.validator.fieldValid('ServiceStartDate') ||
+				!this.validator.fieldValid('ProbationEndDate') ||
+				!this.validator.fieldValid('title') ||
+				!this.validator.fieldValid('ContractEndDate') ||
+				!this.validator.fieldValid('company') ||
+				!this.validator.fieldValid('Position') ||
+				!this.validator.fieldValid('grade') ||
+				!this.validator.fieldValid('Contact') ||
+				!this.validator.fieldValid('Address')) {
+				{
+					this.validator.showMessages();
+					this.forceUpdate();
+					return false;
+				}
+			}
+		} else if (TYPE == "bank") {
+			if (!this.validator.fieldValid('Bank') ||
+				!this.validator.fieldValid('Currency') ||
+				!this.validator.fieldValid('IBAN') ||
+				!this.validator.fieldValid('EffectiveDate') ||
+				!this.validator.fieldValid('IsPrimary')
+			) {
 
+				this.validator.showMessages();
+				this.forceUpdate();
+				return false;
+			}
+		} else if (TYPE == "payroll") {
+			if (this.state.PayRoll.length <= 0 || this.state.oneTimePayRoll.length <= 0) {
+				return false;
+			}
+		} else {
+
+		}
 		var method = "post";
 		var url = defaultUrl + "employee";
 		if (this.state.Action != "Insert Record") {
@@ -763,8 +821,10 @@ class Employee extends Component {
 			PayRollDetail: this.getPayRollDetail(),
 			OneTimePayRollDetail: this.getOneTimePayrollDetail(),
 			ApplicableLaws: this.getLawsDetail(),
-			type:TYPE,
-			Id:this.state.Id
+			type: TYPE,
+			Id: this.state.Id,
+			SocialSecurityApplicable: this.state.SocialSecurityApplicable,
+			TaxationApplicable: this.state.TaxationApplicable,
 		};
 		axios.interceptors.request.use(function (config) {
 			////document.getElementById("fuse-splash-screen").style.display = "block";
@@ -826,7 +886,9 @@ class Employee extends Component {
 					selectedLaws: [],
 					Id: 0,
 					Action: 'Insert Record',
-					value: 0
+					value: 0,
+					SocialSecurityApplicable:true,
+					TaxationApplicable:true,
 				});
 				//document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.success();
@@ -876,7 +938,9 @@ class Employee extends Component {
 					Id: 0,
 					Action: 'Insert Record',
 					table: null,
-					value: 0
+					value: 0,
+					SocialSecurityApplicable:true,
+					TaxationApplicable:true,
 				})
 				//document.getElementById("fuse-splash-screen").style.display = "none";
 				Messages.error(error.message);
@@ -886,12 +950,12 @@ class Employee extends Component {
 	selection = (id) => {
 		console.log("called");
 		const checkboxes = document.querySelectorAll('input[name=radio]:checked');
-									let values = [];
-									checkboxes.forEach((checkbox) => {
-										values.push(checkbox.value);
-									});
-									localStorage.setItem('ids',values);
-								}
+		let values = [];
+		checkboxes.forEach((checkbox) => {
+			values.push(checkbox.value);
+		});
+		localStorage.setItem('ids', values);
+	}
 	nextTab = (val) => {
 		if (val === 2) {
 			if (
@@ -947,12 +1011,12 @@ class Employee extends Component {
 		this.setState({ value: val });
 	}
 	getEmployeeList = (IDD) => {
-		if(this.state.Default == null){
+		if (this.state.Default == null) {
 			return false;
 		}
 		axios({
 			method: "get",
-			url: defaultUrl+"employee/ByCompany/"+this.state.Default.Id,
+			url: defaultUrl + "employee/ByCompany/" + this.state.Default.Id,
 			headers: {
 				// 'Authorization': `bearer ${token}`,
 				"Content-Type": "application/json;charset=utf-8",
@@ -1046,7 +1110,9 @@ class Employee extends Component {
 					Contact: response.data[0].Contact,
 					title: response.data[0].Title,
 					Action: "Update Record",
-					Id: response.data[0].Id
+					Id: response.data[0].Id,
+					SocialSecurityApplicable:response.data[0].SocialSecurityApplicable==1?true:false,
+					TaxationApplicable:response.data[0].TaxationApplicable==1?true:false,
 				})
 				//document.getElementById("fuse-splash-screen").style.display = "none";
 
@@ -1146,7 +1212,7 @@ class Employee extends Component {
 					root: classes.layoutRoot
 				}}
 				header={
-					<div className="p-24"><h4>Employee-{this.state.Default !=null?this.state.Default.Company:"No Company Selected Yet"}</h4></div>
+					<div className="p-24"><h4>Employee-{this.state.Default != null ? this.state.Default.Company : "No Company Selected Yet"}</h4></div>
 				}
 				// contentToolbar={
 				// 	<div className="px-24"><h4>Add New Company</h4></div>
@@ -1169,7 +1235,7 @@ class Employee extends Component {
 								<Tab label="Employee Detail" />
 								<Tab label="Employee Bank" />
 								<Tab label="Employee Payroll" />
-								<Tab label="Applicable Laws" />
+								{/* <Tab label="Applicable Laws" /> */}
 							</Tabs>
 						</AppBar>
 						<SwipeableViews
@@ -1179,27 +1245,27 @@ class Employee extends Component {
 						>
 							<TabContainer dir={theme.direction}>
 								<Paper className={classes.root}>
-								<div className="row" style={{marginBottom:"5px"}}  >
-										<div style={{ float: "left",  "margin": "8px" }}>
+									<div className="row" style={{ marginBottom: "5px" }}  >
+										<div style={{ float: "left", "margin": "8px" }}>
 											<Button variant="contained" color="secondary" className={classes.button} onClick={this.getEmployeeDetailsForEdit}>
 												Edit
 										</Button>
 										</div>
 										<div style={{ float: "left", "margin": "8px" }}>
-											<Button  variant="contained" color="primary" className={classes.button} onClick={this.deleteEmployee}>
+											<Button variant="contained" color="primary" className={classes.button} onClick={this.deleteEmployee}>
 												Delete
 										</Button>
 										</div>
 										<div style={{ float: "left", "margin": "8px" }}>
-											<Button  variant="contained" color="success" className={classes.button} onClick={this.getView}>
+											<Button variant="contained" color="success" className={classes.button} onClick={this.getView}>
 												View
 										</Button>
 										</div>
-										
+
 									</div>
 
-								
-										{/* <Grid item xs={12} sm={5} style={{ paddingTop: "10px",float:"right",width:"20%" }}  >
+
+									{/* <Grid item xs={12} sm={5} style={{ paddingTop: "10px",float:"right",width:"20%" }}  >
 											<Select1
 
 												name="companyId"
@@ -1212,70 +1278,70 @@ class Employee extends Component {
 											/>
 										</Grid> */}
 
-									<Grid item xs={12}  className="table-responsive">
-									<Table className={classes.table}>
-										<TableHead>
-											<TableRow>
-												<CustomTableCell align="center" >EmployeeCode</CustomTableCell>
-												<CustomTableCell align="center">Title</CustomTableCell>
-												<CustomTableCell align="center">FirstName</CustomTableCell>
-												<CustomTableCell align="center">LastName</CustomTableCell>
-												<CustomTableCell align="center">Gender</CustomTableCell>
-												<CustomTableCell align="center">Email</CustomTableCell>
-												<CustomTableCell align="center">Cnic</CustomTableCell>
-												<CustomTableCell align="center">DOB</CustomTableCell>
-												<CustomTableCell align="center">InsuranceId</CustomTableCell>
-												<CustomTableCell align="center">HireDate</CustomTableCell>		
-												<CustomTableCell align="center">HiringReason</CustomTableCell>	
-												<CustomTableCell align="center">ServiceStartDate</CustomTableCell>
-												<CustomTableCell align="center">ProbationEndDate</CustomTableCell>
-												<CustomTableCell align="center">PartTimePercentage</CustomTableCell>		
-												<CustomTableCell align="center">ContractEndDate</CustomTableCell>	
-												<CustomTableCell align="center">Address</CustomTableCell>	
-												<CustomTableCell align="center">Contact</CustomTableCell>
-												<CustomTableCell align="center">MaritalStatus</CustomTableCell>
-												<CustomTableCell align="center">Country</CustomTableCell>		
-												<CustomTableCell align="center">CurrentEmployeeStatus</CustomTableCell>	
-												<CustomTableCell align="center">PartTimeSituation</CustomTableCell>		
-												<CustomTableCell align="center">Action</CustomTableCell>														
-											</TableRow>
-										</TableHead>
-										<TableBody>
-											{this.state.employeeList.map(row => (
-												<TableRow className={classes.row} key={row.Code}>
-													<CustomTableCell align="center">{row.EmployeeCode}</CustomTableCell>
-													<CustomTableCell align="center">{row.Title}</CustomTableCell>
-													<CustomTableCell align="center">{row.FirstName}</CustomTableCell>
-													<CustomTableCell align="center">{row.LastName}</CustomTableCell>
-													<CustomTableCell align="center">{row.Gender}</CustomTableCell>
-													<CustomTableCell align="center">{row.Email}</CustomTableCell>
-													<CustomTableCell align="center">{row.Cnic}</CustomTableCell>
-													<CustomTableCell align="center">{row.DOB}</CustomTableCell>
-													<CustomTableCell align="center">{row.InsuranceId}</CustomTableCell>
-													<CustomTableCell align="center">{row.HireDate}</CustomTableCell>
-													<CustomTableCell align="center">{row.HiringReason}</CustomTableCell>
-													<CustomTableCell align="center">{row.ServiceStartDate}</CustomTableCell>
-													<CustomTableCell align="center">{row.ProbationEndDate}</CustomTableCell>
-													<CustomTableCell align="center">{row.PartTimePercentage}</CustomTableCell>
-													<CustomTableCell align="center">{row.ContractEndDate}</CustomTableCell>
-													<CustomTableCell align="center">{row.Address}</CustomTableCell>
-													<CustomTableCell align="center">{row.Contact}</CustomTableCell>
-													<CustomTableCell align="center">{row.MaritalStatus}</CustomTableCell>
-													<CustomTableCell align="center">{row.Country}</CustomTableCell>
-													<CustomTableCell align="center">{row.CurrentEmployeeStatus}</CustomTableCell>
-													<CustomTableCell align="center">{row.PartTimeSituation}</CustomTableCell>
-													<CustomTableCell align="center"><input type="checkbox" name="radio"  value= {row.Id}
-						onChange={()=>this.selection(row.Id)}
-						/>
-						</CustomTableCell>
+									<Grid item xs={12} className="table-responsive">
+										<Table className={classes.table}>
+											<TableHead>
+												<TableRow>
+													<CustomTableCell align="center" >EmployeeCode</CustomTableCell>
+													<CustomTableCell align="center">Title</CustomTableCell>
+													<CustomTableCell align="center">FirstName</CustomTableCell>
+													<CustomTableCell align="center">LastName</CustomTableCell>
+													<CustomTableCell align="center">Gender</CustomTableCell>
+													<CustomTableCell align="center">Email</CustomTableCell>
+													<CustomTableCell align="center">Cnic</CustomTableCell>
+													<CustomTableCell align="center">DOB</CustomTableCell>
+													<CustomTableCell align="center">InsuranceId</CustomTableCell>
+													<CustomTableCell align="center">HireDate</CustomTableCell>
+													<CustomTableCell align="center">HiringReason</CustomTableCell>
+													<CustomTableCell align="center">ServiceStartDate</CustomTableCell>
+													<CustomTableCell align="center">ProbationEndDate</CustomTableCell>
+													<CustomTableCell align="center">PartTimePercentage</CustomTableCell>
+													<CustomTableCell align="center">ContractEndDate</CustomTableCell>
+													<CustomTableCell align="center">Address</CustomTableCell>
+													<CustomTableCell align="center">Contact</CustomTableCell>
+													<CustomTableCell align="center">MaritalStatus</CustomTableCell>
+													<CustomTableCell align="center">Country</CustomTableCell>
+													<CustomTableCell align="center">CurrentEmployeeStatus</CustomTableCell>
+													<CustomTableCell align="center">PartTimeSituation</CustomTableCell>
+													<CustomTableCell align="center">Action</CustomTableCell>
 												</TableRow>
-											))}
-										</TableBody>
-									</Table>
+											</TableHead>
+											<TableBody>
+												{this.state.employeeList.map(row => (
+													<TableRow className={classes.row} key={row.Code}>
+														<CustomTableCell align="center">{row.EmployeeCode}</CustomTableCell>
+														<CustomTableCell align="center">{row.Title}</CustomTableCell>
+														<CustomTableCell align="center">{row.FirstName}</CustomTableCell>
+														<CustomTableCell align="center">{row.LastName}</CustomTableCell>
+														<CustomTableCell align="center">{row.Gender}</CustomTableCell>
+														<CustomTableCell align="center">{row.Email}</CustomTableCell>
+														<CustomTableCell align="center">{row.Cnic}</CustomTableCell>
+														<CustomTableCell align="center">{row.DOB}</CustomTableCell>
+														<CustomTableCell align="center">{row.InsuranceId}</CustomTableCell>
+														<CustomTableCell align="center">{row.HireDate}</CustomTableCell>
+														<CustomTableCell align="center">{row.HiringReason}</CustomTableCell>
+														<CustomTableCell align="center">{row.ServiceStartDate}</CustomTableCell>
+														<CustomTableCell align="center">{row.ProbationEndDate}</CustomTableCell>
+														<CustomTableCell align="center">{row.PartTimePercentage}</CustomTableCell>
+														<CustomTableCell align="center">{row.ContractEndDate}</CustomTableCell>
+														<CustomTableCell align="center">{row.Address}</CustomTableCell>
+														<CustomTableCell align="center">{row.Contact}</CustomTableCell>
+														<CustomTableCell align="center">{row.MaritalStatus}</CustomTableCell>
+														<CustomTableCell align="center">{row.Country}</CustomTableCell>
+														<CustomTableCell align="center">{row.CurrentEmployeeStatus}</CustomTableCell>
+														<CustomTableCell align="center">{row.PartTimeSituation}</CustomTableCell>
+														<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
+															onChange={() => this.selection(row.Id)}
+														/>
+														</CustomTableCell>
+													</TableRow>
+												))}
+											</TableBody>
+										</Table>
 
 
 									</Grid>
-									
+
 
 
 								</Paper>
@@ -1645,12 +1711,22 @@ class Employee extends Component {
 										<TextField id="standard-basic" value={this.state.Address} fullWidth label="Address" onChange={this.handleChange} name="Address" />
 										{this.validator.message('Address', this.state.Address, 'required')}
 									</Grid>
+									<Grid item xs={12} sm={5} >
+										<FormControlLabel
+											control={<Checkbox checked={this.state.SocialSecurityApplicable} onChange={this.handlecheckboxChange} name="SocialSecurityApplicable" />}
+											label="Social Security Applicable"
+										/>
+											<FormControlLabel
+											control={<Checkbox checked={this.state.TaxationApplicable} onChange={this.handlecheckboxChange} name="TaxationApplicable" />}
+											label="Taxation Applicable"
+										/>
+									</Grid>
 
 								</form>
 								<div className="row" >
 									<Grid item xs={12} sm={10}  >
 										<div style={{ float: "right", "marginRight": "8px" }}>
-										<Button style={{ "marginBottom": "10px","marginRight":"10px" }} variant="outlined" color="secondary"  className={this.state.Action!='Insert Record'?classes.button:'d-none'} onClick={() => this.insertUpdateEmployee('employee')}>
+											<Button style={{ "marginBottom": "10px", "marginRight": "10px" }} variant="outlined" color="secondary" className={this.state.Action != 'Insert Record' ? classes.button : 'd-none'} onClick={() => this.insertUpdateEmployee('employee')}>
 												Update Employee Detail
       										</Button>
 											<Button style={{ "marginBottom": "10px" }} variant="outlined" color="secondary" className={classes.button} onClick={() => this.nextTab(2)}>
@@ -1724,8 +1800,8 @@ class Employee extends Component {
 												<MenuItem value="">
 													<em>None</em>
 												</MenuItem>
-												<MenuItem value="1">Yes</MenuItem>
-												<MenuItem value="0">No</MenuItem>
+												<MenuItem value="Y">Yes</MenuItem>
+												<MenuItem value="N">No</MenuItem>
 
 											</Select>
 										</FormControl>
@@ -1773,8 +1849,8 @@ class Employee extends Component {
   										</Button>
 									</div>
 									<div style={{ float: "right", "marginRight": "8px" }}>
-									<Button style={{ "marginBottom": "10px","marginRight":"10px" }} variant="outlined" color="secondary"  className={this.state.Action!='Insert Record'?classes.button:'d-none'} onClick={() => this.insertUpdateEmployee('bank')}>
-												Update Bank Detail
+										<Button style={{ "marginBottom": "10px", "marginRight": "10px" }} variant="outlined" color="secondary" className={this.state.Action != 'Insert Record' ? classes.button : 'd-none'} onClick={() => this.insertUpdateEmployee('bank')}>
+											Update Bank Detail
       										</Button>
 										<Button style={{ "marginBottom": "10px" }} variant="outlined" color="secondary" className={classes.button} onClick={() => this.nextTab(3)}>
 											Next
@@ -2083,18 +2159,17 @@ class Employee extends Component {
 												Previous
   											</Button>
 										</div>
-										<div style={{ float: "right", "marginRight": "8px" }}>
-										<Button style={{ "marginBottom": "10px","marginRight":"10px" }} variant="outlined" color="secondary"  className={this.state.Action!='Insert Record'?classes.button:'d-none'} onClick={() => this.insertUpdateEmployee('payroll')}>
+										<div style={{ float: "right", "marginRight": "8px","marginTop": "5px" }}>
+											<Button style={{  "marginRight": "10px" }} variant="outlined" color="secondary" className={this.state.Action != 'Insert Record' ? classes.button : 'd-none'} onClick={() => this.insertUpdateEmployee('payroll')}>
 												Update payroll
       										</Button>
-											<Button style={{ "marginBottom": "10px" }} variant="outlined" color="secondary" className={classes.button} onClick={() => this.nextTab(4)}>
-												Next
-      									</Button>
+											  <Button variant="outlined" color="secondary" className={classes.button} onClick={() => this.insertUpdateEmployee('All')} >
+												{this.state.Action}
+											</Button>
 										</div>
 									</Grid>
 								</div>
 							</TabContainer>
-
 							<TabContainer dir={theme.direction}>
 								<h4>Applicable Laws</h4>
 								<form className={classes.container} noValidate autoComplete="off">
@@ -2165,10 +2240,10 @@ class Employee extends Component {
   											</Button>
 										</div>
 										<div style={{ float: "right", "marginRight": "8px" }}>
-										<Button style={{ "marginBottom": "10px","marginRight":"10px" }} variant="outlined" color="secondary" className={this.state.Action!='Insert Record'?classes.button:'d-none'} onClick={() => this.insertUpdateEmployee('laws')}>
+											<Button style={{ "marginBottom": "10px", "marginRight": "10px" }} variant="outlined" color="secondary" className={this.state.Action != 'Insert Record' ? classes.button : 'd-none'} onClick={() => this.insertUpdateEmployee('laws')}>
 												Update Law
       										</Button>
-											<Button variant="outlined" color="secondary" className={classes.button} onClick={()=>this.insertUpdateEmployee('All')} >
+											<Button variant="outlined" color="secondary" className={classes.button} onClick={() => this.insertUpdateEmployee('All')} >
 												{this.state.Action}
 											</Button>
 										</div>

@@ -105,6 +105,9 @@ class BulkUpload extends Component {
 		this.getCompanyDetail();
 
 	}
+	reset=()=>{
+		this.setState({content:{}});
+	}
 	onSave = (newData, updatedRow) => {
 		console.log(newData);
 		this.setState({ bulkdata: newData });
@@ -172,7 +175,7 @@ class BulkUpload extends Component {
 					//document.getElementById("fuse-splash-screen").style.display = "none";
 				}).catch((error) => {
 					console.log("error", error);
-					Messages.error();
+					Messages.error(error.message);
 					//document.getElementById("fuse-splash-screen").style.display = "none";
 				});
 		}
@@ -185,6 +188,7 @@ class BulkUpload extends Component {
 				this.validator.showMessages();
 				this.forceUpdate();
 			} else {
+				// this.setState({ content: { }, bulkdata:[] });
 				// //document.getElementById("fuse-splash-screen").style.display="block";
 				console.log("BulkUpload")
 				var obj = {
@@ -283,47 +287,16 @@ class BulkUpload extends Component {
 				//document.getElementById("fuse-splash-screen").style.display = "none";
 			})
 			.catch((error) => {
+				console.log(error)
+				Messages.error(error.message);
 				//document.getElementById("fuse-splash-screen").style.display = "none";
 			})
 	}
 	render() {
 
 		const { classes, theme } = this.props;
-		var content = {
-			columns: [
-				{ title: 'Name', field: 'name' },
-				{ title: 'Surname', field: 'surname' },
-				{ title: 'Birth Year', field: 'birthYear', type: 'numeric' },
-				{
-					title: 'Birth Place',
-					field: 'birthCity',
-				},
-			],
-			data: [
-				{ name: 'Mehmet', surname: 'Baran', birthYear: 1987, birthCity: 63 },
-				{
-					name: 'Alex Bae',
-					surname: 'Baran',
-					birthYear: '2017',
-					birthCity: '34',
-				},
-				{
-					name: 'Jason Fox',
-					surname: 'Baran',
-					birthYear: '2017',
-					birthCity: '34',
-				},
-				{
-					name: 'Brian Chin',
-					surname: 'Baran',
-					birthYear: '2017',
-					birthCity: '34',
-				}
-			],
-			options: {
-				editable: { start: 0, end: 10 }
-			}
-		}
+		const {content} = this.state;
+	
 		return (
 			<FusePageSimple
 				classes={{
@@ -338,9 +311,7 @@ class BulkUpload extends Component {
 				content={
 
 					<div className={classes.root} style={{ height: '300px' }}>
-						<div>
-							<ToastContainer />
-						</div>
+						
 						<AppBar position="static" color="default">
 							<Tabs
 								value={this.state.value}
@@ -385,8 +356,8 @@ class BulkUpload extends Component {
 												<MenuItem value="EmployeeBank">Employee(Bank)</MenuItem>
 												<MenuItem value="EmployeePayroll">Employee(Payroll-Periodic)</MenuItem>
 												<MenuItem value="EmployeePayrollOneTime">Employee(Payroll-oneTime)</MenuItem>
-												<MenuItem value="ApplicableLaws">Employee(ApplicableLaws)</MenuItem>
-												<MenuItem value="UnpaidLeaves">Employee(UnpaidLeaves)</MenuItem>
+												{/* <MenuItem value="ApplicableLaws">Employee(ApplicableLaws)</MenuItem> */}
+												{/* <MenuItem value="UnpaidLeaves">Employee(UnpaidLeaves)</MenuItem> */}
 												<MenuItem value="overtime">Employee(overTime)</MenuItem>
 												<MenuItem value="EmployeeCostCenter">Employee(Cost Center)</MenuItem>
 												<MenuItem value="CostCenter">Cost Center</MenuItem>
@@ -429,9 +400,14 @@ class BulkUpload extends Component {
 										<div style={{ float: "right", "marginRight": "8px" }}>
 											{
 												this.state.Default !=null?
-												<Button variant="outlined" color="secondary" className={classes.button} style={{ marginTop: "10px" }} onClick={this.uploadFile} >
+												<div>
+													<Button variant="outlined" color="secondary" className={Object.keys(this.state.content).length > 0 ?"d-none":classes.button}  style={{ marginTop: "10px",marginRight:"5px" }} onClick={this.uploadFile} >
 												{this.state.Action}
 											</Button>
+											<Button variant="outlined" color="secondary" className={Object.keys(this.state.content).length > 0 ?classes.button:"d-none"} style={{ marginTop: "10px" }} onClick={this.reset} >
+											Reset
+										</Button>
+												</div>
 											:""
 											}
 										</div>
@@ -447,10 +423,11 @@ class BulkUpload extends Component {
 										Post Data
 									</Button>
 									<EditableTable
-										content={this.state.content}
+										content={content}
 										onCancel={this.onCancel}
 										onSave={this.onSave}
-									/> </div> : ""
+									/> </div> 
+									: ""
 						}
 
 						<Modal
@@ -482,7 +459,7 @@ class BulkUpload extends Component {
 							</div>
 						</Modal>
 
-						
+						<ToastContainer />
 					</div>
 				}
 			/>

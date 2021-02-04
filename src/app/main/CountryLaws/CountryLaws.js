@@ -30,6 +30,7 @@ import SimpleReactValidator from 'simple-react-validator';
 import defaultUrl from "../../../app/services/constant/constant";
 import Messages from '../toaster';
 import { ToastContainer, toast } from 'react-toastify';
+import moment from 'moment';
 import $ from 'jquery';
 import DataTable from "datatables.net";
 import * as responsive from "datatables.net-responsive";
@@ -110,7 +111,9 @@ class CountryLaws extends Component {
 		Lumpsum:"",
 		PaidWithIn:"",
 		DeclarationMode:"",
-		declarationModelList:[]
+		declarationModelList:[],
+		StartDate:"",
+		EndDate:""
 
 	};
 	constructor(props) {
@@ -267,6 +270,8 @@ class CountryLaws extends Component {
 				Lumpsum:this.state.Lumpsum,
 				PaidWithIn:this.state.PaidWithIn,
 				DeclarationMode:this.state.DeclarationMode,
+				StartDate:this.state.StartDate,
+				EndDate:this.state.EndDate
 			};
 			//document.getElementById("fuse-splash-screen").style.display = "block";
 			axios.interceptors.request.use(function (config) {
@@ -307,6 +312,8 @@ class CountryLaws extends Component {
 						Lumpsum:"",
 						PaidWithIn:"",
 						DeclarationMode:"",
+						StartDate:"",
+						EndDate:""
 					});
 					//document.getElementById("fuse-splash-screen").style.display = "none";
 					Messages.success();
@@ -332,6 +339,8 @@ class CountryLaws extends Component {
 						Lumpsum:"",
 						PaidWithIn:"",
 						DeclarationMode:"",
+						StartDate:"",
+						EndDate:""
 					})
 					//document.getElementById("fuse-splash-screen").style.display = "none";
 					Messages.error();
@@ -373,6 +382,8 @@ class CountryLaws extends Component {
 					Lumpsum:response.data[0].lumpsum,
 					PaidWithIn:response.data[0].PaidWithin,
 					DeclarationMode:response.data[0].DeclarationMode,
+					StartDate:moment(response.data[0].StartDate).format('YYYY-MM-DD'),
+					EndDate:moment(response.data[0].EndDate).format('YYYY-MM-DD'),
 				});
 				//document.getElementById("fuse-splash-screen").style.display = "none";
 			})
@@ -778,6 +789,39 @@ class CountryLaws extends Component {
 										/>
 										{this.validator.message('PaidWithIn', this.state.PaidWithIn, 'required')}
 									</Grid>
+									<Grid item xs={12} sm={5}  style={{ marginRight: '5px' }} >
+										<TextField
+											id="date"
+											label="Start Date"
+											type="date"
+											name="StartDate"
+											value={this.state.StartDate}
+											fullWidth
+											className={classes.textField}
+											onChange={this.handleChange}
+											InputLabelProps={{
+												shrink: true,
+											}}
+										/>
+										{this.validator.message('StartDate', this.state.StartDate, 'required')}
+									</Grid>
+									<Grid item xs={12} sm={5} >
+										<TextField
+											id="date"
+											label="End Date"
+											type="date"
+											name="EndDate"
+											value={this.state.EndDate}
+											fullWidth
+											className={classes.textField}
+											onChange={this.handleChange}
+											InputLabelProps={{
+												shrink: true,
+											}}
+										/>
+										{this.validator.message('EndDate', this.state.EndDate, 'required')}
+									</Grid>
+
 								</form>
 								<div className="row">
 									<Grid item xs={12} sm={10} >

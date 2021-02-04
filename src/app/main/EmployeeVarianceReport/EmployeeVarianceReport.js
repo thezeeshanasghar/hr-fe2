@@ -234,7 +234,6 @@ class EmployeeVarianceReport extends Component {
 													<CustomTableCell align="center">{row.LASTMONTH}</CustomTableCell>
 													<CustomTableCell align="center">{row.Varrience}</CustomTableCell>
 													<CustomTableCell align="center">{row.CURRENTMONTH=="0" && row.LASTMONTH=="0"?"0":row.LASTMONTH=="0"?'100':row.CURRENTMONTH=="0"?"-100": (row.Varrience/row.LASTMONTH)*100}</CustomTableCell>
-										
 												</TableRow>
 											))}
 										</TableBody>

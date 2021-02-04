@@ -66,13 +66,17 @@ class EmployeeReports extends Component {
 		table:null,
 		company:"",
 		companyList:[],
-		data:[]
+		data:[],
+		Path:""
 	};
 	constructor(props) {
 		super(props);
 		this.validator = new SimpleReactValidator();
 	
 	  }
+	  download=()=>{
+		window.open(defaultUrl + "download/"+this.state.Path,"_self");
+		}
 	  componentDidMount(){
 		localStorage.removeItem("ids");
 		  this.getselectiveCompanyDetail();
@@ -103,7 +107,7 @@ class EmployeeReports extends Component {
 	getEmployeeDetail = () => {
 		axios({
 			method: "get",
-			url: defaultUrl + "report/employee",
+			url: defaultUrl + "report/employee/"+this.state.company,
 			headers: {
 				// 'Authorization': `bearer ${token}`,
 				"Content-Type": "application/json;charset=utf-8",
@@ -112,7 +116,7 @@ class EmployeeReports extends Component {
 			.then((response) => {
 				console.log(response);
 
-				this.setState({ data: response.data.data.filter(x=>x.Id==this.state.company) });
+				this.setState({ data: response.data.data.data,Path:response.data.Path });
 
 			})
 			.catch((error) => {
@@ -161,7 +165,10 @@ class EmployeeReports extends Component {
 						</AppBar>
 
 						<Paper className={this.state.data.length>0?classes.root:"d-none"} >
-						<ExcelFile element={<button style={{color:"green"}}>Download in Excel sheet</button>}>
+						<Button style={{ "marginBottom": "10px" }} variant="outlined" color="secondary" className={classes.button} onClick={() => this.download()}>
+						Download Report
+  						</Button>
+						{/* <ExcelFile element={<button style={{color:"green"}}>Download in Excel sheet</button>}>
 							<ExcelSheet data={this.state.data} name="Employee-Report">
 								<ExcelColumn label="Employee Code" value="EmployeeCode" />
 								<ExcelColumn label="Cnic" value="Cnic"  />
@@ -179,7 +186,7 @@ class EmployeeReports extends Component {
 								<ExcelColumn label="Company Name" value="CompanyName" />
 								
 							</ExcelSheet>
-						</ExcelFile>
+						</ExcelFile> */}
 				
 							  <Table className={classes.table}>
 										<TableHead>

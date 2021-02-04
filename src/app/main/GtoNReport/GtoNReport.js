@@ -25,10 +25,15 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import ReactExport from "react-export-excel";
+import Pdf from "react-to-pdf";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+const ref = React.createRef();
+const options = {
+	orientation: 'landscape'
+};
 const styles = theme => ({
 	container: {
 		display: 'flex',
@@ -37,7 +42,7 @@ const styles = theme => ({
 	textField: {
 		marginLeft: theme.spacing.unit,
 		marginRight: theme.spacing.unit,
-		
+
 	},
 	dense: {
 		marginTop: 16,
@@ -72,25 +77,27 @@ class GtoNReport extends Component {
 
 	state = {
 		value: 0,
-		Action:'Insert Record',
-		table:null,
+		Action: 'Insert Record',
+		table: null,
 		data: [],
-		Month:"",
-		Company:"",
-		companyList:[],
-		columns:[]
+		Month: "",
+		Company: "",
+		companyList: [],
+		columns: [],
+		Sum:[],
+		Path:""
 
 	};
 
 	constructor(props) {
 		super(props);
 		this.validator = new SimpleReactValidator();
-	
-	  }
-	  componentDidMount(){
+
+	}
+	componentDidMount() {
 		this.getselectiveCompanyDetail();
-	  }
-	
+	}
+
 	getselectiveCompanyDetail = () => {
 		axios({
 			method: "get",
@@ -111,147 +118,186 @@ class GtoNReport extends Component {
 			})
 	}
 	handledropdown = (e) => {
-		this.setState({Company:e.value})
+		this.setState({ Company: e.value })
 	}
-	  generateReport=()=>{
-		if(this.state.Month !="" && this.state.Company!=""){
-			var obj={
-				Date:this.state.Month+"-01",
-				CompanyId:this.state.Company
-		  }
-		axios({
-			method: "post",
-			url: defaultUrl + "Report/GTN",
-			data:JSON.stringify(obj),
-			headers: {
-				// 'Authorization': `bearer ${token}`,
-				"Content-Type": "application/json;charset=utf-8",
-			},
-		})
-			.then((response) => {
-				this.setState({data:response.data.recordset,columns:Object.keys(response.data.recordset[0])})
-				console.log(response.data.recordset,Object.keys(response.data.recordset[0]))
+	download=()=>{
+	window.open(defaultUrl + "download/"+this.state.Path,"_self");
+	}
+	generateReport = () => {
+		if (this.state.Month != "" && this.state.Company != "") {
+			var obj = {
+				Date: this.state.Month + "-01",
+				CompanyId: this.state.Company
+			}
+			axios({
+				method: "post",
+				url: defaultUrl + "Report/GTN",
+				data: JSON.stringify(obj),
+				headers: {
+					// 'Authorization': `bearer ${token}`,
+					"Content-Type": "application/json;charset=utf-8",
+				},
 			})
-			.catch((error) => {
-				console.log(error);
-			})
-		}  
-		
-	  }
-	  handleChange = (e) => {
-		  console.log(e.target.value)
-		this.setState({ [e.target.name]: e.target.value});
+				.then((response) => {
+					console.log(response.data.Path,response.data)
+					this.setState({ Path: response.data.Path,data: response.data.data.recordset, columns: Object.keys(response.data.data.recordset[0]) })
+					// console.log(response.response.data.recordset, Object.keys(response.data.recordset[0]))
+					var FooterCount={};
+				
+					// debugger
+					for(var i=0;i<response.data.data.recordset.length;i++) {
+						
+						for(var y=0;y<Object.keys(response.data.data.recordset[0]).length;y++){
+							if(Number.isInteger(response.data.data.recordset[i][Object.keys(response.data.data.recordset[i])[y]])){
+							FooterCount[Object.keys(response.data.data.recordset[i])[y]]=response.data.data.recordset[i][Object.keys(response.data.data.recordset[i])[y]];
+							}
+						}
+
+					// 		if(Number.isInteger(response.data.recordset[i][Object.keys(response.data.recordset[0])[y]])){
+					// 			if(CountArray.filter(x=>x.EmployeeCode==response.data.recordset[i].EmployeeCode).length===0)
+					// 			{
+					// 				CountArray.push({Object.keys(response.data.recordset[0])[y]:response.data.recordset[i][Object.keys(response.data.recordset[0])[y]],EmployeeCode:response.data.recordset[i].EmployeeCode})
+					// 			}else{
+					// 				var Subarray=CountArray.find(x=>x.EmployeeCode==response.data.recordset[i].EmployeeCode);
+					// 				if(Subarray)
+					// 				{
+					// 					CountArray.splice('EmployeeId',Subarray.EmployeeCode);
+					// 					CountArray.push({Object.keys(response.data.recordset[0])[y]:response.data.recordset[i][Object.keys(response.data.recordset[0])[y]]+Subarray.Amount,EmployeeCode:response.data.recordset[i].EmployeeCode})
+					// 				}
+					// 			}
+					// 			// 
+					// 		}
+					// 	}
+					}
+					this.setState({Sum:[FooterCount]})
+				})
+				.catch((error) => {
+					console.log(error);
+				})
+		}
+
+	}
+	
+	handleChange = (e) => {
+		console.log(e.target.value)
+		this.setState({ [e.target.name]: e.target.value });
 	};
 	render() {
 		const { classes, theme } = this.props;
-		
+
 		return (
 			<FusePageSimple
-				
+
 				header={
 					<div className="p-24"><h4>G2N Report</h4></div>
 				}
-				
+
 				content={
 
 					<div className={classes.root}>
-									<form className={classes.container} noValidate autoComplete="off" style={{marginBottom:'30px'}}>
-								<Grid item xs={12} sm={5}  style={{marginRight:'5px'}} >
+						
+						<form className={classes.container} noValidate autoComplete="off" style={{ marginBottom: '30px' }}>
+							<Grid item xs={12} sm={5} style={{ marginRight: '5px' }} >
 								<FormControl className={classes.formControl}>
-								<TextField
-											id="Month"
-											label="Report Month"
-											type="month"
-											fullWidth
-											name="Month"
-											value={this.state.Month}
-											className={classes.textField}
-											onChange={this.handleChange}
-											InputLabelProps={{
-												shrink: true,
-											}}
-										/>
-										
-										</FormControl>
-									</Grid>
-									<Grid item xs={12} sm={5} style={{marginTop: "10px"}} className={this.state.Type=="Bank" || this.state.Type=="Company" || this.state.Type=="Exchange" || this.state.Type=="CountryLaw" ? 'd-none' : ''   } >
-										<FormControl className={classes.formControl}>
-									
-											<Select1
+									<TextField
+										id="Month"
+										label="Report Month"
+										type="month"
+										fullWidth
+										name="Month"
+										value={this.state.Month}
+										className={classes.textField}
+										onChange={this.handleChange}
+										InputLabelProps={{
+											shrink: true,
+										}}
+									/>
 
-												name="companyId"
-												options={this.state.companyList}
-												value={this.state.CompanySelected}
-												className="basic-multi-select"
-												classNamePrefix="select"
-												onChange={this.handledropdown}
-											
-											/>
-											{this.validator.message('companyId', this.state.companyId, 'required')}
-										</FormControl>
-									</Grid>
-									<Button variant="outlined" color="secondary" style={{marginTop: "10px"}} className={classes.button} onClick={()=>this.generateReport()} >
-												Generate Report
+								</FormControl>
+							</Grid>
+							<Grid item xs={12} sm={5} style={{ marginTop: "10px" }} className={this.state.Type == "Bank" || this.state.Type == "Company" || this.state.Type == "Exchange" || this.state.Type == "CountryLaw" ? 'd-none' : ''} >
+								<FormControl className={classes.formControl}>
+
+									<Select1
+
+										name="companyId"
+										options={this.state.companyList}
+										value={this.state.CompanySelected}
+										className="basic-multi-select"
+										classNamePrefix="select"
+										onChange={this.handledropdown}
+
+									/>
+									{this.validator.message('companyId', this.state.companyId, 'required')}
+								</FormControl>
+							</Grid>
+							<Button variant="outlined" color="secondary" style={{ marginTop: "10px" }} className={classes.button} onClick={() => this.generateReport()} >
+								Generate Report
 											</Button>
-								</form>
-						<AppBar position="static" color="default">
-							
-						</AppBar>
-				
-								<Paper className={this.state.data.length>0?classes.root:"d-none"} > 
-								
-								<div style={{width:"30%",height:"100px",border:"solid 1px black",margin:"10px"}}>
-										<p>Company-{this.state.data.length>0?this.state.data[0].CountryCode:""}</p>
-										<p>Company-{this.state.data.length>0?this.state.data[0].CompanyName:""}</p>
-										<p>PayCycle-{this.state.Month}</p>
-								</div>
-								<ExcelFile element={<button style={{color:"green"}}>Download in Excel sheet</button>}>
-							<ExcelSheet data={this.state.data} name="G2N-Report">
-								{
-									this.state.columns.map(row => 
-									<ExcelColumn label={row} value={row} />
-									)
-								}
-								<ExcelColumn label="PayCycle" value={this.state.Month}  />
-							</ExcelSheet>
-						</ExcelFile>
-								<Table className={classes.table}>
-										<TableHead>
-											<TableRow>
-											{
-											this.state.columns.map(row => 
+						</form>
+						
+						<Paper  ref={ref}  className={this.state.data.length > 0 ? classes.root : "d-none"} >
+						<Button style={{ "marginBottom": "10px" }} variant="outlined" color="secondary" className={classes.button} onClick={() => this.download()}>
+						Download Report
+  						</Button>
+							<div style={{ width: "30%", height: "100px", border: "solid 1px black", margin: "10px" }}>
+								<p>Country Code-{this.state.data.length > 0 ? this.state.data[0].CountryCode : ""}</p>
+								<p>Company Name-{this.state.data.length > 0 ? this.state.data[0].CompanyName : ""}</p>
+								<p>Entity Id-{this.state.data.length > 0 ? this.state.data[0].Code : ""}</p>
+								<p>PayCycle-{this.state.Month}</p>
+							</div>
+							{/* <ExcelFile element={<button style={{ color: "green" }}>Download in Excel sheet</button>}>
+								<ExcelSheet data={this.state.data} name="G2N-Report">
+									{
+										this.state.columns.map(row =>
+											<ExcelColumn label={row} value={row} />
+										)
+									}
+									<ExcelColumn label="PayCycle" value={this.state.Month} />
+								</ExcelSheet>
+							</ExcelFile> */}
+							<Table className={classes.table}>
+								<TableHead>
+									<TableRow>
+										{
+											this.state.columns.map(row =>
 												<CustomTableCell align="center">{row}</CustomTableCell>
 											)
+										}
+									</TableRow>
+								</TableHead>
+								<TableBody>
+									{this.state.data.map(row => (
+										<TableRow className={classes.row} key={row.payElement}>
+											{
+												this.state.columns.map(column =>
+													<CustomTableCell align="center">{row[column]}</CustomTableCell>
+												)
 											}
-											</TableRow>
-										</TableHead>
-										<TableBody>
-											{this.state.data.map(row => (
-												<TableRow className={classes.row} key={row.payElement}>
-														{
-											this.state.columns.map(column =>
-												<CustomTableCell align="center">{row[column]}</CustomTableCell>
-											)
-											}
-												</TableRow>
-											))}
-										</TableBody>
-										<TableFooter>
-												<TableRow>
-												<CustomTableCell align="center">-</CustomTableCell>
-												<CustomTableCell align="center">-</CustomTableCell>
-												<CustomTableCell align="center">-</CustomTableCell>
-												<CustomTableCell align="center">-</CustomTableCell>
-												<CustomTableCell align="center">-</CustomTableCell>
-												<CustomTableCell align="center">-</CustomTableCell>
-												<CustomTableCell align="center">-</CustomTableCell>
-												<CustomTableCell align="center">-</CustomTableCell>
-												</TableRow>
-										</TableFooter>
-									</Table>
-								
-							  </Paper>
-					
+										</TableRow>
+									))}
+								</TableBody>
+								<TableFooter>
+								<TableRow className={classes.row} >
+									{this.state.columns.map((row,index) => (
+										console.log(index,row),console.log(this.state.Sum),
+										index>6?
+										
+											this.state.Sum.map(column =>
+													<CustomTableCell align="center">{column[row]}</CustomTableCell>
+												)
+											
+										
+										:
+										<CustomTableCell align="center">-</CustomTableCell>
+									
+									))}
+									</TableRow>
+								</TableFooter>
+							</Table>
+
+						</Paper>
+
 					</div>
 				}
 			/>

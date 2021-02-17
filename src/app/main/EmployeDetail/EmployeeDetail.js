@@ -127,6 +127,7 @@ class EmployeeDetail extends Component {
 			},
 		})
 			.then((response) => {
+				console.log(response.data,'32432423')
 				this.setState({
 					Employee: response.data,
 					// Action: "Update Record",
@@ -336,6 +337,10 @@ class EmployeeDetail extends Component {
 							<Grid item xs={4} sm={4}  >
 								<h2>Contract End Date</h2>
 								<label>{this.state.Employee.ContractEndDate}</label>
+							</Grid>
+							<Grid item xs={4} sm={4}  >
+								<h2>Current Employee Status</h2>
+								<label>{this.state.Employee.CurrentEmployeeStatus==='30'?'Deactive':'Active'}</label>
 							</Grid>
 						</form>
 

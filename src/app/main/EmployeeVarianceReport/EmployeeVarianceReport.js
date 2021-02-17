@@ -76,7 +76,8 @@ class EmployeeVarianceReport extends Component {
 		data: [],
 		Month:"",
 		Company:"",
-		companyList:[]
+		companyList:[],
+		Path:""
 
 	};
 
@@ -112,6 +113,9 @@ class EmployeeVarianceReport extends Component {
 		console.log("working",e.value)
 		this.setState({Company:e.value})
 	}
+	download=()=>{
+		window.open(defaultUrl + "download/"+this.state.Path,"_self");
+		}
 	  generateReport=()=>{
 		if(this.state.Month !="" && this.state.Company!=""){
 			var obj={
@@ -128,7 +132,7 @@ class EmployeeVarianceReport extends Component {
 			},
 		})
 			.then((response) => {
-				this.setState({data:response.data})
+				this.setState({data:response.data.data,Path:response.data.Path})
 			})
 			.catch((error) => {
 				console.log(error);
@@ -197,12 +201,14 @@ class EmployeeVarianceReport extends Component {
 						</AppBar>
 				
 								<Paper className={this.state.data.length>0?classes.root:"d-none"} > 
-								
+								<Button style={{ "marginBottom": "10px" }} variant="outlined" color="secondary" className={classes.button} onClick={() => this.download()}>
+						Download Report
+  						</Button>
 								<div style={{width:"30%",height:"100px",border:"solid 1px black",margin:"10px"}}>
 										<p>Company-{this.state.data.length>0?this.state.data[0].company:""}</p>
 										<p>PayCycle-{this.state.data.length>0?this.state.data[0].FirstDate+'-'+this.state.data[0].LastDate:""}</p>
 								</div>
-								<ExcelFile element={<button style={{color:"green"}}>Download in Excel sheet</button>}>
+								{/* <ExcelFile element={<button style={{color:"green"}}>Download in Excel sheet</button>}>
 							<ExcelSheet data={this.state.data} name="Varriance-Report">
 								<ExcelColumn label="Company" value="company" />
 								<ExcelColumn label="PayCycle" value={(row) => row.FirstDate+'-'+row.LastDate}  />
@@ -213,7 +219,7 @@ class EmployeeVarianceReport extends Component {
 								<ExcelColumn label="%"
 									value={(row) => row.CURRENTMONTH=="0" && row.LASTMONTH=="0"?"0":row.LASTMONTH=="0"?'100':row.CURRENTMONTH=="0"?"-100": (row.Varrience/row.LASTMONTH)*100} />
 							</ExcelSheet>
-						</ExcelFile>
+						</ExcelFile> */}
 								<Table className={classes.table}>
 										<TableHead>
 											<TableRow>

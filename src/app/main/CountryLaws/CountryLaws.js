@@ -34,6 +34,8 @@ import moment from 'moment';
 import $ from 'jquery';
 import DataTable from "datatables.net";
 import * as responsive from "datatables.net-responsive";
+import Divider from '@material-ui/core/Divider';
+import AddIcon from '@material-ui/icons/Add';
 
 const styles = theme => ({
 	container: {
@@ -106,14 +108,15 @@ class CountryLaws extends Component {
 		CountryLaws: [],
 		table: null,
 		Discount:"",
-		TaxAmount:"",
 		NoCarryForward:"",
 		Lumpsum:"",
 		PaidWithIn:"",
 		DeclarationMode:"",
 		declarationModelList:[],
 		StartDate:"",
-		EndDate:""
+		EndDate:"",
+		RangesList:[],
+		TaxAmount:""
 
 	};
 	constructor(props) {
@@ -129,6 +132,27 @@ class CountryLaws extends Component {
 		this.getMode();
 		this.getType();
 		this.getDeclarationMode();
+	}
+	addRange=()=>{
+
+		if (!this.validator.fieldValid('minSalary') || !this.validator.fieldValid('maxSalary') ) {
+			this.validator.showMessages();
+			this.forceUpdate();
+		return false;  
+		}
+		if((this.state.TaxAmount =="" || this.state.TaxAmount =="0") && (this.state.percentage =="" || this.state.percentage =="0") ){
+			toast.warn("Both Percentage and Fixed amount cant be null");
+			return false;
+		}
+		debugger
+		if((this.state.TaxAmount !="" && this.state.TaxAmount !="0") && (this.state.percentage !="" && this.state.percentage !="0") ){
+			toast.warn("Kindly add Fixed Amount or Percetage");
+			return false;
+		}
+		var array=this.state.RangesList;
+		array.push({minSalary:this.state.minSalary,maxSalary:this.state.maxSalary,Discount:this.state.Discount,Percentage:this.state.percentage.length,id:array.length+1,TaxAmount:this.state.TaxAmount});
+		this.setState({RangesList:array,minSalary:"",maxSalary:"",Discount:"",percentage:"",TaxAmount:""});
+		
 	}
 	handleTabChange = (event, value) => {
 		this.setState({ value });
@@ -241,12 +265,33 @@ class CountryLaws extends Component {
 			})
 	}
 
+	deleteRanges=(id)=>{
+		var i=this.state.RangesList.filter(x=>x.id!=id);
+	 this.setState({RangesList:i});
+	}
+
 	InsertUpdateCountryLaw = () => {
-		if (!this.validator.allValid()) {
+
+		if (!this.validator.fieldValid('EndDate') ||
+			!this.validator.fieldValid('StartDate') ||
+			!this.validator.fieldValid('DeclarationMode') ||
+			// !this.validator.fieldValid('PaidWithIn') ||
+			// !this.validator.fieldValid('Lumpsum') ||
+			!this.validator.fieldValid('NoCarryForward') ||
+			!this.validator.fieldValid('description') ||
+			!this.validator.fieldValid('adultAge') ||
+			!this.validator.fieldValid('type') ||
+			!this.validator.fieldValid('mode') ||
+			!this.validator.fieldValid('Currency') || 
+			!this.validator.fieldValid('code') 
+			) {
 			this.validator.showMessages();
 			this.forceUpdate();
 		} else {
-
+		
+			if(this.state.RangesList.length==0){
+				toast.warn("kindly add ranges")
+			}
 			var method = "post";
 			var url = defaultUrl + "countrylaw";
 			if (this.state.Action != "Insert Record") {
@@ -260,19 +305,22 @@ class CountryLaws extends Component {
 				Currency: this.state.Currency,
 				AdultAge: this.state.adultAge,
 				CalculationMode: this.state.mode,
-				MaxSalary: this.state.maxSalary,
-				MinSalary: this.state.minSalary,
-				Percentage: this.state.percentage,
+				// MaxSalary: this.state.maxSalary,
+				// MinSalary: this.state.minSalary,
+				// Percentage: this.state.percentage,
 				Type: this.state.type,
-				Discount:this.state.Discount,
-				TaxAmount:this.state.TaxAmount,
+				// Discount:this.state.Discount,
+				// TaxAmount:this.state.TaxAmount,
 				NoCarryForward:this.state.NoCarryForward,
 				Lumpsum:this.state.Lumpsum,
 				PaidWithIn:this.state.PaidWithIn,
 				DeclarationMode:this.state.DeclarationMode,
 				StartDate:this.state.StartDate,
-				EndDate:this.state.EndDate
+				EndDate:this.state.EndDate,
+				Ranges:JSON.stringify(this.state.RangesList)
 			};
+
+			console.log(obj)
 			//document.getElementById("fuse-splash-screen").style.display = "block";
 			axios.interceptors.request.use(function (config) {
 				// document.getElementsByClassName("loader-wrapper")[0].style.display="block"
@@ -307,13 +355,14 @@ class CountryLaws extends Component {
 						Id: 0,
 						value: 0,
 						Discount:"",
-						TaxAmount:"",
+						// TaxAmount:"",
 						NoCarryForward:"",
 						Lumpsum:"",
 						PaidWithIn:"",
 						DeclarationMode:"",
 						StartDate:"",
-						EndDate:""
+						EndDate:"",
+						RangesList:[]
 					});
 					//document.getElementById("fuse-splash-screen").style.display = "none";
 					Messages.success();
@@ -334,13 +383,14 @@ class CountryLaws extends Component {
 						Action: "Insert Record",
 						Id: 0,
 						Discount:"",
-						TaxAmount:"",
+						// TaxAmount:"",
 						NoCarryForward:"",
 						Lumpsum:"",
 						PaidWithIn:"",
 						DeclarationMode:"",
 						StartDate:"",
-						EndDate:""
+						EndDate:"",
+						RangesList:[]
 					})
 					//document.getElementById("fuse-splash-screen").style.display = "none";
 					Messages.error();
@@ -363,27 +413,29 @@ class CountryLaws extends Component {
 			},
 		})
 			.then((response) => {
+				console.log(response.data);
 				this.setState({
-					description: response.data[0].Detail,
-					code: response.data[0].CountryCode,
-					Currency: response.data[0].Currency,
-					adultAge: response.data[0].AdultAge,
-					mode: response.data[0].CalculationMode,
-					maxSalary: response.data[0].MaxSalary,
-					minSalary: response.data[0].MinSalary,
-					percentage: response.data[0].Percentage,
-					type: response.data[0].Type,
+					description: response.data.Detail,
+					code: response.data.CountryCode,
+					Currency: response.data.Currency,
+					adultAge: response.data.AdultAge,
+					mode: response.data.CalculationMode,
+					// maxSalary: response.data[0].MaxSalary,
+					// minSalary: response.data[0].MinSalary,
+					percentage: response.data.Percentage,
+					type: response.data.Type,
 					value: 1,
-					Id: response.data[0].Id,
+					Id: response.data.Id,
 					Action: "Update Record",
-					Discount:response.data[0].Discount,
-					TaxAmount:response.data[0].TaxAmount,
-					NoCarryForward:response.data[0].NoCarryForward,
-					Lumpsum:response.data[0].lumpsum,
-					PaidWithIn:response.data[0].PaidWithin,
-					DeclarationMode:response.data[0].DeclarationMode,
-					StartDate:moment(response.data[0].StartDate).format('YYYY-MM-DD'),
-					EndDate:moment(response.data[0].EndDate).format('YYYY-MM-DD'),
+					// Discount:response.data[0].Discount,
+					// TaxAmount:response.data[0].TaxAmount,
+					NoCarryForward:response.data.NoCarryForward,
+					Lumpsum:response.data.lumpsum,
+					PaidWithIn:response.data.PaidWithin,
+					DeclarationMode:response.data.DeclarationMode,
+					StartDate:moment(response.data.StartDate).format('YYYY-MM-DD'),
+					EndDate:moment(response.data.EndDate).format('YYYY-MM-DD'),
+					RangesList:response.data.Ranges
 				});
 				//document.getElementById("fuse-splash-screen").style.display = "none";
 			})
@@ -497,9 +549,9 @@ class CountryLaws extends Component {
 												<CustomTableCell align="center">EndDate</CustomTableCell>
 												<CustomTableCell align="center">AdultAge</CustomTableCell>
 												<CustomTableCell align="center">CalculationMode</CustomTableCell>
-												<CustomTableCell align="center">MaxSalary</CustomTableCell>
+												{/* <CustomTableCell align="center">MaxSalary</CustomTableCell>
 												<CustomTableCell align="center">MinSalary</CustomTableCell>
-												<CustomTableCell align="center">Percentage</CustomTableCell>		
+												<CustomTableCell align="center">Percentage</CustomTableCell>		 */}
 												<CustomTableCell align="center">Type</CustomTableCell>	
 												<CustomTableCell align="center">Action</CustomTableCell>														
 											</TableRow>
@@ -514,9 +566,9 @@ class CountryLaws extends Component {
 													<CustomTableCell align="center">{row.EndDate}</CustomTableCell>
 													<CustomTableCell align="center">{row.AdultAge}</CustomTableCell>
 													<CustomTableCell align="center">{row.CalculationMode}</CustomTableCell>
-													<CustomTableCell align="center">{row.MaxSalary}</CustomTableCell>
+													{/* <CustomTableCell align="center">{row.MaxSalary}</CustomTableCell>
 													<CustomTableCell align="center">{row.MinSalary}</CustomTableCell>
-													<CustomTableCell align="center">{row.Percentage}</CustomTableCell>
+													<CustomTableCell align="center">{row.Percentage}</CustomTableCell> */}
 													<CustomTableCell align="center">{row.Type}</CustomTableCell>
 													<CustomTableCell align="center"><input type="checkbox" name="radio"  value= {row.Id}
 						onChange={()=>this.selection(row.Id)}
@@ -610,35 +662,7 @@ class CountryLaws extends Component {
 										/>
 										{this.validator.message('adultAge', this.state.adultAge, 'required')}
 									</Grid>
-									<Grid item xs={12} sm={5}  style={{ marginRight: '5px' }} >
-										<TextField
-											id="minSalary"
-											label="Min Salary"
-											fullWidth
-											type="number"
-											name="minSalary"
-											className={classes.textField}
-											value={this.state.minSalary}
-											onChange={this.handleChange}
-											margin="normal"
-										/>
-										{this.validator.message('minSalary', this.state.minSalary, 'required')}
-									</Grid>
-
-									<Grid item xs={12} sm={5} >
-										<TextField
-											id="maxSalary"
-											label="Max Salary"
-											fullWidth
-											type="number"
-											name="maxSalary"
-											className={classes.textField}
-											value={this.state.maxSalary}
-											onChange={this.handleChange}
-											margin="normal"
-										/>
-										{this.validator.message('maxSalary', this.state.maxSalary, 'required')}
-									</Grid>
+								
 									<Grid item xs={12} sm={5} style={{ marginRight: '5px' }}>
 										<FormControl className={classes.formControl}>
 											<InputLabel htmlFor="type">Type</InputLabel>
@@ -660,20 +684,7 @@ class CountryLaws extends Component {
 										</FormControl>
 										{this.validator.message('type', this.state.type, 'required')}
 									</Grid>
-									<Grid item xs={12} sm={5} >
-										<TextField
-											id="percentage"
-											label="Percentage"
-											fullWidth
-											type="number"
-											name="percentage"
-											className={classes.textField}
-											value={this.state.percentage}
-											onChange={this.handleChange}
-											margin="normal"
-										/>
-										{this.validator.message('percentage', this.state.percentage, 'required')}
-									</Grid>
+								
 
 									<Grid item xs={12} sm={10} >
 										<TextField
@@ -688,34 +699,6 @@ class CountryLaws extends Component {
 											margin="normal"
 										/>
 										{this.validator.message('description', this.state.description, 'required')}
-									</Grid>
-									<Grid item xs={12} sm={5} style={{ marginRight: '5px' }} >
-										<TextField
-											id="Discount"
-											label="Discount"
-											fullWidth
-											type="number"
-											name="Discount"
-											className={classes.textField}
-											value={this.state.Discount}
-											onChange={this.handleChange}
-											margin="normal"
-										/>
-										{this.validator.message('Discount', this.state.Discount, 'required')}
-									</Grid>
-									<Grid item xs={12} sm={5} >
-										<TextField
-											id="TaxAmount"
-											label="Tax Amount"
-											fullWidth
-											type="number"
-											name="TaxAmount"
-											className={classes.textField}
-											value={this.state.TaxAmount}
-											onChange={this.handleChange}
-											margin="normal"
-										/>
-										{this.validator.message('TaxAmount', this.state.TaxAmount, 'required')}
 									</Grid>
 									<Grid item xs={12} sm={5} style={{ marginRight: '5px' }}>
 										<FormControl className={classes.formControl}>
@@ -751,7 +734,7 @@ class CountryLaws extends Component {
 											onChange={this.handleChange}
 											margin="normal"
 										/>
-										{this.validator.message('Lumpsum', this.state.Lumpsum, 'required')}
+										{/* {this.validator.message('Lumpsum', this.state.Lumpsum, 'required')} */}
 									</Grid>
 									<Grid item xs={12} sm={5} style={{ marginRight: '5px' }}>
 										<FormControl className={classes.formControl}>
@@ -787,7 +770,7 @@ class CountryLaws extends Component {
 											onChange={this.handleChange}
 											margin="normal"
 										/>
-										{this.validator.message('PaidWithIn', this.state.PaidWithIn, 'required')}
+										{/* {this.validator.message('PaidWithIn', this.state.PaidWithIn, 'required')} */}
 									</Grid>
 									<Grid item xs={12} sm={5}  style={{ marginRight: '5px' }} >
 										<TextField
@@ -821,7 +804,117 @@ class CountryLaws extends Component {
 										/>
 										{this.validator.message('EndDate', this.state.EndDate, 'required')}
 									</Grid>
+									<h2 style={{width:"100%",borderBottom:"solid 1px black",marginTop:"20px"}}>Ranges</h2>
 
+									<Grid item xs={12} sm={5}  style={{ marginRight: '5px' }} >
+										<TextField
+											id="minSalary"
+											label="Min Salary"
+											fullWidth
+											type="number"
+											name="minSalary"
+											className={classes.textField}
+											value={this.state.minSalary}
+											onChange={this.handleChange}
+											margin="normal"
+										/>
+										{this.validator.message('minSalary', this.state.minSalary, 'required')}
+									</Grid>
+
+									<Grid item xs={12} sm={5} >
+										<TextField
+											id="maxSalary"
+											label="Max Salary"
+											fullWidth
+											type="number"
+											name="maxSalary"
+											className={classes.textField}
+											value={this.state.maxSalary}
+											onChange={this.handleChange}
+											margin="normal"
+										/>
+										{this.validator.message('maxSalary', this.state.maxSalary, 'required')}
+									</Grid>
+									<Grid item xs={12} sm={5} style={{ marginRight: '5px' }} >
+										<TextField
+											id="Discount"
+											label="Discount"
+											fullWidth
+											type="number"
+											name="Discount"
+											className={classes.textField}
+											value={this.state.Discount}
+											onChange={this.handleChange}
+											margin="normal"
+										/>
+									</Grid>
+									<Grid item xs={12} sm={5} >
+										<TextField
+											id="percentage"
+											label="Percentage"
+											fullWidth
+											type="number"
+											name="percentage"
+											className={classes.textField}
+											value={this.state.percentage}
+											onChange={this.handleChange}
+											margin="normal"
+										/>
+									</Grid>
+									<Grid item xs={12} sm={5} >
+										<TextField
+											id="TaxAmount"
+											label="Fixed Amount"
+											fullWidth
+											type="number"
+											name="TaxAmount"
+											className={classes.textField}
+											value={this.state.TaxAmount}
+											onChange={this.handleChange}
+											margin="normal"
+										/>
+									</Grid>
+									<Grid item xs={12} sm={12} >
+									<IconButton className={classes.button} aria-label="Add" onClick={this.addRange} >
+											<AddIcon />
+										</IconButton>
+
+										<Table className={classes.table}>
+										<TableHead>
+											<TableRow>
+												<CustomTableCell align="center">Salary(Max)</CustomTableCell>
+												<CustomTableCell align="center">Salary(Min)</CustomTableCell>
+												<CustomTableCell align="center">Discount</CustomTableCell>		
+												<CustomTableCell align="center">Percentage</CustomTableCell>	
+												<CustomTableCell align="center">Action</CustomTableCell>														
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{this.state.RangesList.map(row => (
+												<TableRow className={classes.row} key={row.Code}>
+													<CustomTableCell align="center">
+															{row.maxSalary}
+													</CustomTableCell>
+													<CustomTableCell align="center">
+													{row.minSalary}
+													</CustomTableCell>
+													<CustomTableCell align="center">
+													{row.Discount}
+													</CustomTableCell>
+													<CustomTableCell align="center">
+													{row.Percentage}
+													</CustomTableCell>
+													<CustomTableCell align="center">
+														<IconButton className={classes.button} aria-label="Add" onClick={()=>this.deleteRanges(row.id)} >
+															<DeleteIcon />
+														</IconButton>
+													</CustomTableCell>
+												</TableRow>
+											))}
+										</TableBody>
+									</Table>
+							
+										</Grid>
 								</form>
 								<div className="row">
 									<Grid item xs={12} sm={10} >

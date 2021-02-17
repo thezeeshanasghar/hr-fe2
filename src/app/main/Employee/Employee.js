@@ -745,7 +745,6 @@ class Employee extends Component {
 				!this.validator.fieldValid('reason') ||
 				!this.validator.fieldValid('PartTime') ||
 				!this.validator.fieldValid('ServiceStartDate') ||
-				!this.validator.fieldValid('ProbationEndDate') ||
 				!this.validator.fieldValid('title') ||
 				!this.validator.fieldValid('ContractEndDate') ||
 				!this.validator.fieldValid('company') ||
@@ -772,9 +771,9 @@ class Employee extends Component {
 				return false;
 			}
 		} else if (TYPE == "payroll") {
-			if (this.state.PayRoll.length <= 0 || this.state.oneTimePayRoll.length <= 0) {
-				return false;
-			}
+			// if (this.state.PayRoll.length <= 0 || this.state.oneTimePayRoll.length <= 0) {
+			// 	return false;
+			// }
 		} else {
 
 		}
@@ -976,7 +975,7 @@ class Employee extends Component {
 				!this.validator.fieldValid('reason') ||
 				!this.validator.fieldValid('PartTime') ||
 				!this.validator.fieldValid('ServiceStartDate') ||
-				!this.validator.fieldValid('ProbationEndDate') ||
+				// !this.validator.fieldValid('ProbationEndDate') ||
 				!this.validator.fieldValid('title') ||
 				!this.validator.fieldValid('ContractEndDate') ||
 				!this.validator.fieldValid('company') ||
@@ -1282,6 +1281,7 @@ class Employee extends Component {
 										<Table className={classes.table}>
 											<TableHead>
 												<TableRow>
+												<CustomTableCell align="center">Action</CustomTableCell>
 													<CustomTableCell align="center" >EmployeeCode</CustomTableCell>
 													<CustomTableCell align="center">Title</CustomTableCell>
 													<CustomTableCell align="center">FirstName</CustomTableCell>
@@ -1303,12 +1303,16 @@ class Employee extends Component {
 													<CustomTableCell align="center">Country</CustomTableCell>
 													<CustomTableCell align="center">CurrentEmployeeStatus</CustomTableCell>
 													<CustomTableCell align="center">PartTimeSituation</CustomTableCell>
-													<CustomTableCell align="center">Action</CustomTableCell>
+													
 												</TableRow>
 											</TableHead>
 											<TableBody>
 												{this.state.employeeList.map(row => (
 													<TableRow className={classes.row} key={row.Code}>
+															<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
+															onChange={() => this.selection(row.Id)}
+														/>
+														</CustomTableCell>
 														<CustomTableCell align="center">{row.EmployeeCode}</CustomTableCell>
 														<CustomTableCell align="center">{row.Title}</CustomTableCell>
 														<CustomTableCell align="center">{row.FirstName}</CustomTableCell>
@@ -1328,12 +1332,9 @@ class Employee extends Component {
 														<CustomTableCell align="center">{row.Contact}</CustomTableCell>
 														<CustomTableCell align="center">{row.MaritalStatus}</CustomTableCell>
 														<CustomTableCell align="center">{row.Country}</CustomTableCell>
-														<CustomTableCell align="center">{row.CurrentEmployeeStatus}</CustomTableCell>
+														<CustomTableCell align="center">{row.CurrentEmployeeStatus==="30"?'Deactive':'Active'}</CustomTableCell>
 														<CustomTableCell align="center">{row.PartTimeSituation}</CustomTableCell>
-														<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
-															onChange={() => this.selection(row.Id)}
-														/>
-														</CustomTableCell>
+													
 													</TableRow>
 												))}
 											</TableBody>
@@ -1610,7 +1611,7 @@ class Employee extends Component {
 												shrink: true,
 											}}
 										/>
-										{this.validator.message('ProbationEndDate', this.state.ProbationEndDate, 'required')}
+										{/* {this.validator.message('ProbationEndDate', this.state.ProbationEndDate, 'required')} */}
 
 									</Grid>
 									<Grid item xs={12} sm={5} style={{ marginRight: '5px' }} >

@@ -732,7 +732,7 @@ class PayElement extends Component {
 												))} 
 										</Select>
 									</FormControl>
-									{this.validator.message('days', this.state.days, 'required')}
+									{/* {this.validator.message('days', this.state.days, 'required')} */}
 								</Grid>
 								<Grid item xs={12} sm={5} style={{ marginRight: '5px' }}  >
 								<FormControl className={classes.formControl}>

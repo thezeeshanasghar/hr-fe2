@@ -271,56 +271,13 @@ axios({
 		})
 			.then((response) => {
 				//console.log(response);
-
+				this.getSalaryPayRoll();
 				this.setState({ salaryPayroll: response.data.data });
 			
 			})
 			.catch((error) => {
 				//console.log(error);
 			})
-		// localStorage.removeItem("ids");
-		// if (!$.fn.dataTable.isDataTable('#PayRoll_Table')) {
-		// 	this.state.table = $('#PayRoll_Table').DataTable({
-		// 		ajax: defaultUrl + "payslip",
-		// 		"columns": [
-		// 			{ "data": "FirstName" },
-		// 			{ "data": "payables" },
-		// 			{ "data": "taxdeduction" },
-		// 			{ "data": "leavededuct" },
-		// 			{ "data": "paid" },
-		// 			{ "data": "PayRollType" },
-		// 			// 	{ "data": "Action",
-		// 			// 	sortable: false,
-		// 			// 	"render": function ( data, type, full, meta ) {
-
-		// 			// 		return `<input type="checkbox" name="radio"  value=`+full.Id+`
-		// 			// 		onclick=" const checkboxes = document.querySelectorAll('input[name=radio]:checked');
-		// 			// 					let values = [];
-		// 			// 					checkboxes.forEach((checkbox) => {
-		// 			// 						values.push(checkbox.value);
-		// 			// 					});
-		// 			// 					localStorage.setItem('ids',values);	"
-		// 			// 		/>`;
-		// 			// 	}
-		// 			//  }
-
-		// 		],
-		// 		rowReorder: {
-		// 			selector: 'td:nth-child(2)'
-		// 		},
-		// 		responsive: true,
-		// 		dom: 'Bfrtip',
-		// 		buttons: [
-
-		// 		],
-		// 		columnDefs: [{
-		// 			"defaultContent": "-",
-		// 			"targets": "_all"
-		// 		}]
-		// 	});
-		// } else {
-		// 	this.state.table.ajax.reload();
-		// }
 	}
 	InsertSalaryPayRoll = () => {
 
@@ -851,7 +808,7 @@ axios({
 										</FormControl>
 
 									</Grid>
-									<Grid item xs={12} sm={5} className={this.state.type != "Bonus" ? "" : "d-none"}  >
+									<Grid item xs={12} sm={5} className={this.state.type != "Bonus" ? "" : "d-none"} style={{ marginRight: "5px" }} >
 
 										<TextField id="Date" fullWidth label="Date" type="date" name="Date" value={this.state.Date} onChange={this.handleChange}
 											InputLabelProps={{

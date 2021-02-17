@@ -37,7 +37,7 @@ function Logo() {
 			</Typography>
 			<div className={clsx(classes.reactBadge, 'react-badge flex items-center py-4 px-8 rounded')}>
 			
-				<span className="react-text text-12 mx-4">Solutions</span>
+				<span className="react-text text-12 mx-4">Solutions House</span>
 			</div>
 		</div>
 	);

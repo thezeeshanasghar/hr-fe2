@@ -144,13 +144,13 @@ class CountryLaws extends Component {
 			toast.warn("Both Percentage and Fixed amount cant be null");
 			return false;
 		}
-		debugger
-		if((this.state.TaxAmount !="" && this.state.TaxAmount !="0") && (this.state.percentage !="" && this.state.percentage !="0") ){
-			toast.warn("Kindly add Fixed Amount or Percetage");
-			return false;
-		}
+		
+		// if((this.state.TaxAmount !="" && this.state.TaxAmount !="0") && (this.state.percentage !="" && this.state.percentage !="0") ){
+		// 	toast.warn("Kindly add Fixed Amount or Percetage");
+		// 	return false;
+		// }
 		var array=this.state.RangesList;
-		array.push({minSalary:this.state.minSalary,maxSalary:this.state.maxSalary,Discount:this.state.Discount,Percentage:this.state.percentage.length,id:array.length+1,TaxAmount:this.state.TaxAmount});
+		array.push({minSalary:this.state.minSalary,maxSalary:this.state.maxSalary,Discount:this.state.Discount,Percentage:this.state.percentage,id:array.length+1,TaxAmount:this.state.TaxAmount});
 		this.setState({RangesList:array,minSalary:"",maxSalary:"",Discount:"",percentage:"",TaxAmount:""});
 		
 	}
@@ -886,6 +886,7 @@ class CountryLaws extends Component {
 												<CustomTableCell align="center">Salary(Min)</CustomTableCell>
 												<CustomTableCell align="center">Discount</CustomTableCell>		
 												<CustomTableCell align="center">Percentage</CustomTableCell>	
+												<CustomTableCell align="center">Fix Amount</CustomTableCell>	
 												<CustomTableCell align="center">Action</CustomTableCell>														
 											</TableRow>
 										</TableHead>
@@ -903,6 +904,9 @@ class CountryLaws extends Component {
 													</CustomTableCell>
 													<CustomTableCell align="center">
 													{row.Percentage}
+													</CustomTableCell>
+													<CustomTableCell align="center">
+													{row.TaxAmount}
 													</CustomTableCell>
 													<CustomTableCell align="center">
 														<IconButton className={classes.button} aria-label="Add" onClick={()=>this.deleteRanges(row.id)} >

@@ -16,6 +16,7 @@ import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import VerifyIcon from '@material-ui/icons/Check';
+import InfoIcon from '@material-ui/icons/Info';
 import EditIcon from '@material-ui/icons/Check';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -44,11 +45,14 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Modal from '@material-ui/core/Modal';
+import Badge from '@material-ui/core/Badge';
 const options = [
 	{ value: 'chocolate', label: 'Chocolate' },
 	{ value: 'strawberry', label: 'Strawberry' },
 	{ value: 'vanilla', label: 'Vanilla' }
 ]
+
+
 const styles = theme => ({
 	root: {
 		// height: 300,
@@ -156,8 +160,9 @@ class SalaryPayRoll extends Component {
 		Isdisplay:"0",
 		typeList: [
 			{ "value": "Regular", "label": "Regular" },
-			{ "value": "OffCycle", "label": "OffCycle" },
-			{ "value": "Bonus", "label": "Bonus" }
+			{ "value": "OffCycle", "label": "OffCycle" }
+			// ,
+			// { "value": "Bonus", "label": "Bonus" }
 		],
 		Default:localStorage.getItem("state")!=null?JSON.parse(localStorage.getItem("state")):null,
 		salaryPayroll:[]
@@ -199,7 +204,8 @@ axios({
 			},
 		})
 			.then((response) => {
-
+				this.getSelectivePayrolls(this.state.companyId);
+				this.loadCompanyData(this.state.companyId);
 			})
 			.catch((error) => {
 				//console.log(error);
@@ -270,7 +276,7 @@ axios({
 			},
 		})
 			.then((response) => {
-				//console.log(response);
+				console.log(response);
 				this.getSalaryPayRoll();
 				this.setState({ salaryPayroll: response.data.data });
 			
@@ -324,7 +330,7 @@ axios({
 						
 						
 						this.setState({
-							companyId: "",
+						
 							employeeIds: "",
 							Date: "",
 							type: "",
@@ -344,7 +350,6 @@ axios({
 						// document.getElementsByClassName("loader-wrapper")[0].style.display="none"
 						// toastr.error('Operation unsuccessfull');
 						this.setState({
-							companyId: "",
 							employeeIds: "",
 							Date: "",
 							type: "",
@@ -509,7 +514,20 @@ axios({
 		for (var i = 0; i < e.length; i++) {
 			PayElements += e[i].value + ','
 		}
-		this.setState({ 'PayElement': PayElements.slice(0, -1), PayElementSelected: e.value });
+		this.setState({ 'PayElement': PayElements.slice(0, -1), PayElementSelected: e });
+
+		var response=e.filter(x=>x.label=="All");
+		if(response.length>0){
+			var ids="";
+
+			for(var i=0;i<this.state.PayElementList.length;i++){
+				if(this.state.PayElementList[i].value !="All"){
+					ids+= this.state.PayElementList[i].value+","	
+				}
+			
+			}
+			this.setState({ 'PayElement':ids.slice(0, -1), PayElementSelected: response });
+		}
 	}
 	handleTabChange = (event, value) => {
 		this.setState({ value });
@@ -530,7 +548,7 @@ axios({
 
 	}
 	handleEmployeedropdown = (e) => {
-
+	console.log(e)
 		var employees = "";
 		if(!e){
 			this.setState({ 'employeeIds': "", employeeSelected: [] });
@@ -540,7 +558,21 @@ axios({
 		for (var i = 0; i < e.length; i++) {
 			employees += e[i].value + ','
 		}
-		this.setState({ 'employeeIds': employees, employeeSelected: e.value });
+		this.setState({ 'employeeIds': employees, employeeSelected: e });
+		 var response=e.filter(x=>x.label=="All");
+		if(response.length>0){
+			console.log(this.state.employeeList);
+			var ids="";
+
+			for(var i=0;i<this.state.employeeList.length;i++){
+				if(this.state.employeeList[i].value !="All"){
+					ids+= this.state.employeeList[i].value+","	
+				}
+			
+			}
+			this.setState({ 'employeeIds':ids, employeeSelected: response });
+		}
+		console.log(this.state.employeeIds)
 	}
 	handleChange = (e) => {
 		//console.log(e)
@@ -655,11 +687,13 @@ axios({
 	}
 	render() {
 		const { classes, theme } = this.props;
-
+		const options = this.props.multi
+		? [{ label: "Select All", value: "all" }, ...this.props.options]
+		: this.props.options;
 		return (
 			<FusePageSimple
 				classes={{
-					root: classes.layoutRoot
+					root: classes.layoutRoots
 				}}
 				header={
 					<div className="p-24"><h4>Salary Payroll-{this.state.Default !=null?this.state.Default.Company:"No Company Selected Yet"}</h4></div>
@@ -694,10 +728,10 @@ axios({
 										<TableHead>
 											<TableRow>
 												<CustomTableCell align="center" >Name</CustomTableCell>
-												<CustomTableCell align="center" >Payables</CustomTableCell>
-												<CustomTableCell align="center" >taxdedutions</CustomTableCell>
-												<CustomTableCell align="center" >leavededuct</CustomTableCell>
-												<CustomTableCell align="center" >paid</CustomTableCell>
+												<CustomTableCell align="center" >Total Salary</CustomTableCell>
+												<CustomTableCell align="center" >Employee Contribution</CustomTableCell>
+												{/* <CustomTableCell align="center" >leavededuct</CustomTableCell> */}
+												<CustomTableCell align="center" >Net Salary</CustomTableCell>
 												<CustomTableCell align="center" >PayRollType</CustomTableCell>
 											</TableRow>
 										</TableHead>
@@ -709,9 +743,12 @@ axios({
 	
 														<CustomTableCell align="center">{row.FirstName == "" || row.FirstName == null || row.FirstName == undefined ? 'N/A' : row.FirstName}</CustomTableCell>
 														<CustomTableCell align="center">{row.payables == "" || row.payables == null || row.payables == undefined ? 'N/A' : row.payables}</CustomTableCell>
-														<CustomTableCell align="center">{row.taxdeduction == "" || row.taxdeduction == null || row.taxdeduction == undefined ? 'N/A' : row.taxdeduction}</CustomTableCell>
-														<CustomTableCell align="center">{row.leavededuct == "" || row.leavededuct == null || row.leavededuct == undefined ? 'N/A' : row.leavededuct}</CustomTableCell>
+														<CustomTableCell align="center">{row.taxdeduction == "" || row.taxdeduction == null || row.taxdeduction == undefined ? 'N/A' : row.taxdeduction}&nbsp;({row.Law}) </CustomTableCell>
+														
+														
+														{/* <CustomTableCell align="center">{row.leavededuct == "" || row.leavededuct == null || row.leavededuct == undefined ? 'N/A' : row.leavededuct}</CustomTableCell> */}
 														<CustomTableCell align="center">{row.paid == "" || row.paid == null || row.paid == undefined ? 'N/A' : row.paid}</CustomTableCell>
+						
 														<CustomTableCell align="center">{row.PayRollType == "" || row.PayRollType == null || row.PayRollType == undefined ? 'N/A' : row.PayRollType}</CustomTableCell>
 														
 													</TableRow>
@@ -745,6 +782,7 @@ axios({
 											<Select
 												name='type'
 												id='type'
+												options={options}
 												options={this.state.typeList}
 												className="basic-multi-select"
 												classNamePrefix="select"
@@ -808,7 +846,7 @@ axios({
 										</FormControl>
 
 									</Grid>
-									<Grid item xs={12} sm={5} className={this.state.type != "Bonus" ? "" : "d-none"} style={{ marginRight: "5px" }} >
+									<Grid item xs={12} sm={5} className={this.state.type != "Bonus" ? "" : "d-none"} style={{ marginLeft: "5px" }} >
 
 										<TextField id="Date" fullWidth label="Date" type="date" name="Date" value={this.state.Date} onChange={this.handleChange}
 											InputLabelProps={{

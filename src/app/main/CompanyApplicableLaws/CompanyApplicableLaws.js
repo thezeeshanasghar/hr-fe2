@@ -544,7 +544,7 @@ class CompanyApplicableLaws extends Component {
 									<Table className={classes.table}>
 										<TableHead>
 											<TableRow>
-												<CustomTableCell align="center" >Law Id</CustomTableCell>
+												<CustomTableCell align="center" >Law </CustomTableCell>
 												<CustomTableCell align="center">Deduction Type</CustomTableCell>
 												<CustomTableCell align="center">Fixed Amount</CustomTableCell>
 												<CustomTableCell align="center">Company(%)</CustomTableCell>
@@ -555,7 +555,7 @@ class CompanyApplicableLaws extends Component {
 										<TableBody>
 											{this.state.CountryLaws.map(row => (
 												<TableRow className={classes.row} key={row.Id}>
-													<CustomTableCell align="center">{row.Id}</CustomTableCell>
+													<CustomTableCell align="center">{row.Detail}</CustomTableCell>
 													<CustomTableCell align="center">{row.DeductionType}</CustomTableCell>
 													<CustomTableCell align="center">{row.FixedAmount}</CustomTableCell>
 													<CustomTableCell align="center">{row.CompanyCut}</CustomTableCell>

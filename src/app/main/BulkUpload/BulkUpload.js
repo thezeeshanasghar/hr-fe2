@@ -450,7 +450,7 @@ class BulkUpload extends Component {
 
 								<ol style={{height:"200px",overflowX:"scroll"}}>
 									{this.state.logs.map(row => (
-										<li>{row.DETAIL}</li>
+										<li  style={row.Action==1?{color:"green"}:{color:"red"}} >{row.DETAIL}</li>
 									))}
 
 

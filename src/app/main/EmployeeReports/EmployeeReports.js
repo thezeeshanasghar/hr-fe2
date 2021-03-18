@@ -9,6 +9,9 @@ import Paper from '@material-ui/core/Paper';
 import SimpleReactValidator from 'simple-react-validator';
 import defaultUrl from "../../services/constant/constant";
 import $ from 'jquery';
+import FormControl from '@material-ui/core/FormControl';
+
+import TextField from '@material-ui/core/TextField';
 import DataTable from "datatables.net";
 import * as responsive from "datatables.net-responsive";
 import Select1 from 'react-select';
@@ -39,6 +42,9 @@ const styles = theme => ({
 	menu: {
 		width: 200,
 	},
+	formControl: {
+		minWidth: "99%",
+	}
 });
 
 const CustomTableCell = withStyles(theme => ({
@@ -67,6 +73,7 @@ class EmployeeReports extends Component {
 		company:"",
 		companyList:[],
 		data:[],
+		Month:"",
 		Path:""
 	};
 	constructor(props) {
@@ -74,6 +81,10 @@ class EmployeeReports extends Component {
 		this.validator = new SimpleReactValidator();
 	
 	  }
+	  handleChange = (e) => {
+		console.log(e.target.value)
+	  this.setState({ [e.target.name]: e.target.value});
+  };
 	  download=()=>{
 		window.open(defaultUrl + "download/"+this.state.Path,"_self");
 		}
@@ -105,9 +116,14 @@ class EmployeeReports extends Component {
 			})
 	}
 	getEmployeeDetail = () => {
+		var obj={
+			Date:this.state.Month+"-01",
+			CompanyId:this.state.company
+	  }
 		axios({
-			method: "get",
-			url: defaultUrl + "report/employee/"+this.state.company,
+			method: "post",
+			url: defaultUrl + "report/employee",
+			data:JSON.stringify(obj),
 			headers: {
 				// 'Authorization': `bearer ${token}`,
 				"Content-Type": "application/json;charset=utf-8",
@@ -138,7 +154,65 @@ class EmployeeReports extends Component {
 				content={
 
 					<div className={classes.root}>
-								<form className={classes.container} noValidate autoComplete="off" style={{marginBottom:'30px',marginTop:"10px"}}>
+												<form className={classes.container} noValidate autoComplete="off" style={{marginBottom:'30px'}}>
+								<Grid item xs={12} sm={5}  style={{marginRight:'5px'}} >
+								<FormControl className={classes.formControl}>
+								<TextField
+											id="Month"
+											label="Report Month"
+											type="month"
+											fullWidth
+											name="Month"
+											value={this.state.Month}
+											className={classes.textField}
+											onChange={this.handleChange}
+											InputLabelProps={{
+												shrink: true,
+											}}
+										/>
+										
+										</FormControl>
+									</Grid>
+									<Grid item xs={12} sm={5} style={{marginTop: "10px"}} className={this.state.Type=="Bank" || this.state.Type=="Company" || this.state.Type=="Exchange" || this.state.Type=="CountryLaw" ? 'd-none' : ''   } >
+										<FormControl className={classes.formControl}>
+										<Select1
+
+name="companyId"
+options={this.state.companyList}
+// value={this.state.CompanySelected}
+className="basic-multi-select"
+classNamePrefix="select"
+onChange={this.handledropdown}
+
+/>
+
+											{this.validator.message('companyId', this.state.companyId, 'required')}
+										</FormControl>
+									</Grid>
+									<Button variant="outlined" color="secondary" style={{marginTop: "10px"}} className={classes.button} onClick={()=>this.getEmployeeDetail()} >
+												Generate Report
+											</Button>
+								</form>
+				
+								{/* <form className={classes.container} noValidate autoComplete="off" style={{marginBottom:'30px',marginTop:"10px"}}>
+								<Grid item xs={12} sm={5}  style={{marginRight:'5px'}} >
+								<FormControl className={classes.formControl}>
+								<TextField
+											id="Month"
+											label="Report Month"
+											type="month"
+											fullWidth
+											name="Month"
+											value={this.state.Month}
+											className={classes.textField}
+											onChange={this.handleChange}
+											InputLabelProps={{
+												shrink: true,
+											}}
+										/>
+										
+										</FormControl>
+									</Grid>	
 									<Grid item xs={6} sm={5} style={{marginRight:"10px"}} >
 											<Select1
 
@@ -158,7 +232,7 @@ class EmployeeReports extends Component {
 											</Button>
 										</Grid>
 								</form>
-								
+								 */}
 								
 						<AppBar position="static" color="default">
 							
@@ -192,37 +266,28 @@ class EmployeeReports extends Component {
 										<TableHead>
 											<TableRow>
 												<CustomTableCell align="center" >Employee Code</CustomTableCell>
-												<CustomTableCell align="center">CNIC</CustomTableCell>
-												<CustomTableCell align="center">First Name</CustomTableCell>
-												<CustomTableCell align="center">Last Name</CustomTableCell>
-												<CustomTableCell align="center">DOB</CustomTableCell>
+												<CustomTableCell align="center">Employee Name</CustomTableCell>
 												<CustomTableCell align="center">Hire Date</CustomTableCell>
-												<CustomTableCell align="center">Address</CustomTableCell>
-												<CustomTableCell align="center">Contact</CustomTableCell>
-												<CustomTableCell align="center">Gender</CustomTableCell>
-												<CustomTableCell align="center">Salary</CustomTableCell>
-												<CustomTableCell align="center">Email</CustomTableCell>
 												<CustomTableCell align="center">IBAN</CustomTableCell>
-												<CustomTableCell align="center">Company</CustomTableCell>
-												
+												<CustomTableCell align="center">Currency</CustomTableCell>
+												<CustomTableCell align="center">Net Salary</CustomTableCell>
+												<CustomTableCell align="center">Bank Name</CustomTableCell>
+												<CustomTableCell align="center">Swift Code</CustomTableCell>
+												<CustomTableCell align="center">Route Code</CustomTableCell>
 											</TableRow>
 										</TableHead>
 										<TableBody>
 											{this.state.data.map(row => (
 												<TableRow className={classes.row} key={row.EmployeeCode}>
 													<CustomTableCell align="center">{row.EmployeeCode}</CustomTableCell>
-													<CustomTableCell align="center">{row.Cnic}</CustomTableCell>
-													<CustomTableCell align="center">{row.FirstName}</CustomTableCell>
-													<CustomTableCell align="center">{row.LastName}</CustomTableCell>
-													<CustomTableCell align="center">{row.DOB}</CustomTableCell>
+													<CustomTableCell align="center">{row.EmployeeName}</CustomTableCell>
 													<CustomTableCell align="center">{row.HireDate}</CustomTableCell>
-													<CustomTableCell align="center">{row.Address}</CustomTableCell>
-													<CustomTableCell align="center">{row.Contact}</CustomTableCell>
-													<CustomTableCell align="center">{row.Gender}</CustomTableCell>
-													<CustomTableCell align="center">{row.Salary}</CustomTableCell>
-													<CustomTableCell align="center">{row.Email}</CustomTableCell>
 													<CustomTableCell align="center">{row.IBAN}</CustomTableCell>
-													<CustomTableCell align="center">{row.CompanyName}</CustomTableCell>
+													<CustomTableCell align="center">{row.Currency}</CustomTableCell>
+													<CustomTableCell align="center">{row.NetSalary}</CustomTableCell>
+													<CustomTableCell align="center">{row.BankName}</CustomTableCell>
+													<CustomTableCell align="center">{row.SwiftCode}</CustomTableCell>
+													<CustomTableCell align="center">{row.RouteCode}</CustomTableCell>
 												</TableRow>
 											))}
 										</TableBody>

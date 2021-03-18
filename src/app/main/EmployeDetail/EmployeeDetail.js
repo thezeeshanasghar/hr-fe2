@@ -287,6 +287,10 @@ class EmployeeDetail extends Component {
 						<h1 style={{ textAlign: "center" }}>Basic Information</h1>
 						<div style={{ borderBottom: "solid 1px black" }} ></div>
 						<form className={classes.container} style={{ textAlign: "center" }} noValidate autoComplete="off">
+						<Grid item xs={4} sm={4}  >
+								<h2>Employee Code</h2>
+								<label>{this.state.Employee.EmployeeCode}</label>
+							</Grid>
 							<Grid item xs={4} sm={4}  >
 								<h2>FirstName</h2>
 								<label>{this.state.Employee.FirstName}</label>
@@ -378,6 +382,7 @@ class EmployeeDetail extends Component {
 								<TableHead>
 									<TableRow>
 										<CustomTableCell align="center"  >Code</CustomTableCell>
+										<CustomTableCell align="center"  >Nature(Entitlement/Deduction)</CustomTableCell>
 										<CustomTableCell align="center"  >IBAN</CustomTableCell>
 										<CustomTableCell align="center"  >Effective Date</CustomTableCell>
 										<CustomTableCell align="center"  >Payment Date</CustomTableCell>
@@ -386,10 +391,11 @@ class EmployeeDetail extends Component {
 								</TableHead>
 								<TableBody>
 									{this.state.Employee.OnetimeElement == null ? '' : this.state.Employee.OnetimeElement.map(row => (
-										<TableRow className={classes.row} key={row.Id}>
+										<TableRow className={classes.row} key={row.Id}  >
 
 											<CustomTableCell align="center"  >{row.Code}</CustomTableCell>
-											<CustomTableCell align="center"  >{row.Amount}</CustomTableCell>
+											<CustomTableCell align="center"  >{row.MainEntitlement==45?'ENTITLEMENT':'DEDUCTION'}</CustomTableCell>
+											<CustomTableCell align="center"  >{row.Entitlement==45?row.Amount:"-"+row.Amount}</CustomTableCell>
 											<CustomTableCell align="center"  >{row.EffectiveDate}</CustomTableCell>
 											<CustomTableCell align="center"  >{row.PaymentDate == null ? "-" : row.PaymentDate}</CustomTableCell>
 
@@ -405,6 +411,7 @@ class EmployeeDetail extends Component {
 								<TableHead>
 									<TableRow>
 										<CustomTableCell align="center"  >Code</CustomTableCell>
+										<CustomTableCell align="center"  >Nature(Entitlement/Deduction)</CustomTableCell>
 										<CustomTableCell align="center"  >Amount</CustomTableCell>
 										<CustomTableCell align="center"  >Start Date</CustomTableCell>
 										<CustomTableCell align="center"  >End Date</CustomTableCell>
@@ -417,7 +424,8 @@ class EmployeeDetail extends Component {
 										<TableRow className={classes.row} key={row.Id}>
 
 											<CustomTableCell align="center"  >{row.Code}</CustomTableCell>
-											<CustomTableCell align="center"  >{row.amount}</CustomTableCell>
+											<CustomTableCell align="center"  >{row.MainEntitlement==45?'ENTITLEMENT':'DEDUCTION'}</CustomTableCell>
+											<CustomTableCell align="center"  >{row.Entitlement==45?row.amount:"-"+row.amount}</CustomTableCell>
 											<CustomTableCell align="center"  >{row.StartDate}</CustomTableCell>
 											<CustomTableCell align="center"  >{row.EndDate}</CustomTableCell>
 											<CustomTableCell align="center"  >{row.PaymentDate == null ? "-" : row.PaymentDate}</CustomTableCell>

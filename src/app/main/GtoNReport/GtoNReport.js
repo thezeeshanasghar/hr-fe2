@@ -26,6 +26,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import ReactExport from "react-export-excel";
 import Pdf from "react-to-pdf";
+import { Link } from 'react-router-dom'
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -259,6 +260,7 @@ class GtoNReport extends Component {
 							<Table className={classes.table}>
 								<TableHead>
 									<TableRow>
+									<CustomTableCell align="center">Detail</CustomTableCell>
 										{
 											this.state.columns.map(row =>
 												<CustomTableCell align="center">{row}</CustomTableCell>
@@ -269,6 +271,13 @@ class GtoNReport extends Component {
 								<TableBody>
 									{this.state.data.map(row => (
 										<TableRow className={classes.row} key={row.payElement}>
+										<CustomTableCell align="center">
+										<Link
+  											to={{
+    										pathname: "/PaymentDetail/"+row.PayGroup+'/'+row.EmpId,
+  											}}
+										> View</Link>
+										</CustomTableCell>
 											{
 												this.state.columns.map(column =>
 													<CustomTableCell align="center">{row[column]}</CustomTableCell>
@@ -277,7 +286,7 @@ class GtoNReport extends Component {
 										</TableRow>
 									))}
 								</TableBody>
-								<TableFooter>
+								{/* <TableFooter>
 								<TableRow className={classes.row} >
 									{this.state.columns.map((row,index) => (
 										console.log(index,row),console.log(this.state.Sum),
@@ -293,7 +302,7 @@ class GtoNReport extends Component {
 									
 									))}
 									</TableRow>
-								</TableFooter>
+								</TableFooter> */}
 							</Table>
 
 						</Paper>

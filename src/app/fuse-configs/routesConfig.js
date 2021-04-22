@@ -28,12 +28,14 @@ import LoginConfig from 'app/main/Login/LoginConfig';
 import DashboardConfig from 'app/main/Dashboard/DashboardConfig';
 import {GtoNReportConfig} from 'app/main/GtoNReport/GtoNReportConfig';
 import {CompanyApplicableLawConfig} from 'app/main/CompanyApplicableLaws/CompanyApplicableLawConfig';
+import {GlReportConfig} from 'app/main/GlReport/GlReportConfig';
+import {PaymentDetailConfig} from 'app/main/PaymentDetail/PaymentDetailConfig';
 
 const routeConfigs = [
 	BankConfig,CompanyConfig,CostCenterConfig,CountryLawsConfig,CurrencyExchangeConfig,EmployeeConfig,EmployeeDetailConfig,
 	GLAccountConfig,GradesConfig,PayElementConfig,JobsConfig,PositionConfig,PayElementGlAccountConfig,UnitConfig,UnpaidLeavesConfig,UserProtectionConfig,
 	SalaryPayRollConfig,EmployeeReportsConfig,EmployeeVarianceReportConfig,PayrollReportsConfig,TerminationConfig,EmployeeVarianceReportDetailConfig,BulkUploadConfig,
-	LoginConfig,DashboardConfig,GtoNReportConfig,CompanyApplicableLawConfig
+	LoginConfig,DashboardConfig,GtoNReportConfig,CompanyApplicableLawConfig,GlReportConfig,PaymentDetailConfig
 ];
 
 const routes = [

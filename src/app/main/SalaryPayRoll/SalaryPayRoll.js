@@ -46,6 +46,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Modal from '@material-ui/core/Modal';
 import Badge from '@material-ui/core/Badge';
+import { CircularProgress } from '@material-ui/core';
+
 const options = [
 	{ value: 'chocolate', label: 'Chocolate' },
 	{ value: 'strawberry', label: 'Strawberry' },
@@ -157,6 +159,7 @@ class SalaryPayRoll extends Component {
 		PayElement: "",
 		PayElementSelected: "",
 		logs:[],
+		ShowButton:true,
 		Isdisplay:"0",
 		typeList: [
 			{ "value": "Regular", "label": "Regular" },
@@ -182,7 +185,45 @@ class SalaryPayRoll extends Component {
 			callback(this.filterColors(inputValue));
 		}, 1000);
 	};
+	GeneratePaySlip=()=>{
+		var Ids= localStorage.getItem("ids");
+		if(!Ids){
+			toast.warn("Kindly select one record")
+			return false;
+		}
+		var List=Ids.split(",");
+		if(List.length>1){
+			toast.warn("Kindly select one record at a time")
+			return false;
+		}
+		
+		this.setState({"ShowButton":false});
+		
+		for(var i=0;i<List.length;i++){
+
+			axios({
+				method: "get",
+				url: defaultUrl +"/Report/payslip/"+List[i],
+				headers: {
+					// 'Authorization': `bearer ${token}`,
+					"Content-Type": "application/json;charset=utf-8",
+				},
+			})
+				.then((response) => {
+					window.open(defaultUrl + "download/PaySlip.pdf","_self");
+						toast.success("PaySlip Send Successfully")
+						this.setState({"ShowButton":true});
+					
+				})
+				.catch((error) => {
+					//console.log(error);
+				})
+		}
+		
+}
+	
 	GetCompanyMonthlyPayment = (group) => {
+
 		this.setState({ 'PaymentDetail': this.state.payroles.filter(x => x.PayGroup == group && x.CompanyId == this.state.companyId) })
 		
 	}
@@ -228,6 +269,15 @@ axios({
 			.catch((error) => {
 				//console.log(error);
 			})
+	}
+	selection = (id) => {
+		console.log("called");
+		const checkboxes = document.querySelectorAll('input[name=radio]:checked');
+		let values = [];
+		checkboxes.forEach((checkbox) => {
+			values.push(checkbox.value);
+		});
+		localStorage.setItem('ids', values);
 	}
 	loadCompanyData = (val) => {
 		axios({
@@ -277,7 +327,8 @@ axios({
 		})
 			.then((response) => {
 				console.log(response);
-				this.getSalaryPayRoll();
+				// this.getSalaryPayRoll();
+
 				this.setState({ salaryPayroll: response.data.data });
 			
 			})
@@ -704,6 +755,7 @@ axios({
 				content={
 
 					<div className={classes.root}>
+							<ToastContainer />
 						<AppBar position="static" color="default">
 							<Tabs
 								value={this.state.value}
@@ -723,10 +775,24 @@ axios({
 						>
 							<TabContainer dir={theme.direction}>
 								<Paper className={classes.root}>
-								
+								<div className="row" style={{ marginBottom: "5px" }}  >
+										<div style={{ float: "left", "margin": "8px" }}>
+											
+											{
+												this.state.ShowButton==true?
+												<Button variant="contained" color="secondary" className={classes.button} onClick={this.GeneratePaySlip}>
+												Generate and Send Slip
+												</Button>
+										
+												:<CircularProgress></CircularProgress>
+											}
+											
+										</div>
+									</div>
 									<Table className={classes.table}>
 										<TableHead>
 											<TableRow>
+												<CustomTableCell align="center" ></CustomTableCell>
 												<CustomTableCell align="center" >Name</CustomTableCell>
 												<CustomTableCell align="center" >Total Salary</CustomTableCell>
 												<CustomTableCell align="center" >Employee Contribution</CustomTableCell>
@@ -740,7 +806,10 @@ axios({
 												this.state.salaryPayroll.length>0?
 												this.state.salaryPayroll.map(row => (
 													<TableRow className={classes.row} key={row.Id}>
-	
+														<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
+															onChange={() => this.selection(row.Id)}
+														/>
+														</CustomTableCell>
 														<CustomTableCell align="center">{row.FirstName == "" || row.FirstName == null || row.FirstName == undefined ? 'N/A' : row.FirstName}</CustomTableCell>
 														<CustomTableCell align="center">{row.payables == "" || row.payables == null || row.payables == undefined ? 'N/A' : row.payables}</CustomTableCell>
 														<CustomTableCell align="center">{row.taxdeduction == "" || row.taxdeduction == null || row.taxdeduction == undefined ? 'N/A' : row.taxdeduction}&nbsp;({row.Law}) </CustomTableCell>

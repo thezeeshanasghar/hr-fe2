@@ -196,7 +196,7 @@ const navigationConfig = [
         'type': 'collapse',
         'icon': 'money',
         'badge': {
-            'title': 4,
+            'title': 5,
             'bg': '#525e8a',
             'fg': '#FFFFFF'
         },
@@ -228,6 +228,13 @@ const navigationConfig = [
         'type': 'item',
         'icon': 'whatshot',
         'url': '/EmployeeVarianceReportDetail'
+    },
+    {
+        'id': 'GLReport',
+        'title': 'GL Report',
+        'type': 'item',
+        'icon': 'whatshot',
+        'url': '/GlReport'
     },
   
         ]

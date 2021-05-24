@@ -544,26 +544,28 @@ class CompanyApplicableLaws extends Component {
 									<Table className={classes.table}>
 										<TableHead>
 											<TableRow>
+											<CustomTableCell align="center">Action</CustomTableCell>
 												<CustomTableCell align="center" >Law </CustomTableCell>
 												<CustomTableCell align="center">Deduction Type</CustomTableCell>
 												<CustomTableCell align="center">Fixed Amount</CustomTableCell>
 												<CustomTableCell align="center">Company(%)</CustomTableCell>
 												<CustomTableCell align="center">Employee(%)</CustomTableCell>
-												<CustomTableCell align="center">Action</CustomTableCell>
+												
 											</TableRow>
 										</TableHead>
 										<TableBody>
 											{this.state.CountryLaws.map(row => (
 												<TableRow className={classes.row} key={row.Id}>
+														<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
+														onChange={() => this.selection(row.Id)}
+													/>
+													</CustomTableCell>
 													<CustomTableCell align="center">{row.Detail}</CustomTableCell>
 													<CustomTableCell align="center">{row.DeductionType}</CustomTableCell>
 													<CustomTableCell align="center">{row.FixedAmount}</CustomTableCell>
 													<CustomTableCell align="center">{row.CompanyCut}</CustomTableCell>
 													<CustomTableCell align="center">{row.EmployeeCut}</CustomTableCell>
-													<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
-														onChange={() => this.selection(row.Id)}
-													/>
-													</CustomTableCell>
+												
 												</TableRow>
 											))}
 										</TableBody>

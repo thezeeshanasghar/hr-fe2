@@ -385,9 +385,10 @@ class GLAccount extends Component {
 									<Table className={classes.table}>
 										<TableHead>
 											<TableRow>
+											<CustomTableCell align="center">Action</CustomTableCell>
 												<CustomTableCell align="center" >Account</CustomTableCell>
 												<CustomTableCell align="center" >Description</CustomTableCell>
-												<CustomTableCell align="center">Action</CustomTableCell>
+												
 											</TableRow>
 										</TableHead>
 										<TableBody>
@@ -395,14 +396,14 @@ class GLAccount extends Component {
 												this.state.GlAccounts.length>0?
 												this.state.GlAccounts.map(row => (
 													<TableRow className={classes.row} key={row.Code}>
-	
-														<CustomTableCell align="center">{row.Account == "" || row.Account == null || row.Account == undefined ? 'N/A' : row.Account}</CustomTableCell>
-														<CustomTableCell align="center">{row.Description == "" || row.Description == null || row.Description == undefined ? 'N/A' : row.Description}</CustomTableCell>
-														
 														<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
 															onChange={() => this.selection(row.Id)}
 														/>
 														</CustomTableCell>
+														<CustomTableCell align="center">{row.Account == "" || row.Account == null || row.Account == undefined ? 'N/A' : row.Account}</CustomTableCell>
+														<CustomTableCell align="center">{row.Description == "" || row.Description == null || row.Description == undefined ? 'N/A' : row.Description}</CustomTableCell>
+														
+													
 													</TableRow>
 												))
 												:

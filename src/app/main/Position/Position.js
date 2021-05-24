@@ -464,10 +464,11 @@ class Position extends Component {
 										<Table className={classes.table}>
 										<TableHead>
 											<TableRow>
+											<CustomTableCell align="center">Action</CustomTableCell>
 												<CustomTableCell align="center" >Code</CustomTableCell>
 												<CustomTableCell align="center" >Title</CustomTableCell>
 												{/* <CustomTableCell align="center" >Company</CustomTableCell> */}
-												<CustomTableCell align="center">Action</CustomTableCell>
+												
 											</TableRow>
 										</TableHead>
 										<TableBody>
@@ -475,17 +476,17 @@ class Position extends Component {
 												this.state.Positions.length>0?
 												this.state.Positions.map(row => (
 													<TableRow className={classes.row} key={row.Code}>
-	
+														<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
+															onChange={() => this.selection(row.Id)}
+														/>
+														</CustomTableCell>
 														<CustomTableCell align="center">{row.Code == "" || row.Code == null || row.Code == undefined ? 'N/A' : row.Code}</CustomTableCell>
 														<CustomTableCell align="center" component="th" scope="row">
 															{row.Title == "" || row.Title == null || row.Title == undefined ? 'N/A' : row.Title}
 														</CustomTableCell>
 														{/* <CustomTableCell align="center">{row.Company == "" || row.Company == null || row.Company == undefined ? 'N/A' : row.Company}</CustomTableCell> */}
 	
-														<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
-															onChange={() => this.selection(row.Id)}
-														/>
-														</CustomTableCell>
+														
 													</TableRow>
 												))
 												:

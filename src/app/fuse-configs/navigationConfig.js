@@ -129,7 +129,7 @@ const navigationConfig = [
             },
             {
                 'id': 'SalaryPayRoll-component',
-                'title': 'Salary Payroll',
+                'title': 'Employee Payroll',
                 'type': 'item',
                 'icon': 'whatshot',
                 'url': '/salarypayroll'

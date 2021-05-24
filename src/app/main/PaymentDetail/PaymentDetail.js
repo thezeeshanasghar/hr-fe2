@@ -158,21 +158,46 @@ class PaymentDetail extends Component {
 						}
 					</Typography>	
 					)
-					
 					}
+					
+					<div>Taxable Amount(Yearly)#{row.Tax[0].Equation.split("_")[0]}</div>
 					<Typography variant="h5" component="h2">
-					  Taxation/Social Security Details
+					Detail Taxation 
 					</Typography>
 					{
 					row.Tax.map((Tax)=>
 					<Typography variant="body2" component="p">
 						{
 							<div>
-								&rarr;Law #  { Tax.Description}  &rarr;Type #  {Tax.Type}  &rarr;Amount #  {Tax.Amount} &rarr;
+								&rarr;Law #  { Tax.Detail}  &rarr;Type #  {Tax.Type}  &rarr;Amount #  {Tax.Amount} &rarr;
+								<br/>
 								<h4>Detail</h4>
-								{Tax.Equation.split(",").map(x=>
-									<div>{x}</div>
-									)}
+								{Tax.Equation.substring(0, Tax.Equation.length - 1).split(";").map((x,index)=>
+								index==0?
+
+									<div>
+										Amount#{x.split("_")[2]}<br/>
+									Slab(Tax Percentage)#{x.split("_")[3]}%<br/>
+									Slab(Fix Tax)#{x.split("_")[4]}<br/>
+									Slab(Tax)#{x.split("_")[5]}<br/>
+									Remaining#{x.split("_")[6]}<br/>
+									___________________________________________
+									</div>
+									:
+									<div>
+										Amount#{x.split("_")[1]}<br/>
+									Slab(Tax Percentage)#{x.split("_")[2]}%<br/>
+									Slab(Fix Tax)#{x.split("_")[3]}<br/>
+									Slab(Tax)#{x.split("_")[4]}<br/>
+									Remaining#{x.split("_")[5]}<br/>
+									___________________________________________
+									</div>
+								
+								)}
+								<div>Summary</div>
+				<div> Sum(Tax)#{Tax.Equation.substring(0, Tax.Equation.length - 1).split("_")[Tax.Equation.substring(0, Tax.Equation.length - 1).split("_").length-1]}<br/></div>
+						<div>Paid(Tax)#{Number(Tax.Equation.substring(0, Tax.Equation.length - 1).split("_")[Tax.Equation.substring(0, Tax.Equation.length - 1).split("_").length-1])-Number(Tax.Remaining)}</div>
+							<div> Remaining(Tax)#{Tax.Remaining}</div>
 							</div>
 		
 							

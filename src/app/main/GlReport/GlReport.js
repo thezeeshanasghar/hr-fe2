@@ -74,7 +74,8 @@ class GlReport extends Component {
 		companyList:[],
 		data:[],
 		Month:"",
-		Path:""
+		Path:"",
+		Default:localStorage.getItem("state")!=null?JSON.parse(localStorage.getItem("state")):null
 	};
 	constructor(props) {
 		super(props);
@@ -116,9 +117,12 @@ class GlReport extends Component {
 			})
 	}
 	getEmployeeDetail = () => {
+		if(this.state.Month=="" || this.state.Default ==null){
+			return false;
+		}
 		var obj={
 			Date:this.state.Month+"-01",
-			CompanyId:this.state.company
+			CompanyId:this.state.Default.Id
 	  }
 		axios({
 			method: "post",
@@ -148,7 +152,8 @@ class GlReport extends Component {
 			<FusePageSimple
 				
 				header={
-					<div className="p-24"><h4>GL Report</h4></div>
+					<div className="p-24">
+						<h4>GL Report-{this.state.Default !=null?this.state.Default.Company:"No Company Selected Yet"}</h4></div>
 				}
 				
 				content={
@@ -173,7 +178,7 @@ class GlReport extends Component {
 										
 										</FormControl>
 									</Grid>
-									<Grid item xs={12} sm={5} style={{marginTop: "10px"}} className={this.state.Type=="Bank" || this.state.Type=="Company" || this.state.Type=="Exchange" || this.state.Type=="CountryLaw" ? 'd-none' : ''   } >
+									{/* <Grid item xs={12} sm={5} style={{marginTop: "10px"}} className={this.state.Type=="Bank" || this.state.Type=="Company" || this.state.Type=="Exchange" || this.state.Type=="CountryLaw" ? 'd-none' : ''   } >
 										<FormControl className={classes.formControl}>
 										<Select1
 
@@ -188,10 +193,15 @@ onChange={this.handledropdown}
 
 											{this.validator.message('companyId', this.state.companyId, 'required')}
 										</FormControl>
-									</Grid>
-									<Button variant="outlined" color="secondary" style={{marginTop: "10px"}} className={classes.button} onClick={()=>this.getEmployeeDetail()} >
+									</Grid> */}
+									{
+										this.state.Default!=null?
+										<Button variant="outlined" color="secondary" style={{marginTop: "10px"}} className={classes.button} onClick={()=>this.getEmployeeDetail()} >
 												Generate Report
 											</Button>
+											:""
+									}
+									
 								</form>
 				
 								{/* <form className={classes.container} noValidate autoComplete="off" style={{marginBottom:'30px',marginTop:"10px"}}>

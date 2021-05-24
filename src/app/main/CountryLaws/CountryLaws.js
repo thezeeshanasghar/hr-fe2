@@ -140,7 +140,7 @@ class CountryLaws extends Component {
 			this.forceUpdate();
 		return false;  
 		}
-		if((this.state.TaxAmount =="" || this.state.TaxAmount =="0") && (this.state.percentage =="" || this.state.percentage =="0") ){
+		if((this.state.TaxAmount =="" ) && (this.state.percentage =="" ) ){
 			toast.warn("Both Percentage and Fixed amount cant be null");
 			return false;
 		}
@@ -882,17 +882,23 @@ class CountryLaws extends Component {
 										<Table className={classes.table}>
 										<TableHead>
 											<TableRow>
+											<CustomTableCell align="center">Action</CustomTableCell>
 												<CustomTableCell align="center">Salary(Max)</CustomTableCell>
 												<CustomTableCell align="center">Salary(Min)</CustomTableCell>
 												<CustomTableCell align="center">Discount</CustomTableCell>		
 												<CustomTableCell align="center">Percentage</CustomTableCell>	
 												<CustomTableCell align="center">Fix Amount</CustomTableCell>	
-												<CustomTableCell align="center">Action</CustomTableCell>														
+																										
 											</TableRow>
 										</TableHead>
 										<TableBody>
 											{this.state.RangesList.map(row => (
 												<TableRow className={classes.row} key={row.Code}>
+														<CustomTableCell align="center">
+														<IconButton className={classes.button} aria-label="Add" onClick={()=>this.deleteRanges(row.id)} >
+															<DeleteIcon />
+														</IconButton>
+													</CustomTableCell>
 													<CustomTableCell align="center">
 															{row.maxSalary}
 													</CustomTableCell>
@@ -908,11 +914,7 @@ class CountryLaws extends Component {
 													<CustomTableCell align="center">
 													{row.TaxAmount}
 													</CustomTableCell>
-													<CustomTableCell align="center">
-														<IconButton className={classes.button} aria-label="Add" onClick={()=>this.deleteRanges(row.id)} >
-															<DeleteIcon />
-														</IconButton>
-													</CustomTableCell>
+												
 												</TableRow>
 											))}
 										</TableBody>

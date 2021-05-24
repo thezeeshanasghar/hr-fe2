@@ -174,7 +174,8 @@ class Employee extends Component {
 		Default: localStorage.getItem("state") != null ? JSON.parse(localStorage.getItem("state")) : null,
 		SocialSecurityApplicable: true,
 		TaxationApplicable: true,
-
+		CompanyBank:[],
+		PayFrom:0
 	};
 	constructor(props) {
 		super(props);
@@ -283,6 +284,7 @@ class Employee extends Component {
 			this.getPosition(e.target.value);
 			this.getGrades(e.target.value);
 			this.getPayElement(e.target.value);
+			this.getCompanyBank(e.target.value);
 		}
 	};
 	getMaritalStatus = () => {
@@ -297,6 +299,24 @@ class Employee extends Component {
 			.then((response) => {
 				console.log(response);
 				this.setState({ maritallist: response.data });
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+	}
+
+	getCompanyBank = (Id) => {
+		axios({
+			method: "get",
+			url: defaultUrl + "/Company/Banks/" + Id,
+			headers: {
+				// 'Authorization': `bearer ${token}`,
+				"Content-Type": "application/json;charset=utf-8",
+			},
+		})
+			.then((response) => {
+				console.log(response);
+				this.setState({ CompanyBank: response.data });
 			})
 			.catch((error) => {
 				console.log(error);
@@ -751,7 +771,10 @@ class Employee extends Component {
 				!this.validator.fieldValid('Position') ||
 				!this.validator.fieldValid('grade') ||
 				!this.validator.fieldValid('Contact') ||
-				!this.validator.fieldValid('Address')) {
+				!this.validator.fieldValid('Address') ||
+				!this.validator.fieldValid('PayFrom') 
+				
+				) {
 				{
 					this.validator.showMessages();
 					this.forceUpdate();
@@ -759,6 +782,8 @@ class Employee extends Component {
 				}
 			}
 		} else if (TYPE == "bank") {
+			
+			
 			if (!this.validator.fieldValid('Bank') ||
 				!this.validator.fieldValid('Currency') ||
 				!this.validator.fieldValid('IBAN') ||
@@ -769,7 +794,9 @@ class Employee extends Component {
 				this.validator.showMessages();
 				this.forceUpdate();
 				return false;
-			}
+			}	
+			
+			
 		} else if (TYPE == "payroll") {
 			// if (this.state.PayRoll.length <= 0 || this.state.oneTimePayRoll.length <= 0) {
 			// 	return false;
@@ -824,6 +851,7 @@ class Employee extends Component {
 			Id: this.state.Id,
 			SocialSecurityApplicable: this.state.SocialSecurityApplicable,
 			TaxationApplicable: this.state.TaxationApplicable,
+			PayFrom:this.state.PayFrom
 		};
 		axios.interceptors.request.use(function (config) {
 			////document.getElementById("fuse-splash-screen").style.display = "block";
@@ -990,7 +1018,12 @@ class Employee extends Component {
 			}
 		}
 		else if (val == 3) {
-			if (!this.validator.fieldValid('Bank') ||
+			if(this.state.Bank =="" && this.state.Currency=="" && this.state.IBAN=="" && this.state.EffectiveDate=="" && this.state.IsPrimary=="")
+			{
+
+			}
+			else{
+				if (!this.validator.fieldValid('Bank') ||
 				!this.validator.fieldValid('Currency') ||
 				!this.validator.fieldValid('IBAN') ||
 				!this.validator.fieldValid('EffectiveDate') ||
@@ -1001,6 +1034,8 @@ class Employee extends Component {
 				this.forceUpdate();
 				return false;
 			}
+			}
+			
 		}
 		else if (val == 4) {
 			if (this.state.PayRoll.length <= 0 || this.state.oneTimePayRoll.length <= 0) {
@@ -1722,11 +1757,36 @@ class Employee extends Component {
 											label="Taxation Applicable"
 										/>
 									</Grid>
+									<Grid item xs={12} sm={5} style={{ marginRight: '5px' }}  >
+										<FormControl className={classes.formControl}>
+											<InputLabel htmlFor="ContractType">Pay From(Company Bank)</InputLabel>
+											<Select
+												value={this.state.PayFrom}
+												onChange={this.handleChange}
+												inputProps={{
+													name: 'PayFrom',
+													id: 'PayFrom',
+												}}
+											>
+												<MenuItem value="">
+													<em>None</em>
+												</MenuItem>
+												{this.state.CompanyBank.map(row => (
+													<MenuItem value={row.Id}>{row.AccNo}</MenuItem>
+												))}
+											</Select>
+										</FormControl>
+										{this.validator.message('PayFrom', this.state.PayFrom, 'required')}
 
+									</Grid>
 								</form>
 								<div className="row" >
 									<Grid item xs={12} sm={10}  >
+									
 										<div style={{ float: "right", "marginRight": "8px" }}>
+										<Button style={{ "marginBottom": "10px", "marginRight": "10px" }}  variant="outlined" color="secondary" className={this.state.Action == 'Insert Record' ? classes.button : 'd-none'} onClick={() => this.insertUpdateEmployee('employee')} >
+												Save Employee
+											</Button>
 											<Button style={{ "marginBottom": "10px", "marginRight": "10px" }} variant="outlined" color="secondary" className={this.state.Action != 'Insert Record' ? classes.button : 'd-none'} onClick={() => this.insertUpdateEmployee('employee')}>
 												Update Employee Detail
       										</Button>

@@ -368,24 +368,26 @@ class CurrencyExchange extends Component {
 									<Table className={classes.table}>
 										<TableHead>
 											<TableRow>
+											<CustomTableCell align="center">Action</CustomTableCell>
 												<CustomTableCell align="center" >CurrencyName</CustomTableCell>
 												<CustomTableCell align="center">ToCurrencyName</CustomTableCell>
 												<CustomTableCell align="center">Rate</CustomTableCell>
 												<CustomTableCell align="center">EffectiveDate</CustomTableCell>
-												<CustomTableCell align="center">Action</CustomTableCell>											
+																							
 											</TableRow>
 										</TableHead>
 										<TableBody>
 											{this.state.ExchangeRate.map(row => (
 												<TableRow className={classes.row} key={row.Code}>
+														<CustomTableCell align="center"><input type="checkbox" name="radio"  value= {row.Id}
+						onChange={()=>this.selection(row.Id)}
+						/>
+						</CustomTableCell>
 													<CustomTableCell align="center">{row.CurrencyName}</CustomTableCell>
 													<CustomTableCell align="center">{row.ToCurrencyName}</CustomTableCell>
 													<CustomTableCell align="center">{row.Rate}</CustomTableCell>
 													<CustomTableCell align="center">{row.EffectiveDate}</CustomTableCell>
-											<CustomTableCell align="center"><input type="checkbox" name="radio"  value= {row.Id}
-						onChange={()=>this.selection(row.Id)}
-						/>
-						</CustomTableCell>
+										
 												</TableRow>
 											))}
 										</TableBody>

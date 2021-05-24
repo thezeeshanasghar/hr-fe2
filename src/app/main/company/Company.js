@@ -13,6 +13,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
+import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import TextField from '@material-ui/core/TextField';
@@ -113,7 +114,8 @@ class Company extends Component {
 		AccountNo:"",
 		payrollformula:"",
 		employeePercentage:"",
-		companyPercentage:""
+		companyPercentage:"",
+		AccountsList:[]
 	};
 	
  
@@ -130,7 +132,29 @@ class Company extends Component {
 		this.getBanks();
 		this.getCurrency();
 	}
-
+	AddBankAccount=()=>{
+		if (
+			!this.validator.fieldValid('Bank') ||
+			!this.validator.fieldValid('Currency') ||
+			!this.validator.fieldValid('AccountNo') ){
+				console.log("Invalid")
+				this.validator.showMessages();
+				this.forceUpdate();
+				return false;
+			}else{
+		
+				var List=this.state.AccountsList;
+		List.push({BankId:this.state.Bank,CurrencyId:this.state.Currency,AccNo:this.state.AccountNo});
+				this.setState({AccountsList:List,Bank:"",Currency:"",AccountNo:""});
+		
+			}
+	}
+	deleteRow = (element) => {
+		debugger
+		var list=this.state.AccountsList;
+		list.splice(element, 1);
+		this.setState({ AccountsList: list})
+	}
 	handleTab = (event, value) => {
 		this.setState({ value });
 	};
@@ -236,11 +260,29 @@ class Company extends Component {
 		
 	}
 	insertUpdateRecord = () => {
-		if (!this.validator.allValid()) {
+		
+		if (
+			
+			!this.validator.fieldValid('payrollformula') ||
+			!this.validator.fieldValid('EOBINo') ||
+			!this.validator.fieldValid('SocialSecurityNo') ||
+			!this.validator.fieldValid('TaxationNo') ||
+			!this.validator.fieldValid('RegistrationNo') ||
+			!this.validator.fieldValid('Address') ||
+			!this.validator.fieldValid('CountryCode') ||
+			!this.validator.fieldValid('Contact') ||
+			!this.validator.fieldValid('Email') ||
+			!this.validator.fieldValid('Code')|| 
+			!this.validator.fieldValid('Name') ||
+			this.state.AccountsList.length==0
+		
+		) {
+			console.log("fail")
 			this.validator.showMessages();
 			this.forceUpdate();
 			return false;
 		}
+		console.log("pass")
 		var method = "post";
 		var url = defaultUrl + "company";
 		if (this.state.Action != "Insert Record") {
@@ -259,9 +301,10 @@ class Company extends Component {
 			TaxationNo:this.state.TaxationNo,
 			SocialSecurityNo:this.state.SocialSecurityNo,
 			EOBINo:this.state.EOBINo,
-			Bank:this.state.Bank,
-			Currency:this.state.Currency,
-			AccountNo:this.state.AccountNo,
+			// Bank:this.state.Bank,
+			// Currency:this.state.Currency,
+			// AccountNo:this.state.AccountNo,
+			Accounts:JSON.stringify(this.state.AccountsList),
 			payrollformula:this.state.payrollformula,
 			companyPercentage:this.state.companyPercentage,
 			employeePercentage:this.state.employeePercentage
@@ -382,6 +425,7 @@ class Company extends Component {
 		})
 			.then((response) => {
 				console.log(response.data);
+				debugger;
 				if(response.data)
 				{
 					this.setState({
@@ -391,9 +435,10 @@ class Company extends Component {
 						TaxationNo:response.data[0].TaxationNo,
 						SocialSecurityNo:response.data[0].SocialSecurityNo,
 						EOBINo:response.data[0].EOBINo,
-						Bank:response.data[0].BankId,
-				Currency:response.data[0].CurrencyId,
-				AccountNo:response.data[0].AccNo,
+				// 		Bank:response.data[0].BankId,
+				// Currency:response.data[0].CurrencyId,
+				// AccountNo:response.data[0].AccNo,
+				AccountsList:response.data,
 				payrollformula:response.data[0].PayrollFormula,
 				companyPercentage:response.data[0].EmployeeDeduction,
 				employeePercentage:response.data[0].CompanyDeduction
@@ -464,6 +509,7 @@ class Company extends Component {
 									<Table className={classes.table}>
 										<TableHead>
 											<TableRow>
+											<CustomTableCell align="center">Action</CustomTableCell>
 												<CustomTableCell align="center" >Code</CustomTableCell>
 												<CustomTableCell align="center">CompanyName</CustomTableCell>
 												<CustomTableCell align="center">BranchCode</CustomTableCell>
@@ -474,12 +520,16 @@ class Company extends Component {
 												<CustomTableCell align="center">TaxationNo</CustomTableCell>
 												<CustomTableCell align="center">SocialSecurityNo</CustomTableCell>
 												<CustomTableCell align="center">EOBINo</CustomTableCell>		
-												<CustomTableCell align="center">Action</CustomTableCell>														
+																										
 											</TableRow>
 										</TableHead>
 										<TableBody>
 											{this.state.Companies.map(row => (
 												<TableRow className={classes.row} key={row.Code}>
+															<CustomTableCell align="center"><input type="checkbox" name="radio"  value= {row.Id}
+						onChange={()=>this.selection(row.Id)}
+						/>
+						</CustomTableCell>
 													<CustomTableCell align="center">{row.Code}</CustomTableCell>
 													<CustomTableCell align="center">{row.CompanyName}</CustomTableCell>
 													<CustomTableCell align="center">{row.BranchCode}</CustomTableCell>
@@ -490,10 +540,7 @@ class Company extends Component {
 													<CustomTableCell align="center">{row.TaxationNo}</CustomTableCell>
 													<CustomTableCell align="center">{row.SocialSecurityNo}</CustomTableCell>
 													<CustomTableCell align="center">{row.EOBINo}</CustomTableCell>
-													<CustomTableCell align="center"><input type="checkbox" name="radio"  value= {row.Id}
-						onChange={()=>this.selection(row.Id)}
-						/>
-						</CustomTableCell>
+											
 												</TableRow>
 											))}
 										</TableBody>
@@ -619,6 +666,45 @@ class Company extends Component {
 										<TextField id="Address" fullWidth label="AccountNo" name="AccountNo" value={this.state.AccountNo} onChange={this.handleChange} />
 										{this.validator.message('AccountNo', this.state.AccountNo, 'required')}
 									</Grid>
+									<Grid item xs={12} sm={5} style={{ marginRight: '5px' }} >
+									<div style={{"marginRight": "8px" }}>
+
+										<IconButton className={classes.button} aria-label="Add" onClick={this.AddBankAccount} >
+											<AddIcon />
+										</IconButton>
+									</div>
+									</Grid>
+									<Grid item xs={12} sm={10} style={{marginTop:"20px"}}  >
+
+									<Table className={classes.table} style={{width:'100%'}} >
+										<TableHead>
+											<TableRow>
+
+												<CustomTableCell align="center" >Bank</CustomTableCell>
+												<CustomTableCell align="center" >Currency</CustomTableCell>
+												<CustomTableCell align="center" >Account No</CustomTableCell>
+												<CustomTableCell align="center">Action</CustomTableCell>
+
+											</TableRow>
+										</TableHead>
+										<TableBody>
+	
+											{this.state.AccountsList.map((row,index) => (
+												<TableRow className={classes.row} key={row.Id}>
+													<CustomTableCell align="center">{this.state.bankList.find(x=>x.Id==row.BankId).BankName }</CustomTableCell>
+													<CustomTableCell align="center">{this.state.currencyList.find(x=>x.Id==row.CurrencyId).Name }</CustomTableCell>
+													<CustomTableCell align="center">{row.AccNo}</CustomTableCell>
+													<CustomTableCell align="center" component="th" scope="row">
+														<IconButton className={classes.button} aria-label="Delete" onClick={() => this.deleteRow(index)} >
+															<DeleteIcon />
+														</IconButton>
+													</CustomTableCell>
+												</TableRow>
+											))}
+										</TableBody>
+									</Table>
+								</Grid>
+
 								<Grid item xs={12} sm={10} style={{marginTop:"20px"}}  >
 										<div style={{borderBottom:"solid 1px black",borderBottom:"solid 1px black"}}>Company Rules</div>
 									

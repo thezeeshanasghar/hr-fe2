@@ -491,10 +491,11 @@ class PayElementGlAccount extends Component {
 									<Table className={classes.table}>
 										<TableHead>
 											<TableRow>
+											<CustomTableCell align="center">Action</CustomTableCell>
 												<CustomTableCell align="center" >Pay Element</CustomTableCell>
 												<CustomTableCell align="center" >GLAccount</CustomTableCell>
 												<CustomTableCell align="center" >Posting Per Employee</CustomTableCell>
-												<CustomTableCell align="center">Action</CustomTableCell>
+												
 											</TableRow>
 										</TableHead>
 										<TableBody>
@@ -502,15 +503,15 @@ class PayElementGlAccount extends Component {
 												this.state.payelementglAccountList.length>0?
 												this.state.payelementglAccountList.map(row => (
 													<TableRow className={classes.row} key={row.PayElementId}>
-	
-														<CustomTableCell align="center">{row.PayElementId == "" || row.PayElementId == null || row.PayElementId == undefined ? 'N/A' : row.PayElementId}</CustomTableCell>
-														<CustomTableCell align="center">{row.GLAccountId == "" || row.GLAccountId == null || row.GLAccountId == undefined ? 'N/A' : row.GLAccountId}</CustomTableCell>
-														<CustomTableCell align="center">{row.PostingPerEmployee == "" || row.PostingPerEmployee == null || row.PostingPerEmployee == undefined ? 'N/A' : row.PostingPerEmployee}</CustomTableCell>
-														
 														<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
 															onChange={() => this.selection(row.Id)}
 														/>
 														</CustomTableCell>
+														<CustomTableCell align="center">{row.PayElementId == "" || row.PayElementId == null || row.PayElementId == undefined ? 'N/A' : row.PayElementId}</CustomTableCell>
+														<CustomTableCell align="center">{row.GLAccountId == "" || row.GLAccountId == null || row.GLAccountId == undefined ? 'N/A' : row.GLAccountId}</CustomTableCell>
+														<CustomTableCell align="center">{row.PostingPerEmployee == "" || row.PostingPerEmployee == null || row.PostingPerEmployee == undefined ? 'N/A' : row.PostingPerEmployee}</CustomTableCell>
+														
+														
 													</TableRow>
 												))
 												:

@@ -366,11 +366,12 @@ class Termination extends Component {
 									<Table className={classes.table}>
 										<TableHead>
 											<TableRow>
+											<CustomTableCell align="center">Action</CustomTableCell>
 												<CustomTableCell align="center" >First Name</CustomTableCell>
 												<CustomTableCell align="center" >Company Name</CustomTableCell>
 												<CustomTableCell align="center" >Last working Date</CustomTableCell>
 												<CustomTableCell align="center" >Reason of Termination</CustomTableCell>
-												<CustomTableCell align="center">Action</CustomTableCell>
+												
 											</TableRow>
 										</TableHead>
 										<TableBody>
@@ -378,7 +379,10 @@ class Termination extends Component {
 												this.state.TerminationList.length>0?
 												this.state.TerminationList.map(row => (
 													<TableRow className={classes.row} key={row.Code}>
-	
+														<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
+															onChange={() => this.selection(row.Id)}
+														/>
+														</CustomTableCell>
 														<CustomTableCell align="center">{row.FirstName == "" || row.FirstName == null || row.FirstName == undefined ? 'N/A' : row.FirstName}</CustomTableCell>
 														<CustomTableCell align="center">{row.CompanyName == "" || row.CompanyName == null || row.CompanyName == undefined ? 'N/A' : row.CompanyName}</CustomTableCell>
 														<CustomTableCell align="center" component="th" scope="row">
@@ -387,10 +391,7 @@ class Termination extends Component {
 														<CustomTableCell align="center" component="th" scope="row">
 															{row.TerminationReason == "" || row.TerminationReason == null || row.TerminationReason == undefined ? 'N/A' : row.TerminationReason}
 														</CustomTableCell>
-														<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
-															onChange={() => this.selection(row.Id)}
-														/>
-														</CustomTableCell>
+													
 													</TableRow>
 												))
 												:

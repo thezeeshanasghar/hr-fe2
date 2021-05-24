@@ -77,7 +77,8 @@ class EmployeeVarianceReport extends Component {
 		Month:"",
 		Company:"",
 		companyList:[],
-		Path:""
+		Path:"",
+		Default:localStorage.getItem("state")!=null?JSON.parse(localStorage.getItem("state")):null
 
 	};
 
@@ -117,10 +118,11 @@ class EmployeeVarianceReport extends Component {
 		window.open(defaultUrl + "download/"+this.state.Path,"_self");
 		}
 	  generateReport=()=>{
-		if(this.state.Month !="" && this.state.Company!=""){
+	
+		if(this.state.Month !="" && this.state.Default != null ){
 			var obj={
 				Date:this.state.Month+"-01",
-				CompanyId:this.state.Company
+				CompanyId:this.state.Default.Id
 		  }
 		axios({
 			method: "post",
@@ -151,7 +153,8 @@ class EmployeeVarianceReport extends Component {
 			<FusePageSimple
 				
 				header={
-					<div className="p-24"><h4>Varriance Report</h4></div>
+					<div className="p-24">
+						<h4>Varriance Report-{this.state.Default !=null?this.state.Default.Company:"No Company Selected Yet"}</h4></div>
 				}
 				
 				content={
@@ -176,7 +179,7 @@ class EmployeeVarianceReport extends Component {
 										
 										</FormControl>
 									</Grid>
-									<Grid item xs={12} sm={5} style={{marginTop: "10px"}} className={this.state.Type=="Bank" || this.state.Type=="Company" || this.state.Type=="Exchange" || this.state.Type=="CountryLaw" ? 'd-none' : ''   } >
+									{/* <Grid item xs={12} sm={5} style={{marginTop: "10px"}} className={this.state.Type=="Bank" || this.state.Type=="Company" || this.state.Type=="Exchange" || this.state.Type=="CountryLaw" ? 'd-none' : ''   } >
 										<FormControl className={classes.formControl}>
 									
 											<Select1
@@ -191,10 +194,15 @@ class EmployeeVarianceReport extends Component {
 											/>
 											{this.validator.message('companyId', this.state.companyId, 'required')}
 										</FormControl>
-									</Grid>
-									<Button variant="outlined" color="secondary" style={{marginTop: "10px"}} className={classes.button} onClick={()=>this.generateReport()} >
-												Generate Report
-											</Button>
+									</Grid> */}
+									{
+										this.state.Default!=null?
+										<Button variant="outlined" color="secondary" style={{marginTop: "10px"}} className={classes.button} onClick={()=>this.generateReport()} >
+										Generate Report
+									</Button>
+									:""
+									}
+								
 								</form>
 						<AppBar position="static" color="default">
 							

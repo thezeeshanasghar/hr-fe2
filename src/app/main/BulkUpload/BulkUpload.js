@@ -344,27 +344,28 @@ class BulkUpload extends Component {
 												<MenuItem value="">
 													<em>None</em>
 												</MenuItem>
-												<MenuItem value="Bank">Bank</MenuItem>
+												<MenuItem value="Bank">01-Bank</MenuItem>
+												
+												<MenuItem value="PayElement">02-Pay Element</MenuItem>
 												{/* <MenuItem value="Company">Company</MenuItem> */}
-												<MenuItem value="Exchange">Exchange Rate</MenuItem>
-												<MenuItem value="CountryLaw">Country Laws</MenuItem>
-												<MenuItem value="Grade">Grade</MenuItem>
-												<MenuItem value="Unit">Unit</MenuItem>
-												<MenuItem value="Position">Position</MenuItem>
-												<MenuItem value="Job">Job</MenuItem>
-												<MenuItem value="Employee">Employee(Basic)</MenuItem>
-												<MenuItem value="EmployeeBank">Employee(Bank)</MenuItem>
-												<MenuItem value="EmployeePayroll">Employee(Payroll-Periodic)</MenuItem>
-												<MenuItem value="EmployeePayrollOneTime">Employee(Payroll-oneTime)</MenuItem>
+												<MenuItem value="Grade">03-Grade</MenuItem>
+												<MenuItem value="Job">04-Job</MenuItem>
+												<MenuItem value="Unit">05-Unit</MenuItem>
+												<MenuItem value="Position">06-Position</MenuItem>
+												<MenuItem value="CostCenter">07-Cost Cexnter</MenuItem>
+												<MenuItem value="GlAccount">08-GL Account</MenuItem>
+												<MenuItem value="PayElementGlAccount">09-PayElement GlAccount</MenuItem>
+												<MenuItem value="Employee">10-Employee(Basic)</MenuItem>
+												<MenuItem value="EmployeeBank">11-Employee(Bank)</MenuItem>
+												<MenuItem value="EmployeeCostCenter">12-Employee(Cost Center)</MenuItem>
+												<MenuItem value="EmployeePayroll">13-Employee(Payroll-Periodic)</MenuItem>
+												<MenuItem value="EmployeePayrollOneTime">14-Employee(Payroll-oneTime)</MenuItem>
+												<MenuItem value="Exchange">15-Exchange Rate</MenuItem>
+												<MenuItem value="Termination">16-Termination</MenuItem>
+												<MenuItem value="CountryLaw">17-Country Laws</MenuItem>
 												{/* <MenuItem value="ApplicableLaws">Employee(ApplicableLaws)</MenuItem> */}
 												{/* <MenuItem value="UnpaidLeaves">Employee(UnpaidLeaves)</MenuItem> */}
-												<MenuItem value="overtime">Employee(overTime)</MenuItem>
-												<MenuItem value="EmployeeCostCenter">Employee(Cost Center)</MenuItem>
-												<MenuItem value="CostCenter">Cost Center</MenuItem>
-												<MenuItem value="GlAccount">GL Account</MenuItem>
-												<MenuItem value="PayElement">Pay Element</MenuItem>
-												<MenuItem value="PayElementGlAccount">PayElement GlAccount</MenuItem>
-												<MenuItem value="Termination">Termination</MenuItem>
+												<MenuItem value="overtime">18-Employee(overTime)</MenuItem>
 											</Select>
 											{this.validator.message('Type', this.state.Type, 'required')}
 										</FormControl>

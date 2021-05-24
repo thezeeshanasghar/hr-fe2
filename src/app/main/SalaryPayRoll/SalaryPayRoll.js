@@ -135,7 +135,7 @@ const rows = [
 
 class SalaryPayRoll extends Component {
 	state = {
-		value: 0,
+		value: 1,
 		Date: "",
 		Action: "Generate",
 		Id: 0,
@@ -558,6 +558,9 @@ axios({
 	}
 	handlePayelementChange = (e) => {
 		var PayElements = "";
+		if(this.state.type=='Regular'){
+			return false;
+		}
 		if(!e){
 			this.setState({ 'PayElement': "", PayElementSelected: [] });
 			return false;
@@ -595,12 +598,34 @@ axios({
 		this.getSelectivePayrolls(e.value)
 	}
 	handleetypeChange = (e) => {
+		if(e.value=="Regular"){
+			var ids="",PayElements="";
+
+			for(var i=0;i<this.state.employeeList.length;i++){
+				if(this.state.employeeList[i].value !="All"){
+					ids+= this.state.employeeList[i].value+","	
+				}
+			
+			}
+			for (var i = 0; i < this.state.PayElementList.length; i++) {
+				if(this.state.PayElementList[i].value !="All"){
+				PayElements += this.state.PayElementList[i].value + ','
+			}
+		}
+			this.setState({PayElement:PayElements.slice(0,-1),employeeSelected:{value: "All", label: "All"},PayElementSelected:{value: "All", label: "All"},employeeIds:ids})
+		}else{
+			this.setState({employeeSelected:[],PayElementSelected:[]})
+		}
+		
 		this.setState({ 'type': e.value, 'TypeSelected': e });
 
 	}
 	handleEmployeedropdown = (e) => {
 	console.log(e)
 		var employees = "";
+		if(this.state.type=='Regular'){
+			return false;
+		}
 		if(!e){
 			this.setState({ 'employeeIds': "", employeeSelected: [] });
 			return false;

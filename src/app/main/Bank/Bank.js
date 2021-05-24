@@ -425,6 +425,7 @@ class Bank extends Component {
 								<Table className={classes.table} >
 										<TableHead>
 											<TableRow>
+											<CustomTableCell align="center">Action</CustomTableCell>
 												<CustomTableCell align="center" >Code</CustomTableCell>
 												<CustomTableCell align="center">BankName</CustomTableCell>
 												<CustomTableCell align="center">BranchCode</CustomTableCell>
@@ -433,12 +434,16 @@ class Bank extends Component {
 												<CustomTableCell align="center">UAE FTS BANK Code</CustomTableCell>
 												<CustomTableCell align="center">Route Code</CustomTableCell>
 												<CustomTableCell align="center">Description</CustomTableCell>
-												<CustomTableCell align="center">Action</CustomTableCell>
+												
 											</TableRow>
 										</TableHead>
 										<TableBody>
 											{this.state.Banks.map(row => (
 												<TableRow className={classes.row} key={row.Code}>
+														<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
+														onChange={() => this.selection(row.Id)}
+													/>
+													</CustomTableCell>
 													<CustomTableCell align="center">{row.Code}</CustomTableCell>
 													<CustomTableCell align="center">{row.BankName}</CustomTableCell>
 													<CustomTableCell align="center">{row.BranchCode}</CustomTableCell>
@@ -447,10 +452,8 @@ class Bank extends Component {
 													<CustomTableCell align="center">{row.UAEFTSBANKCode}</CustomTableCell>
 													<CustomTableCell align="center">{row.RouteCode}</CustomTableCell>
 													<CustomTableCell align="center">{row.Description}</CustomTableCell>
-													<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
-														onChange={() => this.selection(row.Id)}
-													/>
-													</CustomTableCell>
+												
+													
 												</TableRow>
 											))}
 										</TableBody>

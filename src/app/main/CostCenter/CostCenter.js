@@ -384,9 +384,10 @@ class CostCenter extends Component {
 									<Table className={classes.table}>
 										<TableHead>
 											<TableRow>
+											<CustomTableCell align="center">Action</CustomTableCell>
 												<CustomTableCell align="center" >Code</CustomTableCell>
 												<CustomTableCell align="center" >Description</CustomTableCell>
-												<CustomTableCell align="center">Action</CustomTableCell>
+											
 											</TableRow>
 										</TableHead>
 										<TableBody>
@@ -394,14 +395,14 @@ class CostCenter extends Component {
 												this.state.costcenter.length>0?
 												this.state.costcenter.map(row => (
 													<TableRow className={classes.row} key={row.Code}>
-	
-														<CustomTableCell align="center">{row.Code == "" || row.Code == null || row.Code == undefined ? 'N/A' : row.Code}</CustomTableCell>
-														<CustomTableCell align="center">{row.Description == "" || row.Description == null || row.Description == undefined ? 'N/A' : row.Description}</CustomTableCell>
-														
 														<CustomTableCell align="center"><input type="checkbox" name="radio" value={row.Id}
 															onChange={() => this.selection(row.Id)}
 														/>
 														</CustomTableCell>
+														<CustomTableCell align="center">{row.Code == "" || row.Code == null || row.Code == undefined ? 'N/A' : row.Code}</CustomTableCell>
+														<CustomTableCell align="center">{row.Description == "" || row.Description == null || row.Description == undefined ? 'N/A' : row.Description}</CustomTableCell>
+														
+													
 													</TableRow>
 												))
 												:

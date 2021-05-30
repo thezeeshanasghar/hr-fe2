@@ -110,7 +110,6 @@ class Employee extends Component {
 		Country: '',
 		ContractType: '',
 		EmployeeStatus: '',
-		company: "",
 		Position: "",
 		grade: "",
 		Bank: "",
@@ -199,6 +198,15 @@ class Employee extends Component {
 		this.getCountryLaws();
 		this.getEntitlement();
 		this.getselectiveCompanyDetail();
+		if(this.state.Default!=null){
+			this.state.company=this.state.Default.Id;
+	
+				this.getPosition(this.state.Default.Id);
+				this.getGrades(this.state.Default.Id);
+				this.getPayElement(this.state.Default.Id);
+				this.getCompanyBank(this.state.Default.Id);
+			
+		}
 	}
 	deleteRow = (element) => {
 		console.log(element);
@@ -279,13 +287,7 @@ class Employee extends Component {
 	};
 	handleChange = (e) => {
 		console.log({ [e.target.name]: e.target.value })
-		this.setState({ [e.target.name]: e.target.value });
-		if (e.target.name == "company") {
-			this.getPosition(e.target.value);
-			this.getGrades(e.target.value);
-			this.getPayElement(e.target.value);
-			this.getCompanyBank(e.target.value);
-		}
+	this.setState({ [e.target.name]: e.target.value });	
 	};
 	getMaritalStatus = () => {
 		axios({
@@ -767,7 +769,6 @@ class Employee extends Component {
 				!this.validator.fieldValid('ServiceStartDate') ||
 				!this.validator.fieldValid('title') ||
 				!this.validator.fieldValid('ContractEndDate') ||
-				!this.validator.fieldValid('company') ||
 				!this.validator.fieldValid('Position') ||
 				!this.validator.fieldValid('grade') ||
 				!this.validator.fieldValid('Contact') ||
@@ -886,7 +887,6 @@ class Employee extends Component {
 					Country: '',
 					ContractType: '',
 					EmployeeStatus: '',
-					company: "",
 					Position: "",
 					grade: "",
 					Bank: "",
@@ -937,7 +937,6 @@ class Employee extends Component {
 					Country: '',
 					ContractType: '',
 					EmployeeStatus: '',
-					company: "",
 					Position: "",
 					grade: "",
 					Bank: "",
@@ -1006,7 +1005,6 @@ class Employee extends Component {
 				// !this.validator.fieldValid('ProbationEndDate') ||
 				!this.validator.fieldValid('title') ||
 				!this.validator.fieldValid('ContractEndDate') ||
-				!this.validator.fieldValid('company') ||
 				!this.validator.fieldValid('Position') ||
 				!this.validator.fieldValid('grade') ||
 				!this.validator.fieldValid('Contact') ||
@@ -1286,7 +1284,7 @@ class Employee extends Component {
 										</Button>
 										</div>
 										<div style={{ float: "left", "margin": "8px" }}>
-											<Button variant="contained" color="primary" className={classes.button} onClick={this.deleteEmployee}>
+											<Button variant="contained" color="danger" className={classes.button} onClick={this.deleteEmployee}>
 												Delete
 										</Button>
 										</div>
@@ -1295,7 +1293,11 @@ class Employee extends Component {
 												View
 										</Button>
 										</div>
-
+										<div style={{ float: "left", "margin": "8px" }}>
+											<Button variant="contained" color="primary" className={classes.button} onClick={()=>this.setState({value:1})}>
+												Add Employee
+										</Button>
+										</div>
 									</div>
 
 
@@ -1670,7 +1672,7 @@ class Employee extends Component {
 										/>
 										{this.validator.message('ContractEndDate', this.state.ContractEndDate, 'required')}
 									</Grid>
-									<Grid item xs={12} sm={5} >
+									{/* <Grid item xs={12} sm={5} >
 										<FormControl className={classes.formControl}>
 											<InputLabel htmlFor="company">Company</InputLabel>
 											<Select
@@ -1691,7 +1693,7 @@ class Employee extends Component {
 											</Select>
 										</FormControl>
 										{this.validator.message('company', this.state.company, 'required')}
-									</Grid>
+									</Grid> */}
 
 									<Grid item xs={12} sm={5}  >
 										<FormControl className={classes.formControl}>
@@ -1781,9 +1783,10 @@ class Employee extends Component {
 									</Grid>
 								</form>
 								<div className="row" >
-									<Grid item xs={12} sm={10}  >
-									
-										<div style={{ float: "right", "marginRight": "8px" }}>
+									<Grid item xs={12} sm={10} style={{marginTop:"10px"}}  >
+									{
+										this.state.Default!=null?
+									<div style={{ float: "right", "marginRight": "8px" }}>
 										<Button style={{ "marginBottom": "10px", "marginRight": "10px" }}  variant="outlined" color="secondary" className={this.state.Action == 'Insert Record' ? classes.button : 'd-none'} onClick={() => this.insertUpdateEmployee('employee')} >
 												Save Employee
 											</Button>
@@ -1792,8 +1795,11 @@ class Employee extends Component {
       										</Button>
 											<Button style={{ "marginBottom": "10px" }} variant="outlined" color="secondary" className={classes.button} onClick={() => this.nextTab(2)}>
 												Next
-      								</Button>
+      									</Button>
 										</div>
+										:""
+									}
+										
 									</Grid>
 
 								</div>

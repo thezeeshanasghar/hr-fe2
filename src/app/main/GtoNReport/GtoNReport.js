@@ -270,7 +270,10 @@ class GtoNReport extends Component {
 									<CustomTableCell align="center">Detail</CustomTableCell>
 										{
 											this.state.columns.map(row =>
-												<CustomTableCell align="center">{row}</CustomTableCell>
+												row!="PayGroup"?
+													<CustomTableCell align="center">{row}</CustomTableCell>
+												:""
+												
 											)
 										}
 									</TableRow>
@@ -287,7 +290,12 @@ class GtoNReport extends Component {
 										</CustomTableCell>
 											{
 												this.state.columns.map(column =>
-													<CustomTableCell align="center">{row[column]}</CustomTableCell>
+													
+													column!="PayGroup"?
+												<CustomTableCell align="center">{row[column]}</CustomTableCell>
+												:""
+													
+													
 												)
 											}
 										</TableRow>
